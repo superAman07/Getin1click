@@ -51,7 +51,7 @@ export default function HeroPage() {
                     </p>
                 </div>
             </div>
-            <div className="relative w-full overflow-hidden bg-white py-6">
+            <div className="relative  overflow-hidden bg-white py-6">
                 {/* Wrapper for marquee */}
                 <div className="flex animate-marquee space-x-6">
                     {/* Card 1 */}
