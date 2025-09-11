@@ -55,9 +55,9 @@ export default function HeroPage() {
                 {/* Wrapper for marquee */}
                 <div className="flex animate-marquee space-x-6">
                     {/* Card 1 */}
-                    <div className="relative w-64 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-80 h-60 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                            src="public/gardening.jpg"
+                            src="/gardening.jpg"
                             alt="Gardening"
                             fill
                             className="object-cover"
@@ -68,10 +68,9 @@ export default function HeroPage() {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="relative w-64 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-80 h-60 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-
-                            src="public/accounting.jpg"
+                            src="/accounting.jpg"
                             alt="Accounting"
                             fill
                             className="object-cover"
@@ -85,9 +84,9 @@ export default function HeroPage() {
                     </div>
 
                     {/* Card 3 */}
-                    <div className="relative w-64 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-80 h-60 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                            src="public/counselling.jpg"
+                            src="/counselling.jpg"
                             alt="Counselling"
                             fill
                             className="object-cover"
@@ -101,9 +100,9 @@ export default function HeroPage() {
                     </div>
 
                     {/* Card 4 */}
-                    <div className="relative w-64 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-80 h-60 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                            src="public/personal_trainers.jpg"
+                            src="/personaltraining.jpg"
                             alt="Personal Trainers"
                             fill
                             className="object-cover"
@@ -113,9 +112,9 @@ export default function HeroPage() {
                         </div>
                     </div>
                     {/* Card 5 */}
-                    <div className="relative w-64 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-80 h-60 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                            src="public/Web Design.jpg"
+                            src="/webdesign.jpg"
                             alt=" Web Design"
                             fill
                             className="object-cover"
