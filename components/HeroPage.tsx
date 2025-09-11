@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function HeroPage() {
     return (
         <div className="mt-[250px] relative">
-            <div className="w-full bg-white py-20 px-4 mt-96" style={{ marginTop: "" }}>
+            <div className="w-full bg-white py-20 px-4 mt-96" style={{ marginLeft: "-200px" }}>
                 <div className="max-w-3xl mx-auto text-start">
                     {/* Heading */}
                     <h2 className="text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
@@ -125,6 +125,9 @@ export default function HeroPage() {
                     </div>
                 </div>
             </div>
+
+
+
         </div>
     );
 }

@@ -145,25 +145,7 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Trustpilot */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="flex text-green-500">
-                  {"★★★★★".split("").map((star, i) => (
-                    <span key={i} className={i < 4 ? "text-green-500" : "text-white-300"}>
-                      {star}
-                    </span>
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-white-900">TrustScore 4.1</span>
-              </div>
-              <div className="text-xs text-white-500">
-                <span className="font-medium">104,920</span> reviews
-              </div>
-              <div className="text-xs text-green-600 font-medium">
-                ★ Trustpilot
-              </div>
-            </div>
+       
           </div>
         </div>
 
@@ -183,6 +165,25 @@ export default function Footer() {
               <a href="#" className="hover:text-blue-600 transition-colors">
                 Privacy policy
               </a>
+            </div>
+              {/* Trustpilot */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <div className="flex text-green-500">
+                  {"★★★★★".split("").map((star, i) => (
+                    <span key={i} className={i < 4 ? "text-green-500" : "text-white-300"}>
+                      {star}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-white-900">TrustScore 4.1</span>
+              </div>
+              <div className="text-xs text-white-500">
+                <span className="font-medium">104,920</span> reviews
+              </div>
+              <div className="text-xs text-green-600 font-medium">
+                ★ Trustpilot
+              </div>
             </div>
           </div>
         </div>
