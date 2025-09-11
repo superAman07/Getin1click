@@ -2,17 +2,17 @@
 
 export default function HeroPage() {
   return (
-    <div className="w-full bg-white py-20 px-4">
-      <div className="max-w-3xl mx-auto text-center">
+    <div className="w-full bg-white py-20 px-4" style={{ marginTop: "250px" }}>
+      <div className="max-w-3xl mx-auto text-start">
         {/* Heading */}
         <h2 className="text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
           Find the perfect <br className="hidden sm:block" /> professional for you
         </h2>
 
         {/* Subheading */}
-        <p className="mt-3 text-lg text-gray-400">
+        <h4 className="mt-3 text-lg text-gray-400">
           Get free quotes within minutes
-        </p>
+        </h4>
 
         {/* Search Box */}
         <div className="mt-8 flex flex-col sm:flex-row items-stretch justify-center w-full gap-0">
@@ -48,5 +48,10 @@ export default function HeroPage() {
         </p>
       </div>
     </div>
+
+// slider
+
+
+
   );
 }
