@@ -1,39 +1,38 @@
-// app/components/Footer.tsx (Next.js 13+ with App Router)
-// or place inside /components/Footer.jsx if using pages router
+// components/HeroPage.tsx
 
 export default function HeroPage() {
   return (
-    <header className="w-full bg-white py-12 px-6 border-t">
-      <div className="max-w-5xl mx-auto text-center">
+    <div className="w-full bg-white py-20 px-4">
+      <div className="max-w-3xl mx-auto text-center">
         {/* Heading */}
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-          Find the perfect professional for you
+        <h2 className="text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
+          Find the perfect <br className="hidden sm:block" /> professional for you
         </h2>
 
         {/* Subheading */}
-        <p className="mt-3 text-lg text-gray-500">
+        <p className="mt-3 text-lg text-gray-400">
           Get free quotes within minutes
         </p>
 
         {/* Search Box */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="mt-8 flex flex-col sm:flex-row items-stretch justify-center w-full gap-0">
           <input
             type="text"
             placeholder="What service are you looking for?"
-            className="w-full sm:w-80 px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="flex-1 px-4 py-4 border border-gray-300 rounded-t-md sm:rounded-l-md sm:rounded-tr-none text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="text"
             placeholder="Postcode"
-            className="w-full sm:w-40 px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full sm:w-40 px-4 py-4 border border-gray-300 border-t-0 sm:border-t sm:border-l-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-md shadow-md transition">
+          <button className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-b-md sm:rounded-r-md sm:rounded-bl-none shadow-md transition">
             Search
           </button>
         </div>
 
         {/* Popular Links */}
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-gray-400">
           Popular:{" "}
           <a href="#" className="text-blue-600 hover:underline">
             House Cleaning
@@ -48,6 +47,6 @@ export default function HeroPage() {
           </a>
         </p>
       </div>
-    </header>
+    </div>
   );
 }
