@@ -28,7 +28,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b bg-white relative">
+    <nav className="w-full border-b relative text-white"  style={{ backgroundColor: "#", height: "74px"  }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
         {/* Left: Logo + Explore */}
         <div className="flex items-center space-x-6">
