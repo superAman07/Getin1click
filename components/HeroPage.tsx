@@ -684,25 +684,25 @@ export default function HeroPage() {
           <img src="/1.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/2.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/2.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/3.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/3.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/1.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/2.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/2.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/6.jpg" alt="user" className="w-full h-full object-cover" />
+          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/3.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/3.png" alt="user" className="w-full h-full object-cover" />
         </div>
         <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/avatars/1.png" alt="user" className="w-full h-full object-cover" />
+          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
         </div>
       </div>
 
