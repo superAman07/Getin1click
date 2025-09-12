@@ -348,7 +348,7 @@ export default function HeroPage() {
           href="#"
           className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
         >
-          <div className="relative w-full h-48">
+          <div className="relative w-full h-70">
             <Image
               src="/gardening.jpg"
               alt="Gardening"
@@ -386,7 +386,7 @@ export default function HeroPage() {
         >
           <div className="relative w-full h-70">
             <Image
-              src="/painting.jpg"
+              src="/paintingdecorating.jpg"
               alt="Painting & Decorating"
               fill
               className="object-cover"
@@ -399,6 +399,330 @@ export default function HeroPage() {
       </div>
     </section>
 
+
+    <section className="px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-900">Health & Wellbeing</h2>
+        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+          View All
+        </a>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        {/* Card 1 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/personaltraining.jpg"
+              alt="Personal Training"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Personal Training</h3>
+          </div>
+        </a>
+
+        {/* Card 2 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/counselling.jpg"
+              alt="Counselling"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Counselling</h3>
+          </div>
+        </a>
+
+        {/* Card 3 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/massage-therapy.jpg"
+              alt="Massage Therapy"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Massage Therapy</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
+
+
+    <section className="px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-900">Weddings & Events</h2>
+        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+          View All
+        </a>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        {/* Card 1 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/wedding-photographer.jpg"
+              alt="Wedding Photography"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Wedding Photography</h3>
+          </div>
+        </a>
+
+        {/* Card 2 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/magician.jpg"
+              alt="Magician"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Magician</h3>
+          </div>
+        </a>
+
+        {/* Card 3 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/dj.jpg"
+              alt="DJ"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">DJ</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
+
+    <section className="px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-900">Business Services</h2>
+        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+          View All
+        </a>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        {/* Card 1 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/webdesign.jpg"
+              alt="Web Design"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Web Design</h3>
+          </div>
+        </a>
+
+        {/* Card 2 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/accounting.jpg"
+              alt="Accounting"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Accounting</h3>
+          </div>
+        </a>
+
+        {/* Card 3 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/social-media-marketing.jpg"
+              alt="Social Media Marketing"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Social Media Marketing</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
+
+    <section className="px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-900">Most Popular Categories</h2>
+        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+          View All
+        </a>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        {/* Card 1 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/Cleaners.jpeg"
+              alt="Cleaners"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Cleaners</h3>
+          </div>
+        </a>
+
+        {/* Card 2 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/Gardeners.jpeg"
+              alt="Gardeners"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Gardeners</h3>
+          </div>
+        </a>
+
+        {/* Card 3 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/PersonalTrainers.png"
+              alt="Personal Trainers"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Personal Trainers</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    {/* testimnoial */}
+   <section className="w-full bg-gray-50 py-16 flex flex-col items-center">
+      {/* Avatars Row */}
+      <div className="relative w-full max-w-6xl flex justify-center flex-wrap gap-6 mb-12">
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/2.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/3.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/1.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/2.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/6.jpg" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/3.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+          <img src="/avatars/1.png" alt="user" className="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      {/* Testimonial Text */}
+      <div className="text-center max-w-2xl px-6">
+        <p className="text-xl md:text-2xl font-medium text-gray-900">
+          “I have used Bark twice now for two completely different services and I’ve had a fantastic experience both times!”
+        </p>
+        <p className="mt-4 text-lg font-semibold text-gray-800">Jayne</p>
+      </div>
+
+      {/* Dots Navigation */}
+      <div className="flex mt-6 space-x-2">
+        <span className="h-2 w-2 rounded-full bg-blue-600"></span>
+        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+      </div>
+    </section>
 
         </div>
     );
