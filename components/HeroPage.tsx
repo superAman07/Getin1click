@@ -331,6 +331,74 @@ export default function HeroPage() {
     
 
 
+<section className="px-6 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-900">Home and Garden</h2>
+        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+          View All
+        </a>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        {/* Card 1 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-48">
+            <Image
+              src="/gardening.jpg"
+              alt="Gardening"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Gardening</h3>
+          </div>
+        </a>
+
+        {/* Card 2 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/housecleaning.jpg"
+              alt="House Cleaning"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">House Cleaning</h3>
+          </div>
+        </a>
+
+        {/* Card 3 */}
+        <a
+          href="#"
+          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+        >
+          <div className="relative w-full h-70">
+            <Image
+              src="/painting.jpg"
+              alt="Painting & Decorating"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-medium text-gray-900">Painting & Decorating</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
 
         </div>
     );
