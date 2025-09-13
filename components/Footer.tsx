@@ -71,9 +71,10 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">About</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="https://urban-telegram-v679rxvg4rjvfvpx-3000.app.github.dev/about" className="text-white-600 hover:text-blue-600 transition-colors">
                   About Bark
                 </a>
+                
               </li>
               <li>
                 <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
