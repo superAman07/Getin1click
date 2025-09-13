@@ -1,8 +1,8 @@
-import About from "@/components/About";
+import HeroPage from "@/components/HeroPage";
 export default function Home() {
   return (
     <div className="">
-      <About/>
+      <HeroPage/>
     </div>
   );
 }
