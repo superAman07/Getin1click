@@ -1,3 +1,4 @@
+import Image from "next/image";
 // Calendar SVG component
 const Calendar = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -62,7 +63,6 @@ const Home = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 // components/HeroPage.tsx
-import Image from "next/image";
 // Heart SVG component
 const Heart = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
