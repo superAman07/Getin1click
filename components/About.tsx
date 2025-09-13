@@ -457,6 +457,136 @@ export default function About() {
       </div>
     </section>
 
+     <div className="min-h-screen bg-gray-50 py-16 px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-bold text-gray-900 mb-8">Our People</h1>
+          <p className="text-lg text-gray-700 leading-relaxed max-w-5xl mx-auto">
+            At Bark, we hire for skills and shared values and that's pretty much it. We know that being brilliant in your role has 
+            nothing to do with who you love or what you believe in and that people perform best when they can be their 
+            unapologetic selves. We're intent on building a workforce as diverse as our platform and are proud to have a workplace 
+            culture that's genuinely inclusive. To us, representation isn't just a tick-box exercise. Diversity is one of our strongest 
+            assets and the driving force behind our ability to adapt, innovate and deliver exceptional value to our customers.
+          </p>
+        </div>
+
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 items-center">
+          
+          {/* Gender Distribution - Pie Chart */}
+          <div className="flex flex-col items-center">
+            <div className="relative w-48 h-48 mb-6">
+              {/* Pie Chart Background */}
+              <div className="w-full h-full rounded-full bg-gray-800 relative overflow-hidden">
+                {/* Blue section (58% - roughly 208 degrees) */}
+                <div 
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: `conic-gradient(from 0deg, #3b82f6 0deg 208deg, transparent 208deg 360deg)`
+                  }}
+                ></div>
+                {/* White center circle */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-full"></div>
+                
+                {/* Gender symbols */}
+                <div className="absolute top-4 left-6 text-white text-xl font-bold">♂</div>
+                <div className="absolute bottom-8 left-4 text-blue-500 text-xl font-bold">♀</div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-semibold text-gray-900 mb-1">58% Male, 39% Female,</div>
+              <div className="text-xl font-semibold text-gray-900">3% Other</div>
+            </div>
+          </div>
+
+          {/* Ethnicities - Hands */}
+          <div className="flex flex-col items-center">
+            <div className="relative w-48 h-48 mb-6 flex items-center justify-center">
+              {/* Two hands reaching toward each other */}
+              <div className="relative">
+                {/* Left hand (blue) */}
+                <div className="absolute -left-8 top-0">
+                  <div className="w-16 h-20 bg-blue-500 rounded-t-full rounded-bl-full transform rotate-12 relative">
+                    {/* Fingers */}
+                    <div className="absolute -top-3 left-2 w-3 h-8 bg-blue-500 rounded-full transform -rotate-12"></div>
+                    <div className="absolute -top-4 left-5 w-3 h-10 bg-blue-500 rounded-full transform -rotate-6"></div>
+                    <div className="absolute -top-4 left-8 w-3 h-9 bg-blue-500 rounded-full transform rotate-6"></div>
+                    <div className="absolute -top-2 left-11 w-3 h-6 bg-blue-500 rounded-full transform rotate-12"></div>
+                  </div>
+                </div>
+                
+                {/* Right hand (dark) */}
+                <div className="absolute -right-8 top-0">
+                  <div className="w-16 h-20 bg-gray-800 rounded-t-full rounded-br-full transform -rotate-12 relative">
+                    {/* Fingers */}
+                    <div className="absolute -top-3 right-2 w-3 h-8 bg-gray-800 rounded-full transform rotate-12"></div>
+                    <div className="absolute -top-4 right-5 w-3 h-10 bg-gray-800 rounded-full transform rotate-6"></div>
+                    <div className="absolute -top-4 right-8 w-3 h-9 bg-gray-800 rounded-full transform -rotate-6"></div>
+                    <div className="absolute -top-2 right-11 w-3 h-6 bg-gray-800 rounded-full transform -rotate-12"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-semibold text-gray-900">13 Ethnicities</div>
+            </div>
+          </div>
+
+          {/* Employees - People Icons */}
+          <div className="flex flex-col items-center">
+            <div className="w-48 h-48 mb-6 flex items-center justify-center">
+              <div className="flex space-x-4">
+                {/* Person 1 - Light */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full mb-2"></div>
+                  <div className="w-16 h-20 bg-gray-300 rounded-t-full"></div>
+                </div>
+                
+                {/* Person 2 - Blue */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full mb-2"></div>
+                  <div className="w-16 h-20 bg-blue-500 rounded-t-full"></div>
+                </div>
+                
+                {/* Person 3 - Blue */}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full mb-2"></div>
+                  <div className="w-16 h-20 bg-blue-500 rounded-t-full"></div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-semibold text-gray-900">240 Employees in 6</div>
+              <div className="text-xl font-semibold text-gray-900">countries</div>
+            </div>
+          </div>
+
+          {/* Nationalities - Globe */}
+          <div className="flex flex-col items-center">
+            <div className="w-48 h-48 mb-6 flex items-center justify-center">
+              <div className="w-32 h-40 bg-gray-800 rounded-2xl relative overflow-hidden">
+                {/* Globe inside */}
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full relative">
+                  {/* Continents */}
+                  <div className="absolute top-2 left-3 w-6 h-4 bg-blue-500 rounded-full transform rotate-12"></div>
+                  <div className="absolute top-6 right-2 w-8 h-6 bg-blue-500 rounded-full transform -rotate-6"></div>
+                  <div className="absolute bottom-4 left-2 w-5 h-3 bg-blue-500 rounded-full"></div>
+                  <div className="absolute bottom-2 right-4 w-4 h-4 bg-blue-500 rounded-full"></div>
+                  <div className="absolute top-8 left-8 w-3 h-5 bg-blue-500 rounded-full transform rotate-45"></div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-semibold text-gray-900">36 Nationalities</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
     </div>
   );
 }
