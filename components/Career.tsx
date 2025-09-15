@@ -1,7 +1,7 @@
 
 import { GraduationCap, Brain, Heart, Dumbbell } from "lucide-react";
 
-export default function About() {
+export default function Career() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800">
       <h1 className="text-4xl font-bold mb-6">The people behind the platform </h1>
