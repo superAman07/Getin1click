@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 // Calendar SVG component
 const Calendar = (props: React.SVGProps<SVGSVGElement>) => (
