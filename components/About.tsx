@@ -3,8 +3,8 @@ import { GraduationCap, Brain, Heart, Dumbbell } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800">
-      <h1 className="text-4xl font-bold mb-6">The people behind the platform </h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 " >
+      <h1 className="text-4xl font-bold mb-6 mt-5 ">The people behind the platform </h1>
       <p className="max-w-2xl text-center mb-4">
         Bark is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.      </p>
 

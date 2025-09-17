@@ -140,7 +140,7 @@ export default function Navbar() {
         </div>
         {/* Right: Login + Join */}
         <div className="flex items-center space-x-6">
-          <Link href="#" className="text-[#0d1129] font-medium hover:text-blue-600">
+          <Link href="/login" className="text-[#0d1129] font-medium hover:text-blue-600">
             Login
           </Link>
           <Link
