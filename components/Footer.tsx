@@ -17,12 +17,12 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Howitwork" className="text-white-600 hover:text-blue-600 transition-colors">
                   How it works
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/login" className="text-white-600 hover:text-blue-600 transition-colors">
                   Login
                 </a>
               </li>
@@ -39,12 +39,12 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">For Professionals</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/login" className="text-white-600 hover:text-blue-600 transition-colors">
                   How it works
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Pricing" className="text-white-600 hover:text-blue-600 transition-colors">
                   Pricing
                 </a>
               </li>
@@ -54,7 +54,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Helpcenter" className="text-white-600 hover:text-blue-600 transition-colors">
                   Help centre
                 </a>
               </li>
@@ -71,18 +71,18 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">About</h3>
             <ul className="space-y-3">
               <li>
-                <a href="https://urban-telegram-v679rxvg4rjvfvpx-3000.app.github.dev/about" className="text-white-600 hover:text-blue-600 transition-colors">
-                  About Bark
+                <a href="/about" className="text-white-600 hover:text-blue-600 transition-colors">
+                  About 
                 </a>
                 
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Career" className="text-white-600 hover:text-blue-600 transition-colors">
                   Careers
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Affiliates" className="text-white-600 hover:text-blue-600 transition-colors">
                   Affiliates
                 </a>
               </li>
