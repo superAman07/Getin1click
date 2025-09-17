@@ -78,7 +78,7 @@ const Heart = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function HeroPage() {
   return (
-    <div className="relative pt-16 sm:pt-24 lg:pt-32">
+    <div className="relative ">
             <div className="w-full bg-white py-12 px-4">
                 <div className="max-w-3xl mx-auto text-start">
                     {/* Heading */}
@@ -251,7 +251,7 @@ export default function HeroPage() {
         </div>
         </div>
 </div>
-          <div className="bg-light-100 py-10 px-2 sm:px-4" style={{ marginTop: "80px" , }}>
+          <div className="bg-light-100 py-10 px-2 sm:px-4" style={{backgroundColor:"#d8e3edff", padding: '40px 50px', boxSizing: 'border-box', minHeight: '60vh' , display: 'flex', flexDirection: 'column', justifyContent: 'center' , alignItems: 'center', textAlign: 'center'}}>
 
         {/* Discover Section */}
         <div className="text-center">
@@ -332,7 +332,7 @@ export default function HeroPage() {
     
 
 
-<section className="px-6 py-8">
+<section className="px-6 py-8" style={{ padding: '40px 110px'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Home and Garden</h2>
@@ -401,7 +401,7 @@ export default function HeroPage() {
     </section>
 
 
-    <section className="px-6 py-8">
+    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Health & Wellbeing</h2>
@@ -471,7 +471,7 @@ export default function HeroPage() {
 
 
 
-    <section className="px-6 py-8">
+    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Weddings & Events</h2>
@@ -540,7 +540,7 @@ export default function HeroPage() {
     </section>
 
 
-    <section className="px-6 py-8">
+    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Business Services</h2>
@@ -609,7 +609,7 @@ export default function HeroPage() {
     </section>
 
 
-    <section className="px-6 py-8">
+    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Most Popular Categories</h2>
