@@ -34,11 +34,13 @@ export default function Navbar() {
         <div className="flex items-center space-x-6">
           {/* Logo */}
           <div className="flex items-center">
-            <img
+            <a href="/Home">
+              <img
               src="/logo.png"
               alt="Logo"
               className="h-8"
             />
+            </a>
           </div>
           {/* Explore dropdown */}
           <div className="relative">
@@ -144,7 +146,7 @@ export default function Navbar() {
             Login
           </Link>
           <Link
-            href="#"
+            href="/joinasprofessional"
             className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full shadow-sm"
           >
             <svg

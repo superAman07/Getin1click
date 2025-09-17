@@ -49,7 +49,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/joinasprofessional" className="text-white-600 hover:text-blue-600 transition-colors">
                   Join as a Professional
                 </a>
               </li>
@@ -58,11 +58,7 @@ export default function Footer() {
                   Help centre
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
-                  Mobile App
-                </a>
-              </li>
+             
             </ul>
           </div>
 
@@ -71,19 +67,19 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">About</h3>
             <ul className="space-y-3">
               <li>
-                <a href="/about" className="text-white-600 hover:text-blue-600 transition-colors">
-                  About 
+                <a href="/Home" className="text-white-600 hover:text-blue-600 transition-colors">
+                  Home 
                 </a>
                 
               </li>
               <li>
-                <a href="/Career" className="text-white-600 hover:text-blue-600 transition-colors">
-                  Careers
+                <a href="/about" className="text-white-600 hover:text-blue-600 transition-colors">
+                  About
                 </a>
               </li>
               <li>
-                <a href="/Affiliates" className="text-white-600 hover:text-blue-600 transition-colors">
-                  Affiliates
+                <a href="/Career" className="text-white-600 hover:text-blue-600 transition-colors">
+                  Career
                 </a>
               </li>
               <li>
@@ -91,11 +87,7 @@ export default function Footer() {
                   Blog
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
-                  Press
-                </a>
-              </li>
+             
             </ul>
           </div>
 
@@ -105,7 +97,7 @@ export default function Footer() {
             <div className="space-y-4">
               <h3 className="font-semibold text-white-900 text-lg">Need help?</h3>
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">
-                Contact us
+                <a href="/Contact">Contact us</a>
               </button>
             </div>
 
@@ -128,24 +120,7 @@ export default function Footer() {
               </a>
             </div>
 
-            {/* Country selector */}
-            <div className="flex items-center space-x-2 text-white-600">
-              <div className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors">
-                <div className="w-6 h-4 bg-blue-600 relative overflow-hidden rounded-sm">
-                  {/* UK Flag representation */}
-                  <div className="absolute inset-0 bg-blue-600">
-                    <div className="absolute inset-0 bg-white transform rotate-45 origin-center scale-150"></div>
-                    <div className="absolute inset-0 bg-red-600 w-full h-0.5 top-1/2 transform -translate-y-1/2"></div>
-                    <div className="absolute inset-0 bg-red-600 h-full w-0.5 left-1/2 transform -translate-x-1/2"></div>
-                  </div>
-                </div>
-                <span className="text-sm font-medium">United Kingdom</span>
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-
+           
        
           </div>
         </div>
