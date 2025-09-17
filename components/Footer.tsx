@@ -12,7 +12,7 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">For Customers</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/" className="text-white-600 hover:text-blue-600 transition-colors">
                   Find a Professional
                 </a>
               </li>
