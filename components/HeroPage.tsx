@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import Image from "next/image";
+import { useState } from "react";
 // Calendar SVG component
 const Calendar = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -77,6 +79,18 @@ const Heart = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export default function HeroPage() {
+const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState("");
+
+  const options = [
+    "Allotment",
+    "Communal garden",
+    "Office or commercial garden",
+    "Public garden",
+    "Residential garden",
+    "Other",
+  ];
+
   return (
     <div className="relative ">
             <div className="w-full bg-white py-12 px-4">
@@ -125,21 +139,26 @@ export default function HeroPage() {
                     </p>
                 </div>
             </div>
-      <div className="relative overflow-x-auto bg-white py-6">
+      <div className="relative bg-white py-6">
         {/* Wrapper for marquee */}
         <div className="flex animate-marquee space-x-4 sm:space-x-6">
           {/* Card 1 */}
-          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                            src="/gardening.jpg"
-                            alt="Gardening"
-                            fill
-                            className="object-cover"
-                        />
+                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg flex-shrink-0">
+                         {/* Image that opens modal */}
+      <Image
+        src="/gardening.jpg" // replace with your image path
+        alt="Gardeners"
+        width={400}
+        height={450}
+        className="cursor-pointer rounded-lg shadow-md hover:scale-105 transition h-auto" style={{height:"240px"}}
+        onClick={() => setIsOpen(true)}
+      />
                         <div className="absolute bottom-2 left-2 text-white font-semibold">
                             Gardening
                         </div>
                     </div>
+
+
 
                     {/* Card 2 */}
                     <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
@@ -198,6 +217,62 @@ export default function HeroPage() {
                         </div>
                     </div>
                 </div>
+                 {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-lg w-full relative p-6">
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-3 right-1 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 h-1 rounded mb-6">
+              <div className="w-1/4 bg-blue-500 h-1 rounded"></div>
+            </div>
+
+            {/* Heading */}
+            <h2 className="text-xl font-semibold text-center mb-2">
+              What kind of property is this for?
+            </h2>
+            {/* <p className="text-gray-500 text-center mb-6">
+              Get quotes for cleaners today!
+            </p> */}
+
+            {/* Options */}
+            <div className="space-y-3">
+              {options.map((opt, idx) => (
+                <label
+                  key={idx}
+                  className="flex items-center border rounded-lg px-4 py-3 cursor-pointer hover:border-blue-500 transition"
+                >
+                  <input
+                    type="radio"
+                    name="property"
+                    value={opt}
+                    checked={selected === opt}
+                    onChange={(e) => setSelected(e.target.value)}
+                    className="mr-3 accent-blue-500"
+                  />
+                  <span>{opt}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Continue Button */}
+            <button
+              onClick={() => alert(`Selected: ${selected}`)}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
             </div>
 
           <div className="bg-gray-100 py-10 px-2 sm:px-4" style={{ marginTop: "80px" , }}>

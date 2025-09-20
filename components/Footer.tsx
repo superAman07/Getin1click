@@ -39,7 +39,7 @@ export default function Footer() {
             <h3 className="font-semibold text-white-900 text-lg">For Professionals</h3>
             <ul className="space-y-3">
               <li>
-                <a href="/login" className="text-white-600 hover:text-blue-600 transition-colors">
+                <a href="/Howitwork" className="text-white-600 hover:text-blue-600 transition-colors">
                   How it works
                 </a>
               </li>
@@ -130,7 +130,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
             <div className="text-sm text-white-500">
               © 2025 Bark.com Global Limited.{" "}
-              <a href="#" className="hover:text-blue-600 transition-colors">
+              <a href="/Termandcondition" className="hover:text-blue-600 transition-colors">
                 Terms & Conditions
               </a>{" "}
               /{" "}
@@ -138,7 +138,7 @@ export default function Footer() {
                 Cookie policy
               </a>{" "}
               /{" "}
-              <a href="#" className="hover:text-blue-600 transition-colors">
+              <a href="/Privacypolicy" className="hover:text-blue-600 transition-colors">
                 Privacy policy
               </a>
             </div>
