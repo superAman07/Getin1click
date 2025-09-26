@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -17,7 +16,7 @@ export default function AuthPage() {
 
   const [registerEmail, setRegisterEmail] = useState("")
   const [registerPassword, setRegisterPassword] = useState("")
-  const [registerUsername, setRegisterUsername] = useState("") // Assuming you might want a username
+  const [registerUsername, setRegisterUsername] = useState("")
 
   const handleRegisterClick = () => setIsActive(true)
   const handleLoginClick = () => setIsActive(false)
