@@ -5,25 +5,39 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import "./auth.css"
+import { FaEye, FaEyeSlash } from "react-icons/fa"
 
 export default function AuthPage() {
   const [isActive, setIsActive] = useState(false)
-  const [error, setError] = useState("")
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter()
 
   const [loginEmail, setLoginEmail] = useState("")
   const [loginPassword, setLoginPassword] = useState("")
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [registerEmail, setRegisterEmail] = useState("")
   const [registerPassword, setRegisterPassword] = useState("")
   const [registerUsername, setRegisterUsername] = useState("")
 
-  const handleRegisterClick = () => setIsActive(true)
-  const handleLoginClick = () => setIsActive(false)
+  const handleRegisterClick = () => {
+    setIsActive(true);
+    setLoginError('');
+    setRegisterError('');
+  };
+  const handleLoginClick = () => {
+    setIsActive(false);
+    setLoginError('');
+    setRegisterError('');
+  };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setLoginError('')
+    setRegisterError('')
+    setIsLoading(true);
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -32,19 +46,22 @@ export default function AuthPage() {
       })
 
       if (result?.error) {
-        setError("Invalid credentials. Please try again.")
+        setLoginError("Invalid credentials. Please try again.")
       } else {
         router.push("/")
         router.refresh()
       }
     } catch (err) {
-      setError("Something went wrong during login.")
+      setLoginError("Something went wrong during login.")
+    } finally {
+      setIsLoading(false);
     }
   }
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setRegisterError('');
+    setIsLoading(true);
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -56,14 +73,16 @@ export default function AuthPage() {
         }),
       })
 
-      if (res.ok) { 
+      if (res.ok) {
         handleLoginClick()
       } else {
         const data = await res.json()
-        setError(data.message || "Registration failed.")
+        setRegisterError(data.message || 'Registration failed.');
       }
     } catch (err: any) {
-      setError(err.message)
+      setRegisterError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -78,22 +97,25 @@ export default function AuthPage() {
             Login
           </h2>
           <form onSubmit={handleLoginSubmit}>
-            {error && <p className="text-red-500">{error}</p>}
+            {loginError && <p className="text-red-500">{loginError}</p>}
             <div className="input-box animation" style={{ "--D": 1, "--S": 22 } as React.CSSProperties}>
               <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
               <label>Email</label>
             </div>
             <div className="input-box animation" style={{ "--D": 2, "--S": 23 } as React.CSSProperties}>
               <input
-                type="password"
+                type={`${showLoginPassword ? 'text' : 'password'}`}
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 required
               />
               <label>Password</label>
+              <span onClick={()=>setShowLoginPassword(!showLoginPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white">
+                {showLoginPassword ? <FaEyeSlash/>: <FaEye/>}
+              </span>
             </div>
             <button className="btn animation mt-12" type="submit" style={{ "--D": 3, "--S": 24 } as React.CSSProperties}>
-              Login
+              {isLoading ? 'Loading...': 'Login'}
             </button>
             <div className="regi-link animation" style={{ "--D": 4, "--S": 25 } as React.CSSProperties}>
               <p>
@@ -119,7 +141,7 @@ export default function AuthPage() {
             Register
           </h2>
           <form onSubmit={handleRegisterSubmit}>
-            {error && <p className="text-red-500">{error}</p>}
+            {registerError && <p className="text-red-500">{registerError}</p>}
             <div className="input-box animation" style={{ "--li": 18, "--S": 1 } as React.CSSProperties}>
               <input
                 type="text"
@@ -134,16 +156,14 @@ export default function AuthPage() {
               <label>Email</label>
             </div>
             <div className="input-box animation" style={{ "--li": 19, "--S": 3 } as React.CSSProperties}>
-              <input
-                type="password"
-                value={registerPassword}
-                onChange={(e) => setRegisterPassword(e.target.value)}
-                required
-              />
+              <input type={showLoginPassword ? 'text' : 'password'} value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required autoComplete="new-password" />
               <label>Password</label>
+              <span onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white">
+                {showLoginPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             <button className="btn animation mt-6" type="submit" style={{ "--li": 20, "--S": 4 } as React.CSSProperties}>
-              Register
+              {isLoading ? 'Loading...': 'Register'}
             </button>
             <div className="regi-link animation text-gray-300" style={{ "--li": 21, "--S": 5 } as React.CSSProperties}>
               <p>
