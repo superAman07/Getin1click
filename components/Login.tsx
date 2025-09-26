@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import "./auth.css"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import toast from "react-hot-toast"
 
 export default function AuthPage() {
   const [isActive, setIsActive] = useState(false)
@@ -38,6 +39,8 @@ export default function AuthPage() {
     setLoginError('')
     setRegisterError('')
     setIsLoading(true);
+    const toastId = toast.loading('Logging in...');
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -46,13 +49,14 @@ export default function AuthPage() {
       })
 
       if (result?.error) {
-        setLoginError("Invalid credentials. Please try again.")
+        toast.error('Invalid credentials. Please try again.', { id: toastId });
       } else {
+        toast.success('Logged in successfully!', { id: toastId });
         router.push("/")
         router.refresh()
       }
     } catch (err) {
-      setLoginError("Something went wrong during login.")
+      toast.error("Something went wrong during login.", { id: toastId });
     } finally {
       setIsLoading(false);
     }
@@ -62,6 +66,8 @@ export default function AuthPage() {
     e.preventDefault()
     setRegisterError('');
     setIsLoading(true);
+    const toastId = toast.loading('Registering...');
+
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
@@ -74,13 +80,14 @@ export default function AuthPage() {
       })
 
       if (res.ok) {
+        toast.success('Registration successful! Please log in.', { id: toastId });
         handleLoginClick()
       } else {
-        const data = await res.json()
-        setRegisterError(data.message || 'Registration failed.');
+        const data = await res.json();
+        toast.error(data.message || 'Registration failed.', { id: toastId });
       }
     } catch (err: any) {
-      setRegisterError(err.message);
+      toast.error(err.message, { id: toastId });
     } finally {
       setIsLoading(false);
     }
@@ -110,12 +117,12 @@ export default function AuthPage() {
                 required
               />
               <label>Password</label>
-              <span onClick={()=>setShowLoginPassword(!showLoginPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white">
-                {showLoginPassword ? <FaEyeSlash/>: <FaEye/>}
+              <span onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-white">
+                {showLoginPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
             <button className="btn animation mt-12" type="submit" style={{ "--D": 3, "--S": 24 } as React.CSSProperties}>
-              {isLoading ? 'Loading...': 'Login'}
+              {isLoading ? 'Loading...' : 'Login'}
             </button>
             <div className="regi-link animation" style={{ "--D": 4, "--S": 25 } as React.CSSProperties}>
               <p>
@@ -163,7 +170,7 @@ export default function AuthPage() {
               </span>
             </div>
             <button className="btn animation mt-6" type="submit" style={{ "--li": 20, "--S": 4 } as React.CSSProperties}>
-              {isLoading ? 'Loading...': 'Register'}
+              {isLoading ? 'Loading...' : 'Register'}
             </button>
             <div className="regi-link animation text-gray-300" style={{ "--li": 21, "--S": 5 } as React.CSSProperties}>
               <p>
