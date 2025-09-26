@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useParams, useRouter } from "next/navigation"
 import "./auth.css"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
@@ -14,6 +14,7 @@ type AuthFormsProps = {
 
 export default function AuthPage({ initialMode }: AuthFormsProps) {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const animatedShapeRef = useRef<HTMLDivElement>(null);
 
   const [isActive, setIsActive] = useState(initialMode === 'signup');
@@ -58,6 +59,16 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
       handleAnimatedNavigation('/auth/login', false);
     }
   };
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      if (session?.user?.role === 'ADMIN') {
+        router.push('/dashboard');
+      } else {
+        router.push('/');
+      }
+    }
+  }, [status, session, router]);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
