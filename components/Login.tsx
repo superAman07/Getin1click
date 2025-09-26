@@ -116,7 +116,7 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
   }
 
   return (
-    <div className="auth h-[100vh] flex justify-center items-center">
+    <div className="auth h-[100vh] bg-white flex justify-center items-center">
       <div className={`container ${isActive ? "active" : ""}`}>
         <div ref={animatedShapeRef} className="curved-shape"></div>
         <div className="curved-shape2"></div>
