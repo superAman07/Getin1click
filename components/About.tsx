@@ -570,7 +570,7 @@ export default function About() {
             <div className="w-48 h-48 mb-6 flex items-center justify-center">
               <div className="w-32 h-40 bg-gray-800 rounded-2xl relative overflow-hidden">
                 {/* Globe inside */}
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full relative">
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full">
                   {/* Continents */}
                   <div className="absolute top-2 left-3 w-6 h-4 bg-blue-500 rounded-full transform rotate-12"></div>
                   <div className="absolute top-6 right-2 w-8 h-6 bg-blue-500 rounded-full transform -rotate-6"></div>

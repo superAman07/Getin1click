@@ -1,15 +1,115 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  PROFESSIONAL
+  CUSTOMER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  professionalProfile ProfessionalProfile?
+  customerRequests    CustomerRequest[]
+  bookings            Booking[]
+  reviews             Review[]
+}
+
+model ProfessionalProfile {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id])
+  fullName   String
+  bio        String?
+  postcode   String
+  isVerified Boolean   @default(false)
+  credits    Int       @default(0)
+  services   Service[] @relation("ProfessionalServices")
+  bookings   Booking[]
+  reviews    Review[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Service {
+  id            String                @id @default(cuid())
+  name          String                @unique
+  description   String?
+  imageUrl      String?
+  questions     Question[]
+  professionals ProfessionalProfile[] @relation("ProfessionalServices")
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  text      String
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  options   Option[]
+  order     Int
+  createdAt DateTime @default(now())
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  text       String
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model CustomerRequest {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   User     @relation(fields: [customerId], references: [id])
+  serviceId  String
+  postcode   String
+  answers    Json
+  status     String   @default("open")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Booking    Booking?
+}
+
+model Booking {
+  id                String              @id @default(cuid())
+  customerRequestId String              @unique
+  request           CustomerRequest     @relation(fields: [customerRequestId], references: [id])
+  customerId        String
+  customer          User                @relation(fields: [customerId], references: [id])
+  professionalId    String
+  professional      ProfessionalProfile @relation(fields: [professionalId], references: [id])
+  bookingTime       DateTime
+  status            String
+  creditsCharged    Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  review            Review?
+}
+
+model Review {
+  id             String              @id @default(cuid())
+  rating         Int
+  comment        String?
+  bookingId      String              @unique
+  booking        Booking             @relation(fields: [bookingId], references: [id])
+  customerId     String
+  customer       User                @relation(fields: [customerId], references: [id])
+  professionalId String
+  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id])
+  createdAt      DateTime            @default(now())
 }
