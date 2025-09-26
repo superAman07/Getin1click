@@ -123,7 +123,6 @@ export default function Navbar() {
                   <span>›</span>
                 </li>
               </ul>
-              {/* Popular Services */}
               <div className="flex justify-between items-center mt-4 mb-2">
                 <h3 className="text-sm font-semibold text-gray-800">Popular Services</h3>
                 <Link href="#" className="text-sm text-blue-600 hover:underline">
@@ -142,7 +141,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-        {/* Right: Login + Join */}
         <div className="flex items-center space-x-6">
           {status === 'loading' && (
             <div className="loader flex justify-center items-center"></div>
