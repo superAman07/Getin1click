@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { AuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          throw new Error("Please enter your email and password.");
         }
 
         const user = await prisma.user.findUnique({
@@ -27,7 +28,7 @@ export const authOptions: AuthOptions = {
         });
 
         if (!user || !user.password) {
-          throw new Error("Invalid credentials");
+          throw new Error("No user found with this email. Please sign up.");
         }
 
         const isCorrectPassword = await bcrypt.compare(
@@ -36,7 +37,7 @@ export const authOptions: AuthOptions = {
         );
 
         if (!isCorrectPassword) {
-          throw new Error("Invalid credentials");
+          throw new Error("Incorrect password. Please try again.");
         }
 
         return user;
@@ -47,7 +48,7 @@ export const authOptions: AuthOptions = {
     session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub as string;
-        session.user.role = (token as JWT).role ?? null; 
+        session.user.role = (token as JWT).role ?? null;
       }
       return session;
     },
@@ -63,7 +64,7 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/auth', 
+    signIn: '/auth',
   },
   debug: process.env.NODE_ENV === "development",
 };

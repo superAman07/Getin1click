@@ -49,14 +49,14 @@ export default function AuthPage() {
       })
 
       if (result?.error) {
-        toast.error('Invalid credentials. Please try again.', { id: toastId });
+        toast.error(result.error, { id: toastId });
       } else {
         toast.success('Logged in successfully!', { id: toastId });
         router.push("/")
         router.refresh()
       }
     } catch (err) {
-      toast.error("Something went wrong during login.", { id: toastId });
+      toast.error('An unexpected error occurred.', { id: toastId });
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +95,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="auth flex justify-center items-center">
+    <div className="auth h-[100vh] flex justify-center items-center">
       <div className={`container ${isActive ? "active" : ""}`}>
         <div className="curved-shape"></div>
         <div className="curved-shape2"></div>

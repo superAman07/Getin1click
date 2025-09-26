@@ -1,5 +1,3 @@
-import Home from "./Home/page";
-
-export default function () {
-    return <Home />
+export default function (){
+    return <>jifjfddf</>
 }
