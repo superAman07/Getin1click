@@ -14,7 +14,7 @@ type AuthFormsProps = {
 
 export default function AuthPage({ initialMode }: AuthFormsProps) {
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const animatedShapeRef = useRef<HTMLDivElement>(null);
 
   const [isActive, setIsActive] = useState(initialMode === 'signup');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,27 +32,31 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
   }, [initialMode]);
 
   const handleAnimatedNavigation = (path: string, newIsActiveState: boolean) => {
-    const container = containerRef.current;
-    if (!container) return;
+    const animatedElement = animatedShapeRef.current;
+    if (!animatedElement) return;
 
     const navigate = () => {
       router.push(path, { scroll: false });
-      container.removeEventListener('transitionend', navigate);
+      animatedElement.removeEventListener('transitionend', navigate);
     };
 
-    container.addEventListener('transitionend', navigate, { once: true });
+    animatedElement.addEventListener('transitionend', navigate, { once: true });
 
     setIsActive(newIsActiveState);
   };
 
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleAnimatedNavigation('/auth/signup', true);
+    if (initialMode !== 'signup') {
+      handleAnimatedNavigation('/auth/signup', true);
+    }
   };
 
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleAnimatedNavigation('/auth/login', false);
+    if (initialMode !== 'login') {
+      handleAnimatedNavigation('/auth/login', false);
+    }
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -113,8 +117,8 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
 
   return (
     <div className="auth h-[100vh] flex justify-center items-center">
-      <div ref={containerRef} className={`container ${isActive ? "active" : ""}`}>
-        <div className="curved-shape"></div>
+      <div className={`container ${isActive ? "active" : ""}`}>
+        <div ref={animatedShapeRef} className="curved-shape"></div>
         <div className="curved-shape2"></div>
 
         <div className="form-box Login">
