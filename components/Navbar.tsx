@@ -1,8 +1,10 @@
 'use client';
 import { useRef, useEffect } from "react";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Navbar() {
+  const { data: session, status } = useSession();
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +30,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b relative text-white"  style={{ backgroundColor: "#", height: "74px"  }}>
+    <nav className="w-full border-b relative text-white" style={{ backgroundColor: "#", height: "74px" }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
         {/* Left: Logo + Explore */}
         <div className="flex items-center space-x-6">
@@ -36,10 +38,10 @@ export default function Navbar() {
           <div className="flex items-center">
             <a href="/Home">
               <img
-              src="/logo.png"
-              alt="Logo"
-              className="h-8"
-            />
+                src="/logo.png"
+                alt="Logo"
+                className="h-8"
+              />
             </a>
           </div>
           {/* Explore dropdown */}
@@ -142,29 +144,47 @@ export default function Navbar() {
         </div>
         {/* Right: Login + Join */}
         <div className="flex items-center space-x-6">
-          <Link href="/auth" className="text-[#0d1129] font-medium hover:text-blue-600">
-            Login
-          </Link>
-          <Link
-            href="/joinasprofessional"
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full shadow-sm"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0v.75H4.5v-.75z"
-              />
-            </svg>
-            <span>Join as a Professional</span>
-          </Link>
+          {status === 'loading' && (
+            <div className="loader flex justify-center items-center"></div>
+          )}
+          {status === 'unauthenticated' && (
+            <>
+              <Link href="/auth" className="text-[#0d1129] font-medium hover:text-blue-600">
+                Login
+              </Link>
+              <Link
+                href="/joinasprofessional"
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full shadow-sm"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0v.75H4.5v-.75z"
+                  />
+                </svg>
+                <span>Join as a Professional</span>
+              </Link>
+            </>
+          )}
+          {status === 'authenticated' && (
+            <>
+              <span className="text-gray-700 hidden sm:block">{session.user?.email}</span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>

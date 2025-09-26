@@ -75,6 +75,7 @@ export default function AuthPage() {
         body: JSON.stringify({
           email: registerEmail,
           password: registerPassword,
+          name: registerUsername,
           role: "CUSTOMER",
         }),
       })
