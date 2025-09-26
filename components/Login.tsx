@@ -1,19 +1,23 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import "./auth.css"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import toast from "react-hot-toast"
 
-export default function AuthPage() {
-  const [isActive, setIsActive] = useState(false)
-  const [loginError, setLoginError] = useState('');
-  const [registerError, setRegisterError] = useState('');
+type AuthFormsProps = {
+  initialMode: 'login' | 'signup';
+};
+
+export default function AuthPage({ initialMode }: AuthFormsProps) {
+  const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [isActive, setIsActive] = useState(initialMode === 'signup');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter()
 
   const [loginEmail, setLoginEmail] = useState("")
   const [loginPassword, setLoginPassword] = useState("")
@@ -23,21 +27,36 @@ export default function AuthPage() {
   const [registerPassword, setRegisterPassword] = useState("")
   const [registerUsername, setRegisterUsername] = useState("")
 
-  const handleRegisterClick = () => {
-    setIsActive(true);
-    setLoginError('');
-    setRegisterError('');
+  useEffect(() => {
+    setIsActive(initialMode === 'signup');
+  }, [initialMode]);
+
+  const handleAnimatedNavigation = (path: string, newIsActiveState: boolean) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const navigate = () => {
+      router.push(path, { scroll: false });
+      container.removeEventListener('transitionend', navigate);
+    };
+
+    container.addEventListener('transitionend', navigate, { once: true });
+
+    setIsActive(newIsActiveState);
   };
-  const handleLoginClick = () => {
-    setIsActive(false);
-    setLoginError('');
-    setRegisterError('');
+
+  const handleRegisterClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleAnimatedNavigation('/auth/signup', true);
+  };
+
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleAnimatedNavigation('/auth/login', false);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoginError('')
-    setRegisterError('')
     setIsLoading(true);
     const toastId = toast.loading('Logging in...');
 
@@ -64,7 +83,6 @@ export default function AuthPage() {
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setRegisterError('');
     setIsLoading(true);
     const toastId = toast.loading('Registering...');
 
@@ -82,7 +100,6 @@ export default function AuthPage() {
 
       if (res.ok) {
         toast.success('Registration successful! Please log in.', { id: toastId });
-        handleLoginClick()
       } else {
         const data = await res.json();
         toast.error(data.message || 'Registration failed.', { id: toastId });
@@ -96,7 +113,7 @@ export default function AuthPage() {
 
   return (
     <div className="auth h-[100vh] flex justify-center items-center">
-      <div className={`container ${isActive ? "active" : ""}`}>
+      <div ref={containerRef} className={`container ${isActive ? "active" : ""}`}>
         <div className="curved-shape"></div>
         <div className="curved-shape2"></div>
 
@@ -105,7 +122,6 @@ export default function AuthPage() {
             Login
           </h2>
           <form onSubmit={handleLoginSubmit}>
-            {loginError && <p className="text-red-500">{loginError}</p>}
             <div className="input-box animation" style={{ "--D": 1, "--S": 22 } as React.CSSProperties}>
               <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
               <label>Email</label>
@@ -149,7 +165,6 @@ export default function AuthPage() {
             Register
           </h2>
           <form onSubmit={handleRegisterSubmit}>
-            {registerError && <p className="text-red-500">{registerError}</p>}
             <div className="input-box animation" style={{ "--li": 18, "--S": 1 } as React.CSSProperties}>
               <input
                 type="text"

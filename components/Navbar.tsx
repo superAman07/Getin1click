@@ -149,7 +149,7 @@ export default function Navbar() {
           )}
           {status === 'unauthenticated' && (
             <>
-              <Link href="/auth" className="text-[#0d1129] font-medium hover:text-blue-600">
+              <Link href="/auth/login" className="text-[#0d1129] font-medium hover:text-blue-600">
                 Login
               </Link>
               <Link

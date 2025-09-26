@@ -1,5 +1,5 @@
-import Login from "@/components/Login";
+import { redirect } from 'next/navigation';
 
-export default function(){
-    return <Login/>
+export default function AuthPage() {
+  redirect('/auth/login');
 }
