@@ -179,7 +179,7 @@ export default function Navbar() {
               <span className="text-gray-700 hidden sm:block">{session.user?.email}</span>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                className="bg-red-600 text-white px-4 cursor-pointer py-2 rounded-md hover:bg-red-700"
               >
                 Logout
               </button>

@@ -79,7 +79,7 @@ const Heart = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export default function HeroPage() {
-const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("");
 
   const options = [
@@ -93,20 +93,20 @@ const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative ">
-            <div className="w-full bg-white py-12 px-4">
-                <div className="max-w-3xl mx-auto text-start">
-                    {/* Heading */}
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
-                        Find the perfect <br className="hidden sm:block" /> professional for you
-                    </h2>
+      <div className="w-full bg-white py-12 px-4">
+        <div className="max-w-3xl mx-auto text-start">
+          {/* Heading */}
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
+            Find the perfect <br className="hidden sm:block" /> professional for you
+          </h2>
 
-                    {/* Subheading */}
-                    <h4 className="mt-3 text-base sm:text-lg text-gray-400">
-                        Get free quotes within minutes
-                    </h4>
+          {/* Subheading */}
+          <h4 className="mt-3 text-base sm:text-lg text-gray-400">
+            Get free quotes within minutes
+          </h4>
 
-                    {/* Search Box */}
-                    <div className="mt-8 flex flex-col sm:flex-row items-stretch justify-center w-full gap-2">
+          {/* Search Box */}
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch justify-center w-full gap-2">
             <input
               type="text"
               placeholder="What service are you looking for?"
@@ -120,213 +120,213 @@ const [isOpen, setIsOpen] = useState(false);
             <button className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-b-md sm:rounded-r-md sm:rounded-bl-none shadow-md transition">
               Search
             </button>
-                    </div>
+          </div>
 
-                    {/* Popular Links */}
-                    <p className="mt-6 text-sm text-gray-400">
-                        Popular:{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
-                            House Cleaning
-                        </a>
-                        ,{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
-                            Web Design
-                        </a>
-                        ,{" "}
-                        <a href="#" className="text-blue-600 hover:underline">
-                            Personal Trainers
-                        </a>
-                    </p>
-                </div>
-            </div>
+          {/* Popular Links */}
+          <p className="mt-6 text-sm text-gray-400">
+            Popular:{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              House Cleaning
+            </a>
+            ,{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              Web Design
+            </a>
+            ,{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              Personal Trainers
+            </a>
+          </p>
+        </div>
+      </div>
       <div className="relative bg-white py-6">
         {/* Wrapper for marquee */}
         <div className="flex animate-marquee space-x-4 sm:space-x-6">
           {/* Card 1 */}
-                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg flex-shrink-0">
-                         {/* Image that opens modal */}
-      <Image
-        src="/gardening.jpg" // replace with your image path
-        alt="Gardeners"
-        width={400}
-        height={450}
-        className="cursor-pointer rounded-lg shadow-md hover:scale-105 transition h-auto" style={{height:"240px"}}
-        onClick={() => setIsOpen(true)}
-      />
-                        <div className="absolute bottom-2 left-2 text-white font-semibold">
-                            Gardening
-                        </div>
-                    </div>
-
-
-
-                    {/* Card 2 */}
-                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                            src="/accounting.jpg"
-                            alt="Accounting"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                            Available online
-                        </div>
-                        <div className="absolute bottom-2 left-2 text-white font-semibold">
-                            Accounting
-                        </div>
-                    </div>
-
-                    {/* Card 3 */}
-                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                            src="/counselling.jpg"
-                            alt="Counselling"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                            Available online
-                        </div>
-                        <div className="absolute bottom-2 left-2 text-white font-semibold">
-                            Counselling
-                        </div>
-                    </div>
-
-                    {/* Card 4 */}
-                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                            src="/personaltraining.jpg"
-                            alt="Personal Trainers"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute bottom-2 left-2 text-white font-semibold">
-                            Personal Trainers
-                        </div>
-                    </div>
-                    {/* Card 5 */}
-                    <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                            src="/webdesign.jpg"
-                            alt=" Web Design"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute bottom-2 left-2 text-white font-semibold">
-                            Web Design
-                        </div>
-                    </div>
-                </div>
-                 {/* Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-xl shadow-lg max-w-lg w-full relative p-6">
-            
-            {/* Close Button */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-3 right-1 text-gray-400 hover:text-gray-600 text-xl"
-            >
-              ✕
-            </button>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 h-1 rounded mb-6">
-              <div className="w-1/4 bg-blue-500 h-1 rounded"></div>
+          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg flex-shrink-0">
+            {/* Image that opens modal */}
+            <Image
+              src="/gardening.jpg" // replace with your image path
+              alt="Gardeners"
+              width={400}
+              height={450}
+              className="cursor-pointer rounded-lg shadow-md hover:scale-105 transition h-auto" style={{ height: "240px" }}
+              onClick={() => setIsOpen(true)}
+            />
+            <div className="absolute bottom-2 left-2 text-white font-semibold">
+              Gardening
             </div>
+          </div>
 
-            {/* Heading */}
-            <h2 className="text-xl font-semibold text-center mb-2">
-              What kind of property is this for?
-            </h2>
-            {/* <p className="text-gray-500 text-center mb-6">
+
+
+          {/* Card 2 */}
+          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
+            <Image
+              src="/accounting.jpg"
+              alt="Accounting"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+              Available online
+            </div>
+            <div className="absolute bottom-2 left-2 text-white font-semibold">
+              Accounting
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
+            <Image
+              src="/counselling.jpg"
+              alt="Counselling"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+              Available online
+            </div>
+            <div className="absolute bottom-2 left-2 text-white font-semibold">
+              Counselling
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
+            <Image
+              src="/personaltraining.jpg"
+              alt="Personal Trainers"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute bottom-2 left-2 text-white font-semibold">
+              Personal Trainers
+            </div>
+          </div>
+          {/* Card 5 */}
+          <div className="relative w-64 sm:w-80 h-40 sm:h-60 rounded-lg overflow-hidden flex-shrink-0">
+            <Image
+              src="/webdesign.jpg"
+              alt=" Web Design"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute bottom-2 left-2 text-white font-semibold">
+              Web Design
+            </div>
+          </div>
+        </div>
+        {/* Modal */}
+        {isOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white rounded-xl shadow-lg max-w-lg w-full relative p-6">
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-1 text-gray-400 hover:text-gray-600 text-xl"
+              >
+                ✕
+              </button>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 h-1 rounded mb-6">
+                <div className="w-1/4 bg-blue-500 h-1 rounded"></div>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-xl font-semibold text-center mb-2">
+                What kind of property is this for?
+              </h2>
+              {/* <p className="text-gray-500 text-center mb-6">
               Get quotes for cleaners today!
             </p> */}
 
-            {/* Options */}
-            <div className="space-y-3">
-              {options.map((opt, idx) => (
-                <label
-                  key={idx}
-                  className="flex items-center border rounded-lg px-4 py-3 cursor-pointer hover:border-blue-500 transition"
-                >
-                  <input
-                    type="radio"
-                    name="property"
-                    value={opt}
-                    checked={selected === opt}
-                    onChange={(e) => setSelected(e.target.value)}
-                    className="mr-3 accent-blue-500"
-                  />
-                  <span>{opt}</span>
-                </label>
-              ))}
-            </div>
-
-            {/* Continue Button */}
-            <button
-              onClick={() => alert(`Selected: ${selected}`)}
-              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
-            </div>
-
-          <div className="bg-gray-100 py-10 px-2 sm:px-4" style={{ marginTop: "80px" , }}>
-  <div className="max-w-7xl mx-auto">
-        {/* Media Logos Section */}
-  <div className="mb-10 sm:mb-10">
-          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 md:gap-12 lg:gap-16">
-            {/* BBC Logo */}
-            <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
-              <div className="flex space-x-1">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm md:text-base">B</span>
-                </div>
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm md:text-base">B</span>
-                </div>
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm md:text-base">C</span>
-                </div>
+              {/* Options */}
+              <div className="space-y-3">
+                {options.map((opt, idx) => (
+                  <label
+                    key={idx}
+                    className="flex items-center border rounded-lg px-4 py-3 cursor-pointer hover:border-blue-500 transition"
+                  >
+                    <input
+                      type="radio"
+                      name="property"
+                      value={opt}
+                      checked={selected === opt}
+                      onChange={(e) => setSelected(e.target.value)}
+                      className="mr-3 accent-blue-500"
+                    />
+                    <span>{opt}</span>
+                  </label>
+                ))}
               </div>
-            </div>
 
-            {/* Daily Mail Logo */}
-            <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
-              <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl">
-                Daily <span className="font-bold">Mail</span>
-              </div>
-            </div>
-
-            {/* The Guardian Logo */}
-            <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
-              <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl lowercase">
-                theguardian
-              </div>
-            </div>
-
-            {/* Bazaar Logo */}
-            <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
-              <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl tracking-wider">
-                BAZAAR
-              </div>
-            </div>
-
-            {/* Cosmopolitan Logo */}
-            <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
-              <div className="text-gray-400 font-sans text-xl md:text-2xl lg:text-3xl tracking-widest">
-                COSMOPOLITAN
-              </div>
+              {/* Continue Button */}
+              <button
+                onClick={() => alert(`Selected: ${selected}`)}
+                className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Continue
+              </button>
             </div>
           </div>
+        )}
+      </div>
+
+      <div className="bg-gray-100 py-10 px-2 sm:px-4" style={{ marginTop: "80px", }}>
+        <div className="max-w-7xl mx-auto">
+          {/* Media Logos Section */}
+          <div className="mb-10 sm:mb-10">
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 md:gap-12 lg:gap-16">
+              {/* BBC Logo */}
+              <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
+                <div className="flex space-x-1">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
+                    <span className="text-white font-bold text-sm md:text-base">B</span>
+                  </div>
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
+                    <span className="text-white font-bold text-sm md:text-base">B</span>
+                  </div>
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-400 rounded flex items-center justify-center">
+                    <span className="text-white font-bold text-sm md:text-base">C</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Daily Mail Logo */}
+              <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
+                <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl">
+                  Daily <span className="font-bold">Mail</span>
+                </div>
+              </div>
+
+              {/* The Guardian Logo */}
+              <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
+                <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl lowercase">
+                  theguardian
+                </div>
+              </div>
+
+              {/* Bazaar Logo */}
+              <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
+                <div className="text-gray-400 font-serif text-xl md:text-2xl lg:text-3xl tracking-wider">
+                  BAZAAR
+                </div>
+              </div>
+
+              {/* Cosmopolitan Logo */}
+              <div className="flex items-center justify-center h-10 sm:h-12 md:h-16">
+                <div className="text-gray-400 font-sans text-xl md:text-2xl lg:text-3xl tracking-widest">
+                  COSMOPOLITAN
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        </div>
-</div>
-          <div className="bg-light-100 py-10 px-2 sm:px-4" style={{backgroundColor:"#d8e3edff", padding: '40px 50px', boxSizing: 'border-box', minHeight: '60vh' , display: 'flex', flexDirection: 'column', justifyContent: 'center' , alignItems: 'center', textAlign: 'center'}}>
+      </div>
+      <div className="bg-light-100 py-10 px-2 sm:px-4" style={{ backgroundColor: "#d8e3edff", padding: '40px 50px', boxSizing: 'border-box', minHeight: '60vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
 
         {/* Discover Section */}
         <div className="text-center">
@@ -404,402 +404,402 @@ const [isOpen, setIsOpen] = useState(false);
           </div>
         </div>
       </div>
-    
-
-
-<section className="px-6 py-8" style={{ padding: '40px 110px'}}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Home and Garden</h2>
-        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          View All
-        </a>
-      </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/gardening.jpg"
-              alt="Gardening"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Gardening</h3>
-          </div>
-        </a>
-
-        {/* Card 2 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/housecleaning.jpg"
-              alt="House Cleaning"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">House Cleaning</h3>
-          </div>
-        </a>
-
-        {/* Card 3 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/paintingdecorating.jpg"
-              alt="Painting & Decorating"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Painting & Decorating</h3>
-          </div>
-        </a>
-      </div>
-    </section>
-
-
-    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Health & Wellbeing</h2>
-        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          View All
-        </a>
-      </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/personaltraining.jpg"
-              alt="Personal Training"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Personal Training</h3>
-          </div>
-        </a>
-
-        {/* Card 2 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/counselling.jpg"
-              alt="Counselling"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Counselling</h3>
-          </div>
-        </a>
-
-        {/* Card 3 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/massage-therapy.jpg"
-              alt="Massage Therapy"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Massage Therapy</h3>
-          </div>
-        </a>
-      </div>
-    </section>
 
 
 
-    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Weddings & Events</h2>
-        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          View All
-        </a>
-      </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/wedding-photographer.jpg"
-              alt="Wedding Photography"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Wedding Photography</h3>
-          </div>
-        </a>
-
-        {/* Card 2 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/magician.jpg"
-              alt="Magician"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Magician</h3>
-          </div>
-        </a>
-
-        {/* Card 3 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/dj.jpg"
-              alt="DJ"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">DJ</h3>
-          </div>
-        </a>
-      </div>
-    </section>
-
-
-    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Business Services</h2>
-        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          View All
-        </a>
-      </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/webdesign.jpg"
-              alt="Web Design"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Web Design</h3>
-          </div>
-        </a>
-
-        {/* Card 2 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/accounting.jpg"
-              alt="Accounting"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Accounting</h3>
-          </div>
-        </a>
-
-        {/* Card 3 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/social-media-marketing.jpg"
-              alt="Social Media Marketing"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Social Media Marketing</h3>
-          </div>
-        </a>
-      </div>
-    </section>
-
-
-    <section className="px-6 py-8" style={{ padding: '40px 110px'}}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900">Most Popular Categories</h2>
-        <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
-          View All
-        </a>
-      </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* Card 1 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/Cleaners.jpeg"
-              alt="Cleaners"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Cleaners</h3>
-          </div>
-        </a>
-
-        {/* Card 2 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/Gardeners.jpeg"
-              alt="Gardeners"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Gardeners</h3>
-          </div>
-        </a>
-
-        {/* Card 3 */}
-        <a
-          href="#"
-          className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
-        >
-          <div className="relative w-full h-70">
-            <Image
-              src="/PersonalTrainers.png"
-              alt="Personal Trainers"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-900">Personal Trainers</h3>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    {/* testimnoial */}
-   <section className="w-full bg-gray-50 py-16 flex flex-col items-center">
-      {/* Avatars Row */}
-      <div className="relative w-full max-w-6xl flex justify-center flex-wrap gap-6 mb-12">
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+      <section className="px-6 py-8" style={{ padding: '40px 110px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Home and Garden</h2>
+          <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+            View All
+          </a>
         </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/2.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/3.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg">
-          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/2.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/3.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
-          <img src="/1.png" alt="user" className="w-full h-full object-cover" />
-        </div>
-      </div>
 
-      {/* Testimonial Text */}
-      <div className="text-center max-w-2xl px-6">
-        <p className="text-xl md:text-2xl font-medium text-gray-900">
-          “I have used Bark twice now for two completely different services and I’ve had a fantastic experience both times!”
-        </p>
-        <p className="mt-4 text-lg font-semibold text-gray-800">Jayne</p>
-      </div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      {/* Dots Navigation */}
-      <div className="flex mt-6 space-x-2">
-        <span className="h-2 w-2 rounded-full bg-blue-600"></span>
-        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
-        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
-        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
-        <span className="h-2 w-2 rounded-full bg-gray-300"></span>
-      </div>
-    </section>
+          {/* Card 1 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/gardening.jpg"
+                alt="Gardening"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Gardening</h3>
+            </div>
+          </a>
 
+          {/* Card 2 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/housecleaning.jpg"
+                alt="House Cleaning"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">House Cleaning</h3>
+            </div>
+          </a>
+
+          {/* Card 3 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/paintingdecorating.jpg"
+                alt="Painting & Decorating"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Painting & Decorating</h3>
+            </div>
+          </a>
         </div>
-    );
+      </section>
+
+
+      <section className="px-6 py-8" style={{ padding: '40px 110px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Health & Wellbeing</h2>
+          <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+            View All
+          </a>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Card 1 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/personaltraining.jpg"
+                alt="Personal Training"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Personal Training</h3>
+            </div>
+          </a>
+
+          {/* Card 2 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/counselling.jpg"
+                alt="Counselling"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Counselling</h3>
+            </div>
+          </a>
+
+          {/* Card 3 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/massage-therapy.jpg"
+                alt="Massage Therapy"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Massage Therapy</h3>
+            </div>
+          </a>
+        </div>
+      </section>
+
+
+
+      <section className="px-6 py-8" style={{ padding: '40px 110px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Weddings & Events</h2>
+          <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+            View All
+          </a>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Card 1 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/wedding-photographer.jpg"
+                alt="Wedding Photography"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Wedding Photography</h3>
+            </div>
+          </a>
+
+          {/* Card 2 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/magician.jpg"
+                alt="Magician"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Magician</h3>
+            </div>
+          </a>
+
+          {/* Card 3 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/dj.jpg"
+                alt="DJ"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">DJ</h3>
+            </div>
+          </a>
+        </div>
+      </section>
+
+
+      <section className="px-6 py-8" style={{ padding: '40px 110px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Business Services</h2>
+          <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+            View All
+          </a>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Card 1 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/webdesign.jpg"
+                alt="Web Design"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Web Design</h3>
+            </div>
+          </a>
+
+          {/* Card 2 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/accounting.jpg"
+                alt="Accounting"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Accounting</h3>
+            </div>
+          </a>
+
+          {/* Card 3 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/social-media-marketing.jpg"
+                alt="Social Media Marketing"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Social Media Marketing</h3>
+            </div>
+          </a>
+        </div>
+      </section>
+
+
+      <section className="px-6 py-8" style={{ padding: '40px 110px' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900">Most Popular Categories</h2>
+          <a href="#" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+            View All
+          </a>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Card 1 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/Cleaners.jpeg"
+                alt="Cleaners"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Cleaners</h3>
+            </div>
+          </a>
+
+          {/* Card 2 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/Gardeners.jpeg"
+                alt="Gardeners"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Gardeners</h3>
+            </div>
+          </a>
+
+          {/* Card 3 */}
+          <a
+            href="#"
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="relative w-full h-70">
+              <Image
+                src="/PersonalTrainers.png"
+                alt="Personal Trainers"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-gray-900">Personal Trainers</h3>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      {/* testimnoial */}
+      <section className="w-full bg-gray-50 py-16 flex flex-col items-center">
+        {/* Avatars Row */}
+        <div className="relative w-full max-w-6xl flex justify-center flex-wrap gap-6 mb-12">
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/2.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/3.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg">
+            <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/2.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/3.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+          <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <img src="/1.png" alt="user" className="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        {/* Testimonial Text */}
+        <div className="text-center max-w-2xl px-6">
+          <p className="text-xl md:text-2xl font-medium text-gray-900">
+            “I have used Bark twice now for two completely different services and I’ve had a fantastic experience both times!”
+          </p>
+          <p className="mt-4 text-lg font-semibold text-gray-800">Jayne</p>
+        </div>
+
+        {/* Dots Navigation */}
+        <div className="flex mt-6 space-x-2">
+          <span className="h-2 w-2 rounded-full bg-blue-600"></span>
+          <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+          <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+          <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+          <span className="h-2 w-2 rounded-full bg-gray-300"></span>
+        </div>
+      </section>
+
+    </div>
+  );
 }
