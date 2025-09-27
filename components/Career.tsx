@@ -6,9 +6,7 @@ export default function Career() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800">
       <h1 className="text-4xl font-bold mb-6">The people behind the platform </h1>
       <p className="max-w-2xl text-center mb-4">
-        Bark is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.      </p>
-
-
+        Bark is the world's fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.</p>
       <img src="/gardening.jpg" alt="About Us" />
 
 
@@ -570,7 +568,7 @@ export default function Career() {
             <div className="w-48 h-48 mb-6 flex items-center justify-center">
               <div className="w-32 h-40 bg-gray-800 rounded-2xl relative overflow-hidden">
                 {/* Globe inside */}
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full relative">
+                <div className="top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full relative">
                   {/* Continents */}
                   <div className="absolute top-2 left-3 w-6 h-4 bg-blue-500 rounded-full transform rotate-12"></div>
                   <div className="absolute top-6 right-2 w-8 h-6 bg-blue-500 rounded-full transform -rotate-6"></div>
