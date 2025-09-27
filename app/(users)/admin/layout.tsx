@@ -1,3 +1,4 @@
+import AdminLayoutClient from "@/components/AdminLayoutClient";
 import React from "react";
 
 export default function AdminLayout({
@@ -6,9 +7,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="admin-layout">
-      {/* <AdminSidebar /> */}
-      <main>{children}</main>
-    </div>
+    <AdminLayoutClient>
+      {children}
+    </AdminLayoutClient>
   );
 }

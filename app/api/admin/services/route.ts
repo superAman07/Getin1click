@@ -1,0 +1,73 @@
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function GET() {
+  try {
+    const services = await prisma.service.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return NextResponse.json(services);
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { name, description, imageUrl, categoryId, questions } = body;
+
+    if (!name || !categoryId || !questions || !Array.isArray(questions)) {
+      return new NextResponse('Missing required fields', { status: 400 });
+    }
+
+    const newService = await prisma.$transaction(async (tx) => {
+      // 1. Create the Service
+      const service = await tx.service.create({
+        data: {
+          name,
+          description,
+          imageUrl,
+          categoryId,
+          isActive: true, // Default to active
+        },
+      });
+
+      // 2. Create Questions and their Options
+      for (const [qIndex, questionData] of questions.entries()) {
+        const question = await tx.question.create({
+          data: {
+            text: questionData.text,
+            order: qIndex + 1,
+            serviceId: service.id,
+          },
+        });
+
+        if (questionData.options && Array.isArray(questionData.options)) {
+          await tx.option.createMany({
+            data: questionData.options.map((opt: { text: string }) => ({
+              text: opt.text,
+              questionId: question.id,
+            })),
+          });
+        }
+      }
+
+      return service;
+    });
+
+    return NextResponse.json(newService, { status: 201 });
+
+  } catch (error) {
+    console.error("Error creating service:", error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
