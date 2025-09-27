@@ -12,6 +12,9 @@ interface Category {
     description: string | null;
     createdAt?: string;
     servicesCount?: number;
+    _count?: {
+        services: number
+    }
 }
 
 const SkeletonCard: React.FC = () => {
@@ -167,11 +170,10 @@ export default function ManageCategoriesPage() {
         setLoading(true);
         try {
             const response = await axios.get('/api/admin/categories');
-            // Simulate additional data that might come from API
             const enhancedCategories = response.data.map((cat: Category) => ({
                 ...cat,
                 createdAt: cat.createdAt || new Date().toISOString(),
-                servicesCount: Math.floor(Math.random() * 50) // Mock data
+                servicesCount: cat._count?.services || 0,
             }));
             setCategories(enhancedCategories);
         } catch (error) {
@@ -259,8 +261,6 @@ export default function ManageCategoriesPage() {
         <div className="min-h-screen bg-slate-50 p-4 lg:p-6">
             <div className="max-w-7xl mx-auto">
                 <Breadcrumb />
-
-                {/* Header Section */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 mb-2">Manage Categories</h1>
@@ -277,7 +277,6 @@ export default function ManageCategoriesPage() {
                     </button>
                 </div>
 
-                {/* Search and Filter Bar */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
@@ -295,7 +294,6 @@ export default function ManageCategoriesPage() {
                     </button>
                 </div>
 
-                {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <div className="flex items-center justify-between">
@@ -350,7 +348,6 @@ export default function ManageCategoriesPage() {
                     </div>
                 </div>
 
-                {/* Categories Grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {Array.from({ length: 8 }).map((_, index) => (
@@ -393,7 +390,6 @@ export default function ManageCategoriesPage() {
                     </div>
                 )}
 
-                {/* Modal */}
                 {showModal && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in zoom-in-95 duration-200">
