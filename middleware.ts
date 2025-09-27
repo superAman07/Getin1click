@@ -7,11 +7,11 @@ export async function middleware(req: NextRequest) {
 
     const isAdmin = token?.role === 'ADMIN';
     const isAuthPage = pathname.startsWith('/auth');
-    const isAdminDashboard = pathname.startsWith('/dashboard');
+    const isAdminDashboard = pathname.startsWith('/admin');
 
     if (isAdmin) {
         if (!isAdminDashboard) {
-            return NextResponse.redirect(new URL('/dashboard', req.url));
+            return NextResponse.redirect(new URL('/admin', req.url));
         }
     } 
     
