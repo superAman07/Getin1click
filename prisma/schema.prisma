@@ -44,33 +44,48 @@ model ProfessionalProfile {
   updatedAt  DateTime  @updatedAt
 }
 
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model Service {
-  id            String                @id @default(cuid())
-  name          String                @unique
-  description   String?
-  imageUrl      String?
-  questions     Question[]
-  professionals ProfessionalProfile[] @relation("ProfessionalServices")
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
+  id               String                @id @default(cuid())
+  name             String
+  description      String?
+  imageUrl         String?
+  isActive         Boolean               @default(true)
+  categoryId       String
+  category         Category              @relation(fields: [categoryId], references: [id])
+  professionals    ProfessionalProfile[] @relation("ProfessionalServices")
+  questions        Question[]
+  customerRequests CustomerRequest[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 }
 
 model Question {
   id        String   @id @default(cuid())
   text      String
+  order     Int // To determine the sequence of questions
   serviceId String
-  service   Service  @relation(fields: [serviceId], references: [id])
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   options   Option[]
-  order     Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Option {
   id         String   @id @default(cuid())
   text       String
   questionId String
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model CustomerRequest {
@@ -78,6 +93,7 @@ model CustomerRequest {
   customerId String
   customer   User     @relation(fields: [customerId], references: [id])
   serviceId  String
+  service    Service  @relation(fields: [serviceId], references: [id])
   postcode   String
   answers    Json
   status     String   @default("open")
