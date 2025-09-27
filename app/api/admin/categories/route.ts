@@ -16,3 +16,26 @@ export async function GET() {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { name, description } = body;
+
+    if (!name) {
+      return NextResponse.json({ success: false, message: 'Name is required' }, { status: 400 });
+    }
+
+    const newCategory = await prisma.category.create({
+      data: {
+        name,
+        description,
+      },
+    });
+
+    return NextResponse.json(newCategory, { status: 201 });
+  } catch (error) {
+    console.error("Error creating category:", error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
