@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Menu, Plus } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { LogOut, Menu, Plus, User } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import AddServiceForm from './AddServiceFormPage';
 import AdminSidebar from './AdminSidebar';
 import { ServiceProvider, useServiceContext } from '@/contexts/ServiceContext';
+import { signOut, useSession } from 'next-auth/react';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const {
@@ -15,14 +16,26 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     closeForm
   } = useServiceContext();
 
+  const { data: session } = useSession();
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const getPageTitle = () => {
     const path = pathname.split('/').pop() || 'dashboard';
     return path.replace(/-/g, ' ');
   };
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [userMenuRef]);
 
   return (
     <>
@@ -63,17 +76,37 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   <p className="text-slate-600 text-sm">Manage your {getPageTitle()} efficiently</p>
                 </div>
               </div>
-
-              {pathname.includes('/services') && (
-                <button
-                  onClick={openFormForCreate}
-                  className="bg-cyan-500 hover:bg-cyan-600 text-white cursor-pointer px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg active:scale-95 flex items-center gap-2"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span className="hidden sm:inline">Add New Service</span>
-                  <span className="sm:hidden">Add</span>
-                </button>
-              )}
+              <div className="flex items-center gap-4">
+                {pathname.includes('/services') && (
+                  <button
+                    onClick={openFormForCreate}
+                    className="bg-cyan-500 hover:bg-cyan-600 text-white cursor-pointer px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg active:scale-95 flex items-center gap-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="hidden sm:inline">Add New Service</span>
+                    <span className="sm:hidden">Add</span>
+                  </button>
+                )}
+                <div className="relative" ref={userMenuRef}>
+                  <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="w-10 h-10 bg-slate-200 cursor-pointer rounded-full flex items-center justify-center text-slate-600 font-bold">
+                    {session?.user?.name?.charAt(0).toUpperCase() || <User size={20} />}
+                  </button>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border z-20">
+                      <div className="p-3 border-b">
+                        <p className="font-semibold text-sm text-slate-800">{session?.user?.name}</p>
+                        <p className="text-xs text-slate-500">{session?.user?.email}</p>
+                      </div>
+                      <button
+                        onClick={() => signOut({ callbackUrl: '/auth/login' })}
+                        className="w-full text-left flex items-center cursor-pointer gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        <LogOut size={14} /> Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </header>
 
