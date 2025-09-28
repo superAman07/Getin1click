@@ -213,12 +213,14 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       description: serviceDescription,
       categoryId: selectedCategoryId,
       imageUrl: imageUrl,
-      ...(!isEditMode && {
-        questions: questions.map(q => ({
-          text: q.text,
-          options: q.options.map(opt => ({ text: opt.text })),
-        }))
-      })
+      questions: questions.map(q => ({
+        id: isEditMode ? q.id : undefined, 
+        text: q.text,
+        options: q.options.map(opt => ({
+          id: isEditMode ? opt.id : undefined,
+          text: opt.text
+        })),
+      }))
     };
 
     try {

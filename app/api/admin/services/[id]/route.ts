@@ -11,15 +11,51 @@ export async function PUT(
     
     const { name, description, imageUrl, categoryId, isActive } = body;
 
-    const updatedService = await prisma.service.update({
-      where: { id },
-      data: {
-        name,
-        description,
-        imageUrl,
-        categoryId,
-        isActive,
-      },
+    const updatedService = await prisma.$transaction(async (tx) => {
+      // 1. Update the core service details
+      const service = await tx.service.update({
+        where: { id },
+        data: {
+          name,
+          description,
+          imageUrl,
+          categoryId,
+          isActive,
+        },
+      });
+
+      // 2. If questions are provided, update them
+      if (questions && Array.isArray(questions)) {
+        // Delete existing questions and their options for this service
+        const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
+        const existingQuestionIds = existingQuestions.map(q => q.id);
+        if (existingQuestionIds.length > 0) {
+          await tx.option.deleteMany({ where: { questionId: { in: existingQuestionIds } } });
+          await tx.question.deleteMany({ where: { id: { in: existingQuestionIds } } });
+        }
+
+        // Create the new questions and options
+        for (const [qIndex, questionData] of questions.entries()) {
+          const newQuestion = await tx.question.create({
+            data: {
+              text: questionData.text,
+              order: qIndex + 1,
+              serviceId: service.id,
+            },
+          });
+
+          if (questionData.options && Array.isArray(questionData.options)) {
+            await tx.option.createMany({
+              data: questionData.options.map((opt: { text: string }) => ({
+                text: opt.text,
+                questionId: newQuestion.id,
+              })),
+            });
+          }
+        }
+      }
+      
+      return service;
     });
 
     return NextResponse.json(updatedService);
