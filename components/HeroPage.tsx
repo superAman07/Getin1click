@@ -38,7 +38,6 @@ export default function HeroPage() {
     <div className="relative ">
       <div className="w-full bg-white py-12 px-4">
         <div className="max-w-3xl mx-auto text-start">
-
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
             Find the perfect <br className="hidden sm:block" /> professional for you
           </h2>
