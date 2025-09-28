@@ -9,10 +9,9 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
     
-    const { name, description, imageUrl, categoryId, isActive } = body;
+    const { name, description, imageUrl, categoryId, isActive, questions } = body;
 
     const updatedService = await prisma.$transaction(async (tx) => {
-      // 1. Update the core service details
       const service = await tx.service.update({
         where: { id },
         data: {
@@ -24,9 +23,7 @@ export async function PUT(
         },
       });
 
-      // 2. If questions are provided, update them
       if (questions && Array.isArray(questions)) {
-        // Delete existing questions and their options for this service
         const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
         const existingQuestionIds = existingQuestions.map(q => q.id);
         if (existingQuestionIds.length > 0) {
@@ -34,7 +31,6 @@ export async function PUT(
           await tx.question.deleteMany({ where: { id: { in: existingQuestionIds } } });
         }
 
-        // Create the new questions and options
         for (const [qIndex, questionData] of questions.entries()) {
           const newQuestion = await tx.question.create({
             data: {
@@ -56,6 +52,9 @@ export async function PUT(
       }
       
       return service;
+    }, {
+      maxWait: 10000,
+      timeout: 30000,
     });
 
     return NextResponse.json(updatedService);
@@ -75,9 +74,10 @@ export async function DELETE(
       where: { id },
     });
 
-    return NextResponse.json(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error(`Error deleting service ${(await params).id}:`, error);
-    return NextResponse.json('Internal Server Error', { status: 500 });
+    // Use NextResponse for error responses as well for consistency
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
