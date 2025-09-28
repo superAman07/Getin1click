@@ -28,18 +28,17 @@ export async function POST(request: Request) {
     }
 
     const newService = await prisma.$transaction(async (tx) => {
-      // 1. Create the Service
+
       const service = await tx.service.create({
         data: {
           name,
           description,
           imageUrl,
           categoryId,
-          isActive: true, // Default to active
+          isActive: true,
         },
       });
 
-      // 2. Create Questions and their Options
       for (const [qIndex, questionData] of questions.entries()) {
         const question = await tx.question.create({
           data: {
@@ -60,7 +59,12 @@ export async function POST(request: Request) {
       }
 
       return service;
-    });
+    },
+      {
+        maxWait: 5000,
+        timeout: 30000,
+      }
+    );
 
     return NextResponse.json(newService, { status: 201 });
 

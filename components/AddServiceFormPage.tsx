@@ -187,7 +187,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!response.data.success) {
+      if (response.status !== 201) {
         throw new Error('Failed to create service');
       }
 
