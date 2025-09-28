@@ -20,8 +20,8 @@ const ServiceCard: React.FC<{ service: Service; onToggle: (id: string) => void }
   return (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       <div className="aspect-video w-full overflow-hidden">
-        <img 
-          src={service.imageUrl || defaultImage} 
+        <img
+          src={service.imageUrl || defaultImage}
           alt={service.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -36,9 +36,9 @@ const ServiceCard: React.FC<{ service: Service; onToggle: (id: string) => void }
             <span className={`text-xs font-medium ${service.isActive ? 'text-green-600' : 'text-slate-500'}`}>
               {service.isActive ? 'Active' : 'Inactive'}
             </span>
-            <ToggleSwitch 
-              isOn={service.isActive} 
-              onToggle={() => onToggle(service.id)} 
+            <ToggleSwitch
+              isOn={service.isActive}
+              onToggle={() => onToggle(service.id)}
             />
           </div>
         </div>
@@ -87,11 +87,28 @@ export default function ManageServicesPage() {
   }, []);
 
   const toggleService = (id: string) => {
-    setServices(services.map(service => 
+    setServices(services.map(service =>
       service.id === id ? { ...service, isActive: !service.isActive } : service
     ));
     // Here you would also make an API call to update the service status in the database
   };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+      </div>
+    );
+  }
+
+  if (services.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <h3 className="text-xl font-semibold text-slate-900">No services found</h3>
+        <p className="text-slate-600 mt-2">Get started by adding your first service.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -99,10 +116,10 @@ export default function ManageServicesPage() {
         Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
       ) : (
         services.map((service) => (
-          <ServiceCard 
-            key={service.id} 
-            service={service} 
-            onToggle={toggleService} 
+          <ServiceCard
+            key={service.id}
+            service={service}
+            onToggle={toggleService}
           />
         ))
       )}

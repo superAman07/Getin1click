@@ -245,7 +245,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
                   {/* Category Dropdown */}
                   <div className="group relative">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                    <button onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 group-hover:border-slate-400 flex items-center justify-between text-left">
+                    <button onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full cursor-pointer px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 group-hover:border-slate-400 flex items-center justify-between text-left">
                       <span className={selectedCategoryId ? 'text-slate-900' : 'text-slate-500'}>
                         {selectedCategoryName || 'Select a category...'}
                       </span>
@@ -253,9 +253,9 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
                     </button>
                     
                     {showCategoryDropdown && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-10 animate-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto">
+                      <div className="absolute top-full cursor-pointer left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-10 animate-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto">
                         {categories.map((category) => (
-                          <button key={category.id} onClick={() => { setSelectedCategoryId(category.id); setShowCategoryDropdown(false); }} className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                          <button key={category.id} onClick={() => { setSelectedCategoryId(category.id); setShowCategoryDropdown(false); }} className="w-full px-4 cursor-pointer py-3 text-left hover:bg-slate-50 transition-colors first:rounded-t-xl last:rounded-b-xl">
                             {category.name}
                           </button>
                         ))}
