@@ -8,52 +8,13 @@ import AdminSidebar from './AdminSidebar';
 import { ServiceProvider, useServiceContext } from '@/contexts/ServiceContext';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-//   const { 
-//     isFormOpen, 
-//     editingService, 
-//     openFormForCreate, 
-//     closeForm 
-//   } = useServiceContext();
-//   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-//   // const [showAddServiceForm, setShowAddServiceForm] = useState(false);
-//   // const [editingService, setEditingService] = useState<Service | null>(null);
-//   const pathname = usePathname();
-
-//   const getPageTitle = () => {
-//     const path = pathname.split('/').pop() || 'dashboard';
-//     return path.replace(/-/g, ' ');
-//   };
-
-//   const handleAddNew = () => {
-//     setEditingService(null);
-//     setShowAddServiceForm(true);
-//   };
-
-//   // Function to open the form for editing an existing service
-//   const handleEdit = (service: Service) => {
-//     setEditingService(service);
-//     setShowAddServiceForm(true);
-//   };
-
-//   // Clone children to pass down the handleEdit function
-//   const childrenWithProps = React.Children.map(children, child => {
-//   if (React.isValidElement(child)) {
-//     return React.cloneElement(child, { 
-//       onEdit: handleEdit,
-//       ...child.props
-//     });
-//   }
-//   return child;
-// }); 
-
-const { 
-    isFormOpen, 
-    editingService, 
-    openFormForCreate, 
-    closeForm 
+  const {
+    isFormOpen,
+    editingService,
+    openFormForCreate,
+    closeForm
   } = useServiceContext();
-  
+
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const pathname = usePathname();
