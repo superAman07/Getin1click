@@ -5,17 +5,8 @@ import ToggleSwitch from './ToggleSwitch';
 import { Edit, MoreVertical, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string | null;
-  imageUrl: string | null;
-  isActive: boolean;
-  category: {
-    name: string;
-  };
-}
+import { Service } from '@/types/servicesTypes';
+import { useServiceContext } from '@/contexts/ServiceContext';
 
 interface ServiceCardProps {
   service: Service;
@@ -102,9 +93,14 @@ const SkeletonCard: React.FC = () => (
   </div>
 );
 
-export default function ManageServicesPage() {
+export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service)=> void}) {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const { openFormForEdit } = useServiceContext();
+
+  useEffect(() => {
+    console.log("ManageServicesPage received onEdit:", !!onEdit);
+  }, [onEdit]);
 
   const fetchServices = async () => {
     setLoading(true);
@@ -159,9 +155,8 @@ export default function ManageServicesPage() {
   };
 
   const editService = (service: Service) => {
-    // For now, we'll just show a toast. Later, this can open a pre-filled form.
-    toast('Editing service: ' + service.name);
-    console.log('Editing service:', service);
+    console.log("editService called, onEdit exists:", !!onEdit);
+    openFormForEdit(service);
   };
 
   if (loading) {

@@ -6,6 +6,11 @@ export async function GET() {
     const services = await prisma.service.findMany({
       include: {
         category: true,
+        questions: {   
+          include: {
+            options: true 
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc',

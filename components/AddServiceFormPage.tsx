@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  X, 
-  Plus, 
-  ChevronDown, 
-  GripVertical, 
-  Trash2, 
+import {
+  X,
+  Plus,
+  ChevronDown,
+  GripVertical,
+  Trash2,
   Save,
   ArrowLeft,
   Image as ImageIcon,
@@ -18,6 +18,20 @@ import axios from 'axios';
 interface Option {
   id: string;
   text: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  isActive: boolean;
+  categoryId: string;
+  questions: {
+    id: string;
+    text: string;
+    options: { id: string; text: string }[];
+  }[];
 }
 
 interface Question {
@@ -34,9 +48,10 @@ interface Category {
 interface AddServiceFormProps {
   onClose: () => void;
   onSave: () => void;
+  serviceToEdit?: Service | null;
 }
 
-const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
+const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, serviceToEdit }) => {
   const [serviceName, setServiceName] = useState('');
   const [serviceDescription, setServiceDescription] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -45,12 +60,30 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
   const [questions, setQuestions] = useState<Question[]>([
     { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }] }
   ]);
-  
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [draggedQuestion, setDraggedQuestion] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (serviceToEdit) {
+      setServiceName(serviceToEdit.name);
+      setServiceDescription(serviceToEdit.description || '');
+      setSelectedCategoryId(serviceToEdit.categoryId);
+      setImageUrl(serviceToEdit.imageUrl || null);
+      if (serviceToEdit.questions && Array.isArray(serviceToEdit.questions)) {
+        setQuestions(serviceToEdit.questions.map(q => ({
+          ...q,
+          id: q.id || Date.now().toString() + Math.random(),
+          options: (q.options || []).map(o => ({ ...o, id: o.id || Date.now().toString() + Math.random() }))
+        })));
+      } else {
+        setQuestions([{ id: '1', text: '', options: [{ id: '1-1', text: '' }] }]);
+      }
+    }
+  }, [serviceToEdit]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -85,15 +118,15 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
   };
 
   const addOption = (questionId: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
+    setQuestions(questions.map(q =>
+      q.id === questionId
         ? { ...q, options: [...q.options, { id: `${Date.now()}`, text: '' }] }
         : q
     ));
   };
 
   const removeOption = (questionId: string, optionId: string) => {
-    setQuestions(questions.map(q => 
+    setQuestions(questions.map(q =>
       q.id === questionId && q.options.length > 2
         ? { ...q, options: q.options.filter(opt => opt.id !== optionId) }
         : q
@@ -101,8 +134,8 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
   };
 
   const updateOption = (questionId: string, optionId: string, text: string) => {
-    setQuestions(questions.map(q => 
-      q.id === questionId 
+    setQuestions(questions.map(q =>
+      q.id === questionId
         ? { ...q, options: q.options.map(opt => opt.id === optionId ? { ...opt, text } : opt) }
         : q
     ));
@@ -170,33 +203,37 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
       return;
     }
     setIsLoading(true);
-    
+
+    const isEditMode = !!serviceToEdit;
+    const url = isEditMode ? `/api/admin/services/${serviceToEdit.id}` : '/api/admin/services';
+    const method = isEditMode ? 'PUT' : 'POST';
+
     const payload = {
       name: serviceName,
       description: serviceDescription,
       categoryId: selectedCategoryId,
       imageUrl: imageUrl,
-      questions: questions.map(q => ({
-        text: q.text,
-        options: q.options.map(opt => ({ text: opt.text })),
-      })),
+      ...(!isEditMode && {
+        questions: questions.map(q => ({
+          text: q.text,
+          options: q.options.map(opt => ({ text: opt.text })),
+        }))
+      })
     };
 
     try {
-      const response = await axios.post('/api/admin/services', payload, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await axios({ method, url, data: payload });
 
-      if (response.status !== 201) {
-        throw new Error('Failed to create service');
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Failed to ${isEditMode ? 'update' : 'create'} service`);
       }
 
-      toast.success('Service created successfully!');
+      toast.success(`Service ${isEditMode ? 'updated' : 'created'} successfully!`);
       onSave();
-      onClose(); 
+      onClose();
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred while saving.');
+      toast.error(`An error occurred while ${isEditMode ? 'updating' : 'saving'}.`);
     } finally {
       setIsLoading(false);
     }
@@ -214,8 +251,12 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
               <ArrowLeft className="w-5 h-5 cursor-pointer text-slate-600" />
             </button>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900">Create New Service</h2>
-              <p className="text-slate-600">Build your service step by step</p>
+              <h2 className="text-2xl font-bold text-slate-900">
+                {serviceToEdit ? 'Edit Service' : 'Create New Service'}
+              </h2>
+              <p className="text-slate-600">
+                {serviceToEdit ? 'Update the details of your service' : 'Build your service step by step'}
+              </p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg transition-colors">
@@ -251,7 +292,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
                       </span>
                       <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${showCategoryDropdown ? 'rotate-180' : ''}`} />
                     </button>
-                    
+
                     {showCategoryDropdown && (
                       <div className="absolute top-full cursor-pointer left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-10 animate-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto">
                         {categories.map((category) => (
@@ -370,7 +411,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave }) => {
             {isLoading ? (
               <><Loader2 className="w-5 h-5 animate-spin" /> Saving...</>
             ) : (
-              <><Save className="w-5 h-5" /> Save Service</>
+              <><Save className="w-5 h-5" /> {serviceToEdit ? 'Save Changes' : 'Save Service'}</>
             )}
           </button>
         </div>
