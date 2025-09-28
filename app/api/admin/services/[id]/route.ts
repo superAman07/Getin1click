@@ -3,10 +3,10 @@ import prisma from '@/lib/db';
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     
     const { name, description, imageUrl, categoryId, isActive } = body;
@@ -24,24 +24,24 @@ export async function PUT(
 
     return NextResponse.json(updatedService);
   } catch (error) {
-    console.error(`Error updating service ${params.id}:`, error);
+    console.error(`Error updating service ${(await params).id}:`, error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await prisma.service.delete({
       where: { id },
     });
 
     return NextResponse.json(null, { status: 204 });
   } catch (error) {
-    console.error(`Error deleting service ${params.id}:`, error);
+    console.error(`Error deleting service ${(await params).id}:`, error);
     return NextResponse.json('Internal Server Error', { status: 500 });
   }
 }
