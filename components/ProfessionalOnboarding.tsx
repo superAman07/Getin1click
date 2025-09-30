@@ -52,7 +52,7 @@ export default function ProfessionalOnboarding() {
     useEffect(() => {
         const fetchAllServices = async () => {
             try {
-                const response = await axios.get('/api/admin/services');
+                const response = await axios.get('/api/professional/services');
                 setAllServices(response.data);
                 const initialServiceId: string | undefined = response.data.find((s: Service) => s.name === initialService)?.id;
                 if (initialServiceId) {

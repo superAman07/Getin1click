@@ -50,6 +50,7 @@ export async function POST(request: Request) {
             text: questionData.text,
             order: qIndex + 1,
             type: questionData.type,
+            inputType: questionData.inputType,
             serviceId: service.id,
           },
         });

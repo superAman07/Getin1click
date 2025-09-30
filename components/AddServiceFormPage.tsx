@@ -10,7 +10,9 @@ import {
   Save,
   ArrowLeft,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  CheckSquare,
+  Type
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -30,6 +32,8 @@ interface Service {
   questions: {
     id: string;
     text: string;
+    type: 'CUSTOMER' | 'PROFESSIONAL';
+    inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
     options: { id: string; text: string }[];
   }[];
 }
@@ -39,6 +43,7 @@ interface Question {
   text: string;
   options: Option[];
   type: 'CUSTOMER' | 'PROFESSIONAL';
+  inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
 }
 
 interface Category {
@@ -58,8 +63,9 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [activeQuestionTab, setActiveQuestionTab] = useState<'CUSTOMER' | 'PROFESSIONAL'>('CUSTOMER');
   const [questions, setQuestions] = useState<Question[]>([
-    { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }], type: 'CUSTOMER' }
+    { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }], type: 'CUSTOMER', inputType: 'SINGLE_CHOICE' }
   ]);
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -74,15 +80,27 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       setServiceDescription(serviceToEdit.description || '');
       setSelectedCategoryId(serviceToEdit.categoryId);
       setImageUrl(serviceToEdit.imageUrl || null);
-      if (serviceToEdit.questions && Array.isArray(serviceToEdit.questions)) {
-        setQuestions(serviceToEdit.questions.map(q => ({
+      if (serviceToEdit.questions && Array.isArray(serviceToEdit.questions) && serviceToEdit.questions.length > 0) {
+        const loadedQuestions = serviceToEdit.questions.map(q => ({
           ...q,
           id: q.id || Date.now().toString() + Math.random(),
-          type: (q as any).type || 'CUSTOMER',
+          type: q.type || 'CUSTOMER',
+          inputType: q.inputType || 'SINGLE_CHOICE',
           options: (q.options || []).map(o => ({ ...o, id: o.id || Date.now().toString() + Math.random() }))
-        })));
+        }));
+        setQuestions(loadedQuestions);
+        const hasProfessionalQuestions = loadedQuestions.some(q => q.type === 'PROFESSIONAL');
+        const hasCustomerQuestions = loadedQuestions.some(q => q.type === 'CUSTOMER');
+
+        if (hasProfessionalQuestions && !hasCustomerQuestions) {
+          setActiveQuestionTab('PROFESSIONAL');
+        } else {
+          setActiveQuestionTab('CUSTOMER');
+        }
+
       } else {
-        setQuestions([{ id: '1', text: '', options: [{ id: '1-1', text: '' }], type: 'CUSTOMER' }]);
+        setQuestions([{ id: '1', text: '', options: [{ id: '1-1', text: '' }], type: 'CUSTOMER', inputType: 'SINGLE_CHOICE' }]);
+        setActiveQuestionTab('CUSTOMER');
       }
     }
   }, [serviceToEdit]);
@@ -105,12 +123,13 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       id: Date.now().toString(),
       text: '',
       options: [{ id: `${Date.now()}-1`, text: '' }, { id: `${Date.now()}-2`, text: '' }],
-      type: 'CUSTOMER',
+      type: activeQuestionTab,
+      inputType: 'SINGLE_CHOICE',
     };
     setQuestions([...questions, newQuestion]);
   };
-  const updateQuestionType = (questionId: string, type: 'CUSTOMER' | 'PROFESSIONAL') => {
-    setQuestions(questions.map(q => q.id === questionId ? { ...q, type } : q));
+  const updateQuestionInputType = (questionId: string, inputType: Question['inputType']) => {
+    setQuestions(questions.map(q => q.id === questionId ? { ...q, inputType } : q));
   };
 
   const removeQuestion = (questionId: string) => {
@@ -222,10 +241,12 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       questions: questions.map(q => ({
         id: isEditMode ? q.id : undefined,
         text: q.text,
-        options: q.options.map(opt => ({
+        type: q.type, 
+        inputType: q.inputType, 
+        options: q.inputType !== 'TEXT' ? q.options.map(opt => ({
           id: isEditMode ? opt.id : undefined,
           text: opt.text
-        })),
+        })) : [],
       }))
     };
 
@@ -248,6 +269,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
   };
 
   const selectedCategoryName = categories.find(c => c.id === selectedCategoryId)?.name;
+  const visibleQuestions = questions.filter(q => q.type === activeQuestionTab);
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-90 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
@@ -357,16 +379,25 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
 
             {/* Questions Section */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
                   <span className="text-cyan-600 font-semibold text-sm">2</span>
                 </div>
                 <h3 className="text-xl font-semibold text-slate-900">Service Questions</h3>
-                <p className="text-slate-600 text-sm">Help customers provide the right information</p>
+              </div>
+
+              {/* Tab Buttons */}
+              <div className="flex border-b border-slate-200">
+                <button onClick={() => setActiveQuestionTab('CUSTOMER')} className={`px-4 py-3 cursor-pointer font-medium text-sm ${activeQuestionTab === 'CUSTOMER' ? 'border-b-2 border-cyan-500 text-cyan-600' : 'text-slate-500'}`}>
+                  For Customers
+                </button>
+                <button onClick={() => setActiveQuestionTab('PROFESSIONAL')} className={`px-4 py-3 cursor-pointer font-medium text-sm ${activeQuestionTab === 'PROFESSIONAL' ? 'border-b-2 border-purple-500 text-purple-600' : 'text-slate-500'}`}>
+                  For Professionals
+                </button>
               </div>
 
               <div className="space-y-4">
-                {questions.map((question, index) => (
+                {visibleQuestions.map((question, index) => (
                   <div key={question.id} draggable onDragStart={(e) => handleDragStart(e, question.id)} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, question.id)} className={`bg-slate-50 border border-slate-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md ${draggedQuestion === question.id ? 'opacity-50 scale-95' : ''}`}>
                     <div className="flex items-start gap-4">
                       <button className="mt-3 p-1 text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing">
@@ -375,22 +406,25 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                       <div className="flex-1 space-y-4">
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium text-slate-900">Question {index + 1}</h4>
-                          <div className="flex items-center gap-2 text-xs border border-slate-200 rounded-lg p-1">
-                            <button onClick={() => updateQuestionType(question.id, 'CUSTOMER')} className={`px-2 py-1 rounded-md ${question.type === 'CUSTOMER' ? 'bg-cyan-500 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>
-                              For Customer
-                            </button>
-                            <button onClick={() => updateQuestionType(question.id, 'PROFESSIONAL')} className={`px-2 py-1 rounded-md ${question.type === 'PROFESSIONAL' ? 'bg-purple-500 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>
-                              For Professional
-                            </button>
-                          </div>
-                          {questions.length > 1 && (
+                          {visibleQuestions.length > 1 && (
                             <button onClick={() => removeQuestion(question.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 cursor-pointer rounded-lg transition-all duration-200">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           )}
                         </div>
                         <input type="text" value={question.text} onChange={(e) => updateQuestion(question.id, e.target.value)} placeholder="Enter your question..." className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200" />
-                        <div className="space-y-3">
+                        <div className="flex items-center gap-4">
+                          <label className="text-sm font-medium text-slate-700">Answer Type:</label>
+                          <div className="flex items-center gap-2 text-xs border border-slate-200 rounded-lg p-1">
+                            <button onClick={() => updateQuestionInputType(question.id, 'SINGLE_CHOICE')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'SINGLE_CHOICE' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
+                              <CheckSquare size={12} /> Single Choice
+                            </button>
+                            <button onClick={() => updateQuestionInputType(question.id, 'TEXT')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'TEXT' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
+                              <Type size={12} /> Text Input
+                            </button>
+                          </div>
+                        </div>
+                        {question.inputType !== 'TEXT' && (<div className="space-y-3">
                           <label className="block text-sm font-medium text-slate-700">Answer Options</label>
                           {question.options.map((option, optionIndex) => (
                             <div key={option.id} className="flex items-center gap-3 animate-in slide-in-from-left duration-200">
@@ -408,13 +442,14 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                             Add Option
                           </button>
                         </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 ))}
                 <button onClick={addQuestion} className="w-full border-2 cursor-pointer border-dashed border-slate-300 rounded-xl p-6 text-slate-600 hover:text-cyan-600 hover:border-cyan-400 hover:bg-cyan-50 transition-all duration-200 flex items-center justify-center gap-3 font-medium">
                   <Plus className="w-5 h-5" />
-                  Add Another Question
+                  Add Another Question for {activeQuestionTab === 'CUSTOMER' ? 'Customers' : 'Professionals'}
                 </button>
               </div>
             </div>

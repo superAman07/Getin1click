@@ -3,10 +3,10 @@ import prisma from '@/lib/db';
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     const body = await request.json();
     
     const { name, description, imageUrl, categoryId, isActive, questions } = body;
@@ -37,6 +37,7 @@ export async function PUT(
               text: questionData.text,
               order: qIndex + 1,
               type: questionData.type,
+              inputType: questionData.inputType,
               serviceId: service.id,
             },
           });
@@ -67,10 +68,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     await prisma.service.delete({
       where: { id },
     });
