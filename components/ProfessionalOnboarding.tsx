@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -16,12 +16,11 @@ const STEPS = {
 
 export default function ProfessionalOnboarding() {
     const router = useRouter();
+    const { data: session, status: sessionStatus } = useSession();
     const searchParams = useSearchParams();
-    const initialService = searchParams.get('service'); // Get service from previous page
+    const initialService = searchParams.get('service');
 
-    const [step, setStep] = useState(STEPS.ACCOUNT);
-
-    // State for Step 1: Account Creation
+    const [step, setStep] = useState<number | null>(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,12 +31,23 @@ export default function ProfessionalOnboarding() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        if (sessionStatus === 'loading') {
+            return;
+        }
+
+        if (sessionStatus === 'authenticated') {
+            setStep(STEPS.SERVICES);
+        } else {
+            setStep(STEPS.ACCOUNT);
+        }
+    }, [sessionStatus]);
+
     const handleAccountCreation = async () => {
         setIsLoading(true);
         const toastId = toast.loading('Creating your account...');
 
         try {
-            // 1. Create the user account first
             const res = await axios.post('/api/auth/signup', {
                 name,
                 email,
@@ -48,7 +58,6 @@ export default function ProfessionalOnboarding() {
             if (res.status === 201) {
                 toast.success('Account created!', { id: toastId });
 
-                // 2. Automatically log the new user in
                 const loginResult = await signIn('credentials', {
                     redirect: false,
                     email,
@@ -59,7 +68,6 @@ export default function ProfessionalOnboarding() {
                     throw new Error('Auto-login failed. Please try logging in manually.');
                 }
 
-                // 3. Move to the next step of the wizard
                 setStep(STEPS.SERVICES);
             }
         } catch (error: any) {
@@ -84,6 +92,9 @@ export default function ProfessionalOnboarding() {
     };
 
     const renderStep = () => {
+        if (step === null) {
+            return <div className='loader'>Loading onboarding step...</div>;
+        }
         switch (step) {
             case STEPS.ACCOUNT:
                 return (
@@ -114,8 +125,7 @@ export default function ProfessionalOnboarding() {
             case STEPS.PROFILE:
                 return (
                     <div>
-                        <h2 className="text-2xl font-bold">Tell us about your business</h2>
-                        {/* Postcode, business name, etc. will go here */}
+                        <h2 className="text-2xl font-bold">Tell us about your business</h2> 
                         <button
                             onClick={handleFinishOnboarding}
                             disabled={isLoading}
@@ -133,12 +143,11 @@ export default function ProfessionalOnboarding() {
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center">
             <div className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
-                {/* Progress Bar (optional but recommended) */}
                 <div className="mb-8">
                     <div className="h-2 w-full bg-slate-200 rounded-full">
                         <div
                             className="h-2 bg-blue-600 rounded-full transition-all duration-500"
-                            style={{ width: `${(step / Object.keys(STEPS).length) * 100}%` }}
+                            style={{ width: `${((step || 0) / Object.keys(STEPS).length) * 100}%` }}
                         ></div>
                     </div>
                 </div>

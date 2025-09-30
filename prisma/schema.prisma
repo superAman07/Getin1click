@@ -20,13 +20,38 @@ model User {
   password           String
   role               UserRole @default(CUSTOMER)
   onboardingComplete Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  credits            Int      @default(0)
 
   professionalProfile ProfessionalProfile?
   customerRequests    CustomerRequest[]
   bookings            Booking[]
   reviews             Review[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  CreditPurchase      CreditPurchase[]
+}
+
+model CreditPackage {
+  id             String           @id @default(cuid())
+  name           String
+  description    String?
+  credits        Int // How many credits this package gives
+  price          Float // The price in your currency
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  CreditPurchase CreditPurchase[]
+}
+
+// NEW: A record of a professional purchasing a credit package
+model CreditPurchase {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  creditPackageId String
+  creditPackage   CreditPackage @relation(fields: [creditPackageId], references: [id])
+  amountPaid      Float
+  transactionId   String        @unique // From the payment gateway
+  purchasedAt     DateTime      @default(now())
 }
 
 model ProfessionalProfile {
@@ -58,6 +83,7 @@ model Service {
   id               String                @id @default(cuid())
   name             String
   description      String?
+  creditCost       Int?
   imageUrl         String?
   isActive         Boolean               @default(true)
   categoryId       String
