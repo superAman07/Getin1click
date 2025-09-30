@@ -21,7 +21,8 @@ interface Question {
 const STEPS = {
     ACCOUNT: 1,
     SERVICES: 2,
-    PROFILE: 3,
+    DETAILS: 3,
+    QUESTIONS: 4,
 };
 
 export default function ProfessionalOnboarding() {
@@ -35,10 +36,6 @@ export default function ProfessionalOnboarding() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // State for future steps
-    // const [selectedServices, setSelectedServices] = useState([initialService]);
-    // const [postcode, setPostcode] = useState('');
-
     // State for Step 2: Services
     const [allServices, setAllServices] = useState<Service[]>([]);
     const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
@@ -48,6 +45,7 @@ export default function ProfessionalOnboarding() {
     const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
     const [companyName, setCompanyName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [pincode, setPincode] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -75,7 +73,7 @@ export default function ProfessionalOnboarding() {
         try {
             const response = await axios.get(`/api/admin/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
             setServiceQuestions(response.data);
-            setStep(STEPS.PROFILE);
+            setStep(STEPS.DETAILS);
         } catch (error) {
             toast.error("Could not load service questions.");
         }
@@ -123,6 +121,24 @@ export default function ProfessionalOnboarding() {
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'An error occurred.';
             toast.error(errorMessage, { id: toastId });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleProceedToQuestions = async () => {
+        if (selectedServiceIds.length === 0) {
+            // This is a fallback, should not happen in normal flow
+            toast.error("No service selected. Please go back.");
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`/api/admin/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
+            setServiceQuestions(response.data);
+            setStep(STEPS.QUESTIONS); // Move to the final step
+        } catch (error) {
+            toast.error("Could not load service-specific questions.");
         } finally {
             setIsLoading(false);
         }
@@ -189,72 +205,85 @@ export default function ProfessionalOnboarding() {
                             ))}
                         </div>
                         <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700">
-                            Next: Complete Profile
+                            Next: Your Details
                         </button>
                     </div>
                 );
-            case STEPS.PROFILE:
+            case STEPS.DETAILS:
                 return (
                     <div>
-                        <h2 className="text-2xl font-bold">Tell us about your business</h2>
-                        <p className="text-slate-600 mb-6">This information will be shown on your public profile.</p>
-
+                        <h2 className="text-2xl font-bold">Your Business Details</h2>
+                        <p className="text-slate-600 mb-6">This helps us connect you with the right customers.</p>
                         <div className="space-y-4">
-                            {/* This will be pre-filled from the session */}
                             <div>
                                 <label className="text-sm font-medium text-slate-700">Your name</label>
                                 <input type="text" value={session?.user?.name || ''} disabled className="w-full p-3 border rounded-md bg-slate-100 cursor-not-allowed" />
                             </div>
+                            {/* Add email field as requested */}
                             <div>
-                                <label className="text-sm font-medium text-slate-700">Company name</label>
+                                <label className="text-sm font-medium text-slate-700">Email address</label>
+                                <input type="email" value={session?.user?.email || ''} disabled className="w-full p-3 border rounded-md bg-slate-100 cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Company name (optional)</label>
                                 <input type="text" placeholder="e.g., Aman's Cleaning Co." value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full p-3 border rounded-md" />
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-700">Phone number</label>
                                 <input type="tel" placeholder="Your contact number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full p-3 border rounded-md" />
                             </div>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Primary work pincode</label>
+                                <input type="text" placeholder="e.g., 400001" value={pincode} onChange={(e) => setPincode(e.target.value)} className="w-full p-3 border rounded-md" />
+                            </div>
+                        </div>
+                        <button onClick={handleProceedToQuestions} disabled={isLoading} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 disabled:bg-blue-400">
+                            {isLoading ? 'Loading Questions...' : 'Next: Service Questions'}
+                        </button>
+                    </div>
+                );
+            case STEPS.QUESTIONS:
+                return (
+                    <div>
+                        <h2 className="text-2xl font-bold">About Your Services</h2>
+                        <p className="text-slate-600 mb-6">Answer a few questions to complete your profile.</p>
 
-                            {/* Dynamic Questions Rendered Here */}
-                            {serviceQuestions.length > 0 && (
-                                <div className="pt-4 space-y-4">
-                                    <h3 className="font-semibold">Please answer a few questions:</h3>
-                                    {serviceQuestions.map(q => (
-                                        <div key={q.id}>
-                                            <label className="block text-sm font-medium text-gray-700">{q.text}</label>
-                                            {q.inputType === 'TEXT' && (
+                        {/* The dynamic question rendering logic we built before */}
+                        <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                            {serviceQuestions.length > 0 ? (
+                                serviceQuestions.map(q => (
+                                    <div key={q.id}>
+                                        <label htmlFor={q.id} className="block text-sm font-medium text-gray-700 mb-1">{q.text}</label>
+                                        {q.inputType === 'TEXT' && (
+                                            <input
+                                                type="text"
+                                                id={q.id}
+                                                value={answers[q.id] || ''}
+                                                onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                                                className="w-full p-3 border rounded-md"
+                                            />
+                                        )}
+                                        {q.inputType === 'SINGLE_CHOICE' && q.options.map(option => (
+                                            <div key={option.id} className="flex items-center mt-2">
                                                 <input
-                                                    type="text"
-                                                    onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                                    className="mt-1 w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                                    type="radio"
+                                                    id={option.id}
+                                                    name={q.id}
+                                                    value={option.text}
+                                                    checked={answers[q.id] === option.text}
+                                                    onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                                                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                                                 />
-                                            )}
-
-                                            {q.inputType === 'SINGLE_CHOICE' && (
-                                                <div className="space-y-2">
-                                                    {q.options.map(option => (
-                                                        <label key={option.id} className="flex items-center p-3 border rounded-md hover:bg-slate-50 cursor-pointer">
-                                                            <input
-                                                                type="radio"
-                                                                name={q.id} // Group radio buttons by question ID
-                                                                value={option.text}
-                                                                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                                            />
-                                                            <span className="ml-3 text-sm text-gray-700">{option.text}</span>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {/* Placeholder for future MULTIPLE_CHOICE implementation */}
-                                            {q.inputType === 'MULTIPLE_CHOICE' && (
-                                                <div className="text-sm text-slate-400 p-4 bg-slate-50 rounded-md">
-                                                    Multiple choice questions are not yet supported in this form.
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
+                                                <label htmlFor={option.id} className="ml-3 block text-sm text-gray-700">
+                                                    {option.text}
+                                                </label>
+                                            </div>
+                                        ))}
+                                        {/* Add MULTIPLE_CHOICE handling if needed */}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-slate-500">No specific questions for this service. You can proceed.</p>
                             )}
                         </div>
 
