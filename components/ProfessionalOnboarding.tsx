@@ -12,8 +12,10 @@ interface Question {
     id: string;
     text: string;
     type: 'CUSTOMER' | 'PROFESSIONAL';
+    inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
     order: number;
     serviceId: string;
+    options: { id: string; text: string }[];
 }
 
 const STEPS = {
@@ -71,7 +73,7 @@ export default function ProfessionalOnboarding() {
             return;
         }
         try {
-            const response = await axios.get(`/api/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
+            const response = await axios.get(`/api/admin/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
             setServiceQuestions(response.data);
             setStep(STEPS.PROFILE);
         } catch (error) {
@@ -219,11 +221,37 @@ export default function ProfessionalOnboarding() {
                                     {serviceQuestions.map(q => (
                                         <div key={q.id}>
                                             <label className="block text-sm font-medium text-gray-700">{q.text}</label>
-                                            <input
-                                                type="text"
-                                                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                                className="mt-1 w-full p-2 border rounded-md"
-                                            />
+                                            {q.inputType === 'TEXT' && (
+                                                <input
+                                                    type="text"
+                                                    onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                                                    className="mt-1 w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                                />
+                                            )}
+
+                                            {q.inputType === 'SINGLE_CHOICE' && (
+                                                <div className="space-y-2">
+                                                    {q.options.map(option => (
+                                                        <label key={option.id} className="flex items-center p-3 border rounded-md hover:bg-slate-50 cursor-pointer">
+                                                            <input
+                                                                type="radio"
+                                                                name={q.id} // Group radio buttons by question ID
+                                                                value={option.text}
+                                                                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                                            />
+                                                            <span className="ml-3 text-sm text-gray-700">{option.text}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Placeholder for future MULTIPLE_CHOICE implementation */}
+                                            {q.inputType === 'MULTIPLE_CHOICE' && (
+                                                <div className="text-sm text-slate-400 p-4 bg-slate-50 rounded-md">
+                                                    Multiple choice questions are not yet supported in this form.
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

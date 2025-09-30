@@ -3,17 +3,20 @@ import prisma from '@/lib/db';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
-    const { id: serviceId } = params; 
+    const { id: serviceId } = await params;
 
     try {
         const questions = await prisma.question.findMany({
             where: {
                 serviceId: serviceId,
                 ...(type && { type: type as 'CUSTOMER' | 'PROFESSIONAL' })
+            },
+            include: {
+                options: true
             },
             orderBy: { order: 'asc' },
         });
