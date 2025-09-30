@@ -13,6 +13,17 @@ enum UserRole {
   CUSTOMER
 }
 
+enum QuestionType {
+  CUSTOMER
+  PROFESSIONAL
+}
+
+enum QuestionInputType {
+  TEXT
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+}
+
 model User {
   id                 String   @id @default(cuid())
   email              String   @unique
@@ -96,14 +107,16 @@ model Service {
 }
 
 model Question {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid())
   text      String
-  order     Int // To determine the sequence of questions
+  order     Int
+  type      QuestionType      @default(CUSTOMER)
+  inputType QuestionInputType @default(SINGLE_CHOICE)
   serviceId String
-  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service   Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   options   Option[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 }
 
 model Option {

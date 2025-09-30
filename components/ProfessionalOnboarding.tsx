@@ -6,8 +6,16 @@ import axios from 'axios';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { Service } from '@/types/servicesTypes';
 
-// Define the steps
+interface Question {
+    id: string;
+    text: string;
+    type: 'CUSTOMER' | 'PROFESSIONAL';
+    order: number;
+    serviceId: string;
+}
+
 const STEPS = {
     ACCOUNT: 1,
     SERVICES: 2,
@@ -29,7 +37,47 @@ export default function ProfessionalOnboarding() {
     // const [selectedServices, setSelectedServices] = useState([initialService]);
     // const [postcode, setPostcode] = useState('');
 
+    // State for Step 2: Services
+    const [allServices, setAllServices] = useState<Service[]>([]);
+    const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+
+    // State for Step 3: Profile & Questions
+    const [serviceQuestions, setServiceQuestions] = useState<Question[]>([]);
+    const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
+    const [companyName, setCompanyName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchAllServices = async () => {
+            try {
+                const response = await axios.get('/api/admin/services');
+                setAllServices(response.data);
+                const initialServiceId: string | undefined = response.data.find((s: Service) => s.name === initialService)?.id;
+                if (initialServiceId) {
+                    setSelectedServiceIds([initialServiceId]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch services", error);
+            }
+        };
+        fetchAllServices();
+    }, [initialService]);
+
+    const handleProceedToProfile = async () => {
+        if (selectedServiceIds.length === 0) {
+            toast.error("Please select at least one service.");
+            return;
+        }
+        try {
+            const response = await axios.get(`/api/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
+            setServiceQuestions(response.data);
+            setStep(STEPS.PROFILE);
+        } catch (error) {
+            toast.error("Could not load service questions.");
+        }
+    };
 
     useEffect(() => {
         if (sessionStatus === 'loading') {
@@ -115,9 +163,30 @@ export default function ProfessionalOnboarding() {
                 return (
                     <div>
                         <h2 className="text-2xl font-bold">What services do you offer?</h2>
-                        {/* Service selection UI will go here */}
-                        <p>Initial service: {initialService}</p>
-                        <button onClick={() => setStep(STEPS.PROFILE)} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700">
+                        <p className="text-slate-600 mb-6">Select all that apply. You can change this later.</p>
+                        <div className="space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
+                            {allServices.map(service => (
+                                <div key={service.id} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id={service.id}
+                                        checked={selectedServiceIds.includes(service.id)}
+                                        onChange={(e) => {
+                                            setSelectedServiceIds(
+                                                e.target.checked
+                                                    ? [...selectedServiceIds, service.id]
+                                                    : selectedServiceIds.filter(id => id !== service.id)
+                                            );
+                                        }}
+                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <label htmlFor={service.id} className="ml-3 block text-sm font-medium text-gray-700">
+                                        {service.name}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                        <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700">
                             Next: Complete Profile
                         </button>
                     </div>
@@ -125,12 +194,43 @@ export default function ProfessionalOnboarding() {
             case STEPS.PROFILE:
                 return (
                     <div>
-                        <h2 className="text-2xl font-bold">Tell us about your business</h2> 
-                        <button
-                            onClick={handleFinishOnboarding}
-                            disabled={isLoading}
-                            className="w-full bg-green-600 text-white p-3 mt-6 rounded-md hover:bg-green-700 disabled:bg-green-400"
-                        >
+                        <h2 className="text-2xl font-bold">Tell us about your business</h2>
+                        <p className="text-slate-600 mb-6">This information will be shown on your public profile.</p>
+
+                        <div className="space-y-4">
+                            {/* This will be pre-filled from the session */}
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Your name</label>
+                                <input type="text" value={session?.user?.name || ''} disabled className="w-full p-3 border rounded-md bg-slate-100 cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Company name</label>
+                                <input type="text" placeholder="e.g., Aman's Cleaning Co." value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full p-3 border rounded-md" />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium text-slate-700">Phone number</label>
+                                <input type="tel" placeholder="Your contact number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full p-3 border rounded-md" />
+                            </div>
+
+                            {/* Dynamic Questions Rendered Here */}
+                            {serviceQuestions.length > 0 && (
+                                <div className="pt-4 space-y-4">
+                                    <h3 className="font-semibold">Please answer a few questions:</h3>
+                                    {serviceQuestions.map(q => (
+                                        <div key={q.id}>
+                                            <label className="block text-sm font-medium text-gray-700">{q.text}</label>
+                                            <input
+                                                type="text"
+                                                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                                                className="mt-1 w-full p-2 border rounded-md"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <button onClick={handleFinishOnboarding} disabled={isLoading} className="w-full bg-green-600 text-white p-3 mt-6 rounded-md hover:bg-green-700 disabled:bg-green-400">
                             {isLoading ? 'Saving...' : 'Finish & Go to Dashboard'}
                         </button>
                     </div>

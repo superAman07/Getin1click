@@ -6,9 +6,9 @@ export async function GET() {
     const services = await prisma.service.findMany({
       include: {
         category: true,
-        questions: {   
+        questions: {
           include: {
-            options: true 
+            options: true
           }
         }
       },
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
           data: {
             text: questionData.text,
             order: qIndex + 1,
+            type: questionData.type,
             serviceId: service.id,
           },
         });

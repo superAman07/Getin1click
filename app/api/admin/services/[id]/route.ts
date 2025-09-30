@@ -36,6 +36,7 @@ export async function PUT(
             data: {
               text: questionData.text,
               order: qIndex + 1,
+              type: questionData.type,
               serviceId: service.id,
             },
           });

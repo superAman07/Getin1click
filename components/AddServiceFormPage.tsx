@@ -38,6 +38,7 @@ interface Question {
   id: string;
   text: string;
   options: Option[];
+  type: 'CUSTOMER' | 'PROFESSIONAL';
 }
 
 interface Category {
@@ -58,7 +59,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([
-    { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }] }
+    { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }], type: 'CUSTOMER' }
   ]);
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -77,10 +78,11 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
         setQuestions(serviceToEdit.questions.map(q => ({
           ...q,
           id: q.id || Date.now().toString() + Math.random(),
+          type: (q as any).type || 'CUSTOMER',
           options: (q.options || []).map(o => ({ ...o, id: o.id || Date.now().toString() + Math.random() }))
         })));
       } else {
-        setQuestions([{ id: '1', text: '', options: [{ id: '1-1', text: '' }] }]);
+        setQuestions([{ id: '1', text: '', options: [{ id: '1-1', text: '' }], type: 'CUSTOMER' }]);
       }
     }
   }, [serviceToEdit]);
@@ -102,9 +104,13 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
     const newQuestion: Question = {
       id: Date.now().toString(),
       text: '',
-      options: [{ id: `${Date.now()}-1`, text: '' }, { id: `${Date.now()}-2`, text: '' }]
+      options: [{ id: `${Date.now()}-1`, text: '' }, { id: `${Date.now()}-2`, text: '' }],
+      type: 'CUSTOMER',
     };
     setQuestions([...questions, newQuestion]);
+  };
+  const updateQuestionType = (questionId: string, type: 'CUSTOMER' | 'PROFESSIONAL') => {
+    setQuestions(questions.map(q => q.id === questionId ? { ...q, type } : q));
   };
 
   const removeQuestion = (questionId: string) => {
@@ -214,7 +220,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       categoryId: selectedCategoryId,
       imageUrl: imageUrl,
       questions: questions.map(q => ({
-        id: isEditMode ? q.id : undefined, 
+        id: isEditMode ? q.id : undefined,
         text: q.text,
         options: q.options.map(opt => ({
           id: isEditMode ? opt.id : undefined,
@@ -369,6 +375,14 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                       <div className="flex-1 space-y-4">
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium text-slate-900">Question {index + 1}</h4>
+                          <div className="flex items-center gap-2 text-xs border border-slate-200 rounded-lg p-1">
+                            <button onClick={() => updateQuestionType(question.id, 'CUSTOMER')} className={`px-2 py-1 rounded-md ${question.type === 'CUSTOMER' ? 'bg-cyan-500 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>
+                              For Customer
+                            </button>
+                            <button onClick={() => updateQuestionType(question.id, 'PROFESSIONAL')} className={`px-2 py-1 rounded-md ${question.type === 'PROFESSIONAL' ? 'bg-purple-500 text-white' : 'text-slate-600 hover:bg-slate-100'}`}>
+                              For Professional
+                            </button>
+                          </div>
                           {questions.length > 1 && (
                             <button onClick={() => removeQuestion(question.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 cursor-pointer rounded-lg transition-all duration-200">
                               <Trash2 className="w-4 h-4" />
