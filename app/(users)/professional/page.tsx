@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function(){
-    return <div>Professional Page</div>
+    redirect('/professional/dashboard');
 }

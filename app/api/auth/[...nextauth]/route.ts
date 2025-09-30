@@ -52,6 +52,7 @@ export const authOptions: AuthOptions = {
     jwt({ token, user }) {
       if (user) {
         token.role = (user as any).role ?? token.role;
+        token.onboardingComplete = (user as any).onboardingComplete;
       }
       return token;
     },
