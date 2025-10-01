@@ -7,7 +7,7 @@ import { JWT } from "next-auth/jwt";
 import prisma from '@/lib/db';
 
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -41,30 +41,58 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
-  callbacks: {
-    session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub as string;
-        session.user.role = (token as JWT).role ?? null;
-      }
-      return session;
-    },
-    jwt({ token, user }) {
-      if (user) {
-        token.role = (user as any).role ?? token.role;
-        token.onboardingComplete = (user as any).onboardingComplete;
-      }
-      return token;
-    },
-  },
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60,
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    // session({ session, token }) {
+    //   if (session.user && token.sub) {
+    //     session.user.id = token.sub as string;
+    //     session.user.role = (token as JWT).role ?? null;
+    //   }
+    //   return session;
+    // },
+    // jwt({ token, user }) {
+    //   if (user) {
+    //     token.role = (user as any).role ?? token.role;
+    //     token.onboardingComplete = (user as any).onboardingComplete;
+    //   }
+    //   return token;
+    async jwt({ token, user, trigger, session }) {
+      // 1. On initial sign-in, persist the user data to the token.
+      if (user) {
+        token.sub = user.id;
+        token.role = user.role;
+        token.onboardingComplete = user.onboardingComplete;
+      }
+
+      // 2. When updateSession() is called from the client, this runs.
+      if (trigger === "update") {
+        // Refetch the user from the database to get the latest data.
+        const dbUser = await prisma.user.findUnique({ where: { id: token.sub } });
+        if (dbUser) {
+          // Update the token with the fresh data.
+          token.role = dbUser.role;
+          token.onboardingComplete = dbUser.onboardingComplete;
+        }
+      }
+
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role;
+        session.user.onboardingComplete = token.onboardingComplete;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: '/auth/login',
   },
+  secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
 

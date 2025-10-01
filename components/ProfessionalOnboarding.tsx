@@ -7,6 +7,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Service } from '@/types/servicesTypes';
+import { X } from 'lucide-react';
 
 interface Question {
     id: string;
@@ -27,7 +28,7 @@ const STEPS = {
 
 export default function ProfessionalOnboarding() {
     const router = useRouter();
-    const { data: session, status: sessionStatus } = useSession();
+    const { data: session, status: sessionStatus , update: updateSession } = useSession();
     const searchParams = useSearchParams();
     const initialService = searchParams.get('service');
 
@@ -41,11 +42,16 @@ export default function ProfessionalOnboarding() {
     const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
 
     // State for Step 3: Profile & Questions
-    const [serviceQuestions, setServiceQuestions] = useState<Question[]>([]);
+    const [serviceQuestions, setServiceQuestions] = useState<{ serviceName: string; questions: Question[] }[]>([]);
     const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
     const [companyName, setCompanyName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [pincode, setPincode] = useState('');
+    const [locationName, setLocationName] = useState('');
+    const [isPincodeLoading, setIsPincodeLoading] = useState(false);
+
+    const [serviceSearchTerm, setServiceSearchTerm] = useState('');
+    const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -78,6 +84,32 @@ export default function ProfessionalOnboarding() {
             toast.error("Could not load service questions.");
         }
     };
+
+    useEffect(() => {
+        if (pincode.length === 6) {
+            setIsPincodeLoading(true);
+            setLocationName('');
+            const fetchLocation = async () => {
+                try {
+                    const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+                    if (response.data && response.data[0].Status === 'Success') {
+                        const postOffice = response.data[0].PostOffice[0];
+                        setLocationName(`${postOffice.District}, ${postOffice.State}`);
+                    } else {
+                        setLocationName('Invalid Pincode');
+                    }
+                } catch (error) {
+                    setLocationName('Could not verify pincode');
+                } finally {
+                    setIsPincodeLoading(false);
+                }
+            };
+            const debounce = setTimeout(fetchLocation, 500);
+            return () => clearTimeout(debounce);
+        } else {
+            setLocationName('');
+        }
+    }, [pincode]);
 
     useEffect(() => {
         if (sessionStatus === 'loading') {
@@ -134,9 +166,22 @@ export default function ProfessionalOnboarding() {
         }
         setIsLoading(true);
         try {
-            const response = await axios.get(`/api/admin/services/${selectedServiceIds[0]}/questions?type=PROFESSIONAL`);
-            setServiceQuestions(response.data);
-            setStep(STEPS.QUESTIONS); // Move to the final step
+            const questionPromises = selectedServiceIds.map(id => 
+                axios.get(`/api/admin/services/${id}/questions?type=PROFESSIONAL`)
+            );
+            const responses = await Promise.all(questionPromises);
+            
+            const questionsByService = responses.map((response, index) => {
+                const serviceId = selectedServiceIds[index];
+                const service = allServices.find(s => s.id === serviceId);
+                return {
+                    serviceName: service?.name || 'Service',
+                    questions: response.data,
+                };
+            }).filter(group => group.questions.length > 0);
+
+            setServiceQuestions(questionsByService);
+            setStep(STEPS.QUESTIONS);
         } catch (error) {
             toast.error("Could not load service-specific questions.");
         } finally {
@@ -147,15 +192,51 @@ export default function ProfessionalOnboarding() {
     const handleFinishOnboarding = async () => {
         setIsLoading(true);
         try {
-            await axios.put('/api/professional/complete-onboarding');
+            const payload = {
+                companyName,
+                phoneNumber,
+                pincode,
+                locationName,
+                selectedServiceIds,
+                answers,
+            };
+
+            await axios.post('/api/professional/profile', payload);
+            console.log("session before update:", session);
+            await updateSession();
+            console.log("session after update:", session);
+
             toast.success('Setup complete! Welcome aboard.');
-            router.push('/professional/dashboard');
+            router.push('/professional/dashboard'); 
         } catch (error) {
+            console.error("Onboarding finish error:", error);
             toast.error('Could not finalize your setup. Please try again.');
         } finally {
             setIsLoading(false);
         }
     };
+
+    const handleBack = () => {
+        setStep(prev => (prev && prev > STEPS.SERVICES ? prev - 1 : prev));
+    };
+
+    const handleAddService = (service: Service) => {
+        if (!selectedServiceIds.includes(service.id)) {
+            setSelectedServiceIds([...selectedServiceIds, service.id]);
+        }
+        setServiceSearchTerm('');
+        setIsServiceDropdownOpen(false);
+    };
+
+    const handleRemoveService = (serviceId: string) => {
+        setSelectedServiceIds(selectedServiceIds.filter(id => id !== serviceId));
+    };
+
+    const filteredServices = serviceSearchTerm
+        ? allServices.filter(s =>
+            s.name.toLowerCase().includes(serviceSearchTerm.toLowerCase()) && !selectedServiceIds.includes(s.id)
+        )
+        : [];
 
     const renderStep = () => {
         if (step === null) {
@@ -182,7 +263,41 @@ export default function ProfessionalOnboarding() {
                     <div>
                         <h2 className="text-2xl font-bold">What services do you offer?</h2>
                         <p className="text-slate-600 mb-6">Select all that apply. You can change this later.</p>
-                        <div className="space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search for a service..."
+                                value={serviceSearchTerm}
+                                onChange={(e) => { setServiceSearchTerm(e.target.value); setIsServiceDropdownOpen(true); }}
+                                onFocus={() => setIsServiceDropdownOpen(true)}
+                                className="w-full p-3 border rounded-md"
+                            />
+                            {isServiceDropdownOpen && filteredServices.length > 0 && (
+                                <div className="absolute top-full left-0 right-0 bg-white border mt-1 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                                    {filteredServices.map(service => (
+                                        <div key={service.id} onClick={() => handleAddService(service)} className="p-3 hover:bg-slate-100 cursor-pointer">
+                                            {service.name}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Selected Services Tags */}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {selectedServiceIds.map(id => {
+                                const service = allServices.find(s => s.id === id);
+                                return service ? (
+                                    <div key={id} className="flex items-center gap-2 bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                                        {service.name}
+                                        <button onClick={() => handleRemoveService(id)} className="text-blue-600 hover:text-blue-800 cursor-pointer">
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                ) : null;
+                            })}
+                        </div>
+                        {/* <div className="space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
                             {allServices.map(service => (
                                 <div key={service.id} className="flex items-center">
                                     <input
@@ -203,8 +318,8 @@ export default function ProfessionalOnboarding() {
                                     </label>
                                 </div>
                             ))}
-                        </div>
-                        <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700">
+                        </div> */}
+                        <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 cursor-pointer">
                             Next: Your Details
                         </button>
                     </div>
@@ -234,62 +349,91 @@ export default function ProfessionalOnboarding() {
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-700">Primary work pincode</label>
-                                <input type="text" placeholder="e.g., 400001" value={pincode} onChange={(e) => setPincode(e.target.value)} className="w-full p-3 border rounded-md" />
+                                <input type="text" placeholder="e.g., 400001" value={pincode} onChange={(e) => setPincode(e.target.value)} className="w-full p-3 border rounded-md" maxLength={6} />
+                                {isPincodeLoading && <p className="text-xs text-slate-500 mt-1">Verifying...</p>}
+                                {locationName && <p className="text-sm text-green-600 font-medium mt-1">{locationName}</p>}
                             </div>
                         </div>
-                        <button onClick={handleProceedToQuestions} disabled={isLoading} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 disabled:bg-blue-400">
-                            {isLoading ? 'Loading Questions...' : 'Next: Service Questions'}
-                        </button>
+                        <div className="flex gap-4 mt-6">
+                            <button onClick={handleBack} className="w-1/3 bg-slate-200 text-slate-800 p-3 rounded-md hover:bg-slate-300 cursor-pointer">
+                                Back
+                            </button>
+                            <button onClick={handleProceedToQuestions} disabled={isLoading} className="w-2/3 bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 disabled:bg-blue-400 cursor-pointer">
+                                {isLoading ? 'Loading...' : 'Next'}
+                            </button>
+                        </div>
                     </div>
                 );
             case STEPS.QUESTIONS:
                 return (
                     <div>
                         <h2 className="text-2xl font-bold">About Your Services</h2>
-                        <p className="text-slate-600 mb-6">Answer a few questions to complete your profile.</p>
+                        <p className="text-slate-600 mb-6">A few final questions to help us match you with the right clients.</p>
 
-                        {/* The dynamic question rendering logic we built before */}
-                        <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        <div className="space-y-8 max-h-[50vh] overflow-y-auto pr-4 -mr-4">
                             {serviceQuestions.length > 0 ? (
-                                serviceQuestions.map(q => (
-                                    <div key={q.id}>
-                                        <label htmlFor={q.id} className="block text-sm font-medium text-gray-700 mb-1">{q.text}</label>
-                                        {q.inputType === 'TEXT' && (
-                                            <input
-                                                type="text"
-                                                id={q.id}
-                                                value={answers[q.id] || ''}
-                                                onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                                className="w-full p-3 border rounded-md"
-                                            />
-                                        )}
-                                        {q.inputType === 'SINGLE_CHOICE' && q.options.map(option => (
-                                            <div key={option.id} className="flex items-center mt-2">
-                                                <input
-                                                    type="radio"
-                                                    id={option.id}
-                                                    name={q.id}
-                                                    value={option.text}
-                                                    checked={answers[q.id] === option.text}
-                                                    onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                                                />
-                                                <label htmlFor={option.id} className="ml-3 block text-sm text-gray-700">
-                                                    {option.text}
-                                                </label>
+                                serviceQuestions.map(group => (
+                                    <div key={group.serviceName} className="space-y-6">
+                                        {/* Service Group Header */}
+                                        <h3 className="font-semibold text-lg text-slate-800 border-b pb-2">
+                                            For {group.serviceName}
+                                        </h3>
+                                        
+                                        {/* Questions within the group */}
+                                        {group.questions.map(q => (
+                                            <div key={q.id} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                                <label className="block text-sm font-medium text-gray-800 mb-3">{q.text}</label>
+                                                
+                                                {/* Renders a Text Input */}
+                                                {q.inputType === 'TEXT' && (
+                                                    <input
+                                                        type="text"
+                                                        id={q.id}
+                                                        value={answers[q.id] || ''}
+                                                        onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                                                        className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition"
+                                                    />
+                                                )}
+
+                                                {/* Renders Radio Button Options */}
+                                                {q.inputType === 'SINGLE_CHOICE' && (
+                                                    <div className="space-y-2">
+                                                        {q.options.map(option => (
+                                                            <label key={option.id} className="flex items-center p-3 border rounded-md hover:bg-slate-100 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-400 transition cursor-pointer">
+                                                                <input
+                                                                    type="radio"
+                                                                    id={option.id}
+                                                                    name={q.id}
+                                                                    value={option.text}
+                                                                    checked={answers[q.id] === option.text}
+                                                                    onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                                                                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                                />
+                                                                <span className="ml-3 block text-sm text-gray-700">{option.text}</span>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
-                                        {/* Add MULTIPLE_CHOICE handling if needed */}
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-slate-500">No specific questions for this service. You can proceed.</p>
+                                <div className="text-center py-10 px-6 bg-slate-50 rounded-lg">
+                                    <p className="text-slate-600">No specific questions for your selected services. You're all set!</p>
+                                </div>
                             )}
                         </div>
 
-                        <button onClick={handleFinishOnboarding} disabled={isLoading} className="w-full bg-green-600 text-white p-3 mt-6 rounded-md hover:bg-green-700 disabled:bg-green-400">
-                            {isLoading ? 'Saving...' : 'Finish & Go to Dashboard'}
-                        </button>
+                        {/* Navigation Buttons */}
+                        <div className="flex gap-4 mt-8">
+                            <button onClick={handleBack} className="w-1/3 bg-slate-200 text-slate-800 p-3 rounded-md hover:bg-slate-300 transition cursor-pointer">
+                                Back
+                            </button>
+                            <button onClick={handleFinishOnboarding} disabled={isLoading} className="w-2/3 bg-green-600 text-white p-3 rounded-md hover:bg-green-700 disabled:bg-green-400 transition cursor-pointer">
+                                {isLoading ? 'Saving...' : 'Finish & Go to Dashboard'}
+                            </button>
+                        </div>
                     </div>
                 );
             default:

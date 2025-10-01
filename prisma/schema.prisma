@@ -37,6 +37,7 @@ model User {
   customerRequests    CustomerRequest[]
   bookings            Booking[]
   reviews             Review[]
+  professionalAnswers ProfessionalAnswer[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   CreditPurchase      CreditPurchase[]
@@ -66,19 +67,33 @@ model CreditPurchase {
 }
 
 model ProfessionalProfile {
-  id         String    @id @default(cuid())
-  userId     String    @unique
-  user       User      @relation(fields: [userId], references: [id])
-  fullName   String
-  bio        String?
-  postcode   String
-  isVerified Boolean   @default(false)
-  credits    Int       @default(0)
-  services   Service[] @relation("ProfessionalServices")
-  bookings   Booking[]
-  reviews    Review[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  companyName String?
+  bio         String?
+  phoneNumber String?
+  postcode    String?
+  location    String?
+  isVerified  Boolean   @default(false)
+  services    Service[] @relation("ProfessionalServices")
+  bookings    Booking[]
+  reviews     Review[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProfessionalAnswer {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  answerText String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, questionId]) // A user can only have one answer per question
 }
 
 model Category {
@@ -107,16 +122,17 @@ model Service {
 }
 
 model Question {
-  id        String            @id @default(cuid())
+  id        String               @id @default(cuid())
   text      String
   order     Int
-  type      QuestionType      @default(CUSTOMER)
-  inputType QuestionInputType @default(SINGLE_CHOICE)
+  type      QuestionType         @default(CUSTOMER)
+  inputType QuestionInputType    @default(SINGLE_CHOICE)
   serviceId String
-  service   Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service   Service              @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   options   Option[]
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  answers   ProfessionalAnswer[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
 }
 
 model Option {
