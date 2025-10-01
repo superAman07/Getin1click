@@ -151,7 +151,7 @@ export default function Navbar() {
                 Login
               </Link>
               <Link
-                href="/professional/onboarding"
+                href="/joinasprofessional"
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full shadow-sm"
               >
                 <svg
