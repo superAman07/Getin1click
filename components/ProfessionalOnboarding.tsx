@@ -37,11 +37,9 @@ export default function ProfessionalOnboarding() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // State for Step 2: Services
     const [allServices, setAllServices] = useState<Service[]>([]);
     const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
 
-    // State for Step 3: Profile & Questions
     const [serviceQuestions, setServiceQuestions] = useState<{ serviceName: string; questions: Question[] }[]>([]);
     const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
     const [companyName, setCompanyName] = useState('');
@@ -159,8 +157,7 @@ export default function ProfessionalOnboarding() {
     };
 
     const handleProceedToQuestions = async () => {
-        if (selectedServiceIds.length === 0) {
-            // This is a fallback, should not happen in normal flow
+        if (selectedServiceIds.length === 0) { 
             toast.error("No service selected. Please go back.");
             return;
         }
@@ -297,28 +294,6 @@ export default function ProfessionalOnboarding() {
                                 ) : null;
                             })}
                         </div>
-                        {/* <div className="space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
-                            {allServices.map(service => (
-                                <div key={service.id} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id={service.id}
-                                        checked={selectedServiceIds.includes(service.id)}
-                                        onChange={(e) => {
-                                            setSelectedServiceIds(
-                                                e.target.checked
-                                                    ? [...selectedServiceIds, service.id]
-                                                    : selectedServiceIds.filter(id => id !== service.id)
-                                            );
-                                        }}
-                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <label htmlFor={service.id} className="ml-3 block text-sm font-medium text-gray-700">
-                                        {service.name}
-                                    </label>
-                                </div>
-                            ))}
-                        </div> */}
                         <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 cursor-pointer">
                             Next: Your Details
                         </button>
