@@ -43,11 +43,11 @@ export default function Joinasprofessional() {
   }, []);
 
   const handleGetStarted = () => {
-    if (!selectedService) {
-      alert("Please select a service you provide.");
-      return;
+    if (selectedService) {
+      router.push(`/professional/onboarding?service=${encodeURIComponent(selectedService)}`);
+    } else {
+      router.push('/professional/onboarding');
     }
-    router.push(`/joinasprofessional/signup?service=${encodeURIComponent(selectedService)}`);
   };
 
   const handleServiceSelect = (serviceName: string) => {

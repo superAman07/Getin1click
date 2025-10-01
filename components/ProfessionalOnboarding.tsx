@@ -7,7 +7,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Service } from '@/types/servicesTypes';
-import { X } from 'lucide-react';
+import { X, CheckCircle2, Search, Building2, Phone, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface Question {
     id: string;
@@ -28,7 +28,7 @@ const STEPS = {
 
 export default function ProfessionalOnboarding() {
     const router = useRouter();
-    const { data: session, status: sessionStatus , update: updateSession } = useSession();
+    const { data: session, status: sessionStatus, update: updateSession } = useSession();
     const searchParams = useSearchParams();
     const initialService = searchParams.get('service');
 
@@ -157,17 +157,17 @@ export default function ProfessionalOnboarding() {
     };
 
     const handleProceedToQuestions = async () => {
-        if (selectedServiceIds.length === 0) { 
+        if (selectedServiceIds.length === 0) {
             toast.error("No service selected. Please go back.");
             return;
         }
         setIsLoading(true);
         try {
-            const questionPromises = selectedServiceIds.map(id => 
+            const questionPromises = selectedServiceIds.map(id =>
                 axios.get(`/api/admin/services/${id}/questions?type=PROFESSIONAL`)
             );
             const responses = await Promise.all(questionPromises);
-            
+
             const questionsByService = responses.map((response, index) => {
                 const serviceId = selectedServiceIds[index];
                 const service = allServices.find(s => s.id === serviceId);
@@ -204,7 +204,7 @@ export default function ProfessionalOnboarding() {
             console.log("session after update:", session);
 
             toast.success('Setup complete! Welcome aboard.');
-            router.push('/professional/dashboard'); 
+            router.push('/professional/dashboard');
         } catch (error) {
             console.error("Onboarding finish error:", error);
             toast.error('Could not finalize your setup. Please try again.');
@@ -237,144 +237,317 @@ export default function ProfessionalOnboarding() {
 
     const renderStep = () => {
         if (step === null) {
-            return <div className='loader'>Loading onboarding step...</div>;
+            return (
+                <div className='flex items-center justify-center py-12'>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            );
         }
         switch (step) {
             case STEPS.ACCOUNT:
                 return (
-                    <div>
-                        <h2 className="text-2xl font-bold">Create your Professional Account</h2>
-                        <p className="text-slate-600 mb-6">Let's start with the basics.</p>
-                        <div className="space-y-4">
-                            <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 border rounded-md" />
-                            <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border rounded-md" />
-                            <input type="password" placeholder="Create Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border rounded-md" />
+                    <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                                <Building2 className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Professional!</h2>
+                            <p className="text-gray-600">Let's create your account and get you started</p>
                         </div>
-                        <button onClick={handleAccountCreation} disabled={isLoading} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed">
-                            {isLoading ? 'Creating...' : 'Next: Choose Services'}
+                        <div className="space-y-5">
+                            <div className="group">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter your full name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
+                                />
+                            </div>
+                            <div className="group">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    placeholder="your.email@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
+                                />
+                            </div>
+                            <div className="group">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Create Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Create a strong password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleAccountCreation}
+                            disabled={isLoading}
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 mt-8 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2 group cursor-pointer"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    <span>Creating Account...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>Create Account & Continue</span>
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
                         </button>
                     </div>
                 );
             case STEPS.SERVICES:
                 return (
-                    <div>
-                        <h2 className="text-2xl font-bold">What services do you offer?</h2>
-                        <p className="text-slate-600 mb-6">Select all that apply. You can change this later.</p>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search for a service..."
-                                value={serviceSearchTerm}
-                                onChange={(e) => { setServiceSearchTerm(e.target.value); setIsServiceDropdownOpen(true); }}
-                                onFocus={() => setIsServiceDropdownOpen(true)}
-                                className="w-full p-3 border rounded-md"
-                            />
+                    <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                                <CheckCircle2 className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Your Services</h2>
+                            <p className="text-gray-600">Select all services you offer. You can update this anytime.</p>
+                        </div>
+
+                        <div className="relative mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Search Services</label>
+                            <div className="relative">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Type to search services..."
+                                    value={serviceSearchTerm}
+                                    onChange={(e) => { setServiceSearchTerm(e.target.value); setIsServiceDropdownOpen(true); }}
+                                    onFocus={() => setIsServiceDropdownOpen(true)}
+                                    className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 cursor-pointer"
+                                />
+                            </div>
                             {isServiceDropdownOpen && filteredServices.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 bg-white border mt-1 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                                <div className="absolute top-full left-0 right-0 bg-white border-2 border-gray-200 mt-2 rounded-xl shadow-2xl z-10 max-h-72 overflow-y-auto">
                                     {filteredServices.map(service => (
-                                        <div key={service.id} onClick={() => handleAddService(service)} className="p-3 hover:bg-slate-100 cursor-pointer">
-                                            {service.name}
+                                        <div
+                                            key={service.id}
+                                            onClick={() => handleAddService(service)}
+                                            className="p-4 hover:bg-blue-50 cursor-pointer transition-colors duration-150 border-b border-gray-100 last:border-b-0 flex items-center gap-3 group"
+                                        >
+                                            <div className="w-2 h-2 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <span className="font-medium text-gray-700 group-hover:text-blue-600 transition-colors">{service.name}</span>
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        {/* Selected Services Tags */}
-                        <div className="mt-4 flex flex-wrap gap-2">
-                            {selectedServiceIds.map(id => {
-                                const service = allServices.find(s => s.id === id);
-                                return service ? (
-                                    <div key={id} className="flex items-center gap-2 bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                                        {service.name}
-                                        <button onClick={() => handleRemoveService(id)} className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                                            <X size={14} />
-                                        </button>
-                                    </div>
-                                ) : null;
-                            })}
-                        </div>
-                        <button onClick={handleProceedToProfile} className="w-full bg-blue-600 text-white p-3 mt-6 rounded-md hover:bg-blue-700 cursor-pointer">
-                            Next: Your Details
+                        {selectedServiceIds.length > 0 && (
+                            <div className="mb-8">
+                                <label className="block text-sm font-semibold text-gray-700 mb-3">Selected Services</label>
+                                <div className="flex flex-wrap gap-2.5">
+                                    {selectedServiceIds.map(id => {
+                                        const service = allServices.find(s => s.id === id);
+                                        return service ? (
+                                            <div
+                                                key={id}
+                                                className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-sm font-semibold px-4 py-2.5 rounded-full border-2 border-blue-200 shadow-sm hover:shadow-md transition-all duration-200 group"
+                                            >
+                                                <CheckCircle2 className="w-4 h-4" />
+                                                <span>{service.name}</span>
+                                                <button
+                                                    onClick={() => handleRemoveService(id)}
+                                                    className="ml-1 text-blue-600 hover:text-blue-800 hover:bg-blue-200 rounded-full p-1 transition-colors cursor-pointer"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ) : null;
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={() => setStep(STEPS.DETAILS)}
+                            disabled={selectedServiceIds.length === 0}
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2 group cursor-pointer"
+                        >
+                            <span>Continue to Details</span>
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
                 );
             case STEPS.DETAILS:
                 return (
-                    <div>
-                        <h2 className="text-2xl font-bold">Your Business Details</h2>
-                        <p className="text-slate-600 mb-6">This helps us connect you with the right customers.</p>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Your name</label>
-                                <input type="text" value={session?.user?.name || ''} disabled className="w-full p-3 border rounded-md bg-slate-100 cursor-not-allowed" />
+                    <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                                <Building2 className="w-8 h-8 text-blue-600" />
                             </div>
-                            {/* Add email field as requested */}
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Email address</label>
-                                <input type="email" value={session?.user?.email || ''} disabled className="w-full p-3 border rounded-md bg-slate-100 cursor-not-allowed" />
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Business Details</h2>
+                            <p className="text-gray-600">Help us connect you with the right customers</p>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Your Name</label>
+                                <input
+                                    type="text"
+                                    value={session?.user?.name || ''}
+                                    disabled
+                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium cursor-not-allowed"
+                                />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Company name (optional)</label>
-                                <input type="text" placeholder="e.g., Aman's Cleaning Co." value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full p-3 border rounded-md" />
+
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={session?.user?.email || ''}
+                                    disabled
+                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium cursor-not-allowed"
+                                />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Phone number</label>
-                                <input type="tel" placeholder="Your contact number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full p-3 border rounded-md" />
+
+                            <div className="group">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                                    <Building2 className="w-4 h-4" />
+                                    Company Name <span className="text-gray-400 text-xs font-normal">(Optional)</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., Aman's Cleaning Co."
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300 cursor-pointer"
+                                />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-slate-700">Primary work pincode</label>
-                                <input type="text" placeholder="e.g., 400001" value={pincode} onChange={(e) => setPincode(e.target.value)} className="w-full p-3 border rounded-md" maxLength={6} />
-                                {isPincodeLoading && <p className="text-xs text-slate-500 mt-1">Verifying...</p>}
-                                {locationName && <p className="text-sm text-green-600 font-medium mt-1">{locationName}</p>}
+
+                            <div className="group">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                                    <Phone className="w-4 h-4" />
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="tel"
+                                    placeholder="Your contact number"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300 cursor-pointer"
+                                />
+                            </div>
+
+                            <div className="group">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                                    <MapPin className="w-4 h-4" />
+                                    Primary Work Pincode
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., 400001"
+                                    value={pincode}
+                                    onChange={(e) => setPincode(e.target.value)}
+                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300 cursor-pointer"
+                                    maxLength={6}
+                                />
+                                {isPincodeLoading && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                                        <span>Verifying pincode...</span>
+                                    </div>
+                                )}
+                                {locationName && !isPincodeLoading && (
+                                    <div className="flex items-center gap-2 mt-2 p-3 bg-green-50 border-2 border-green-200 rounded-lg">
+                                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                        <span className="text-sm font-semibold text-green-700">{locationName}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="flex gap-4 mt-6">
-                            <button onClick={handleBack} className="w-1/3 bg-slate-200 text-slate-800 p-3 rounded-md hover:bg-slate-300 cursor-pointer">
-                                Back
+
+                        <div className="flex gap-3 mt-8">
+                            <button
+                                onClick={handleBack}
+                                className="w-1/3 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                                <span>Back</span>
                             </button>
-                            <button onClick={handleProceedToQuestions} disabled={isLoading} className="w-2/3 bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 disabled:bg-blue-400 cursor-pointer">
-                                {isLoading ? 'Loading...' : 'Next'}
+                            <button
+                                onClick={handleProceedToQuestions}
+                                disabled={isLoading}
+                                className="w-2/3 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:from-blue-300 disabled:to-blue-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2 group cursor-pointer"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        <span>Loading...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Continue</span>
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
                 );
             case STEPS.QUESTIONS:
                 return (
-                    <div>
-                        <h2 className="text-2xl font-bold">About Your Services</h2>
-                        <p className="text-slate-600 mb-6">A few final questions to help us match you with the right clients.</p>
+                    <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                                <CheckCircle2 className="w-8 h-8 text-blue-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">Almost Done!</h2>
+                            <p className="text-gray-600">Answer a few questions to help us match you with clients</p>
+                        </div>
 
-                        <div className="space-y-8 max-h-[50vh] overflow-y-auto pr-4 -mr-4">
+                        <div className="space-y-6 max-h-[55vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                             {serviceQuestions.length > 0 ? (
-                                serviceQuestions.map(group => (
-                                    <div key={group.serviceName} className="space-y-6">
-                                        {/* Service Group Header */}
-                                        <h3 className="font-semibold text-lg text-slate-800 border-b pb-2">
-                                            For {group.serviceName}
-                                        </h3>
-                                        
-                                        {/* Questions within the group */}
-                                        {group.questions.map(q => (
-                                            <div key={q.id} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                                <label className="block text-sm font-medium text-gray-800 mb-3">{q.text}</label>
-                                                
-                                                {/* Renders a Text Input */}
+                                serviceQuestions.map((group, groupIndex) => (
+                                    <div key={group.serviceName} className="space-y-5">
+                                        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-3 rounded-xl shadow-md z-10">
+                                            <h3 className="font-bold text-lg flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                                                    {groupIndex + 1}
+                                                </div>
+                                                Questions for {group.serviceName}
+                                            </h3>
+                                        </div>
+
+                                        {group.questions.map((q, qIndex) => (
+                                            <div key={q.id} className="bg-white border-2 border-gray-200 p-5 rounded-xl hover:border-blue-300 transition-all duration-200 shadow-sm hover:shadow-md">
+                                                <label className="flex items-start gap-3 text-sm font-semibold text-gray-800 mb-4">
+                                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs flex-shrink-0 mt-0.5">
+                                                        {qIndex + 1}
+                                                    </span>
+                                                    <span className="flex-1">{q.text}</span>
+                                                </label>
+
                                                 {q.inputType === 'TEXT' && (
                                                     <input
                                                         type="text"
                                                         id={q.id}
                                                         value={answers[q.id] || ''}
                                                         onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                                        className="w-full p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 transition"
+                                                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 cursor-pointer"
+                                                        placeholder="Type your answer here..."
                                                     />
                                                 )}
 
-                                                {/* Renders Radio Button Options */}
                                                 {q.inputType === 'SINGLE_CHOICE' && (
-                                                    <div className="space-y-2">
+                                                    <div className="space-y-2.5">
                                                         {q.options.map(option => (
-                                                            <label key={option.id} className="flex items-center p-3 border rounded-md hover:bg-slate-100 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-400 transition cursor-pointer">
+                                                            <label
+                                                                key={option.id}
+                                                                className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500 has-[:checked]:shadow-md transition-all duration-200 cursor-pointer group"
+                                                            >
                                                                 <input
                                                                     type="radio"
                                                                     id={option.id}
@@ -382,9 +555,14 @@ export default function ProfessionalOnboarding() {
                                                                     value={option.text}
                                                                     checked={answers[q.id] === option.text}
                                                                     onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                                                    className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                                    className="h-5 w-5 text-blue-600 border-2 border-gray-300 focus:ring-4 focus:ring-blue-100 cursor-pointer"
                                                                 />
-                                                                <span className="ml-3 block text-sm text-gray-700">{option.text}</span>
+                                                                <span className="flex-1 text-sm font-medium text-gray-700 group-has-[:checked]:text-blue-700 group-has-[:checked]:font-semibold">
+                                                                    {option.text}
+                                                                </span>
+                                                                {answers[q.id] === option.text && (
+                                                                    <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                                                                )}
                                                             </label>
                                                         ))}
                                                     </div>
@@ -394,39 +572,73 @@ export default function ProfessionalOnboarding() {
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-center py-10 px-6 bg-slate-50 rounded-lg">
-                                    <p className="text-slate-600">No specific questions for your selected services. You're all set!</p>
+                                <div className="text-center py-16 px-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border-2 border-blue-200">
+                                    <CheckCircle2 className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                                    <p className="text-lg font-semibold text-blue-900">Perfect! No additional questions needed.</p>
+                                    <p className="text-sm text-blue-700 mt-2">You're all set to get started!</p>
                                 </div>
                             )}
                         </div>
 
-                        {/* Navigation Buttons */}
-                        <div className="flex gap-4 mt-8">
-                            <button onClick={handleBack} className="w-1/3 bg-slate-200 text-slate-800 p-3 rounded-md hover:bg-slate-300 transition cursor-pointer">
-                                Back
+                        <div className="flex gap-3 mt-8 pt-6 border-t-2 border-gray-200">
+                            <button
+                                onClick={handleBack}
+                                className="w-1/3 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                                <span>Back</span>
                             </button>
-                            <button onClick={handleFinishOnboarding} disabled={isLoading} className="w-2/3 bg-green-600 text-white p-3 rounded-md hover:bg-green-700 disabled:bg-green-400 transition cursor-pointer">
-                                {isLoading ? 'Saving...' : 'Finish & Go to Dashboard'}
+                            <button
+                                onClick={handleFinishOnboarding}
+                                disabled={isLoading}
+                                className="w-2/3 bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 disabled:from-green-300 disabled:to-green-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 flex items-center justify-center gap-2 group cursor-pointer"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        <span>Finalizing...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        <span>Complete Setup & Start</span>
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
                 );
             default:
-                return <div>Loading...</div>;
+                return (
+                    <div className='flex items-center justify-center py-12'>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    </div>
+                );
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-            <div className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
-                <div className="mb-8">
-                    <div className="h-2 w-full bg-slate-200 rounded-full">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl bg-white p-8 md:p-10 rounded-2xl shadow-2xl border border-gray-100">
+                {/* Progress Bar */}
+                <div className="mb-10">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-semibold text-gray-600">
+                            Step {step} of {Object.keys(STEPS).length}
+                        </span>
+                        <span className="text-sm font-semibold text-blue-600">
+                            {Math.round(((step || 0) / Object.keys(STEPS).length) * 100)}% Complete
+                        </span>
+                    </div>
+                    <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden shadow-inner">
                         <div
-                            className="h-2 bg-blue-600 rounded-full transition-all duration-500"
+                            className="h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-700 ease-out shadow-lg"
                             style={{ width: `${((step || 0) / Object.keys(STEPS).length) * 100}%` }}
                         ></div>
                     </div>
                 </div>
+
+                {/* Step Content */}
                 {renderStep()}
             </div>
         </div>

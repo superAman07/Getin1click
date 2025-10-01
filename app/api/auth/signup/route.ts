@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(user);
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
     console.error("SIGNUP_ERROR", error);
     return new NextResponse("Internal Server Error", { status: 500 });
