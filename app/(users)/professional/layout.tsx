@@ -9,14 +9,9 @@ export default function ProfessionalLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <NavbarProfessional />
-    
       <main className="">
         {children}
       </main>
-
-      {/* Toaster components can be placed here if needed */}
-      {/* <Toaster /> */}
-      {/* <Sonner /> */}
     </div>
   );
 }
