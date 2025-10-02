@@ -63,7 +63,7 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
   useEffect(() => {
     if (status === 'authenticated') {
       if (session?.user?.role === 'ADMIN') {
-        router.push('/dashboard');
+        router.push('/admin');
       } else if (session?.user?.role === 'PROFESSIONAL'){
         router.push('/professional')
       }else {

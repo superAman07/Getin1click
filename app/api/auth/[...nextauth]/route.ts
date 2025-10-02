@@ -63,8 +63,8 @@ export const authOptions: AuthOptions = {
       // 1. On initial sign-in, persist the user data to the token.
       if (user) {
         token.sub = user.id;
-        token.role = user.role;
-        token.onboardingComplete = user.onboardingComplete;
+        token.role = (user as any).role;
+        token.onboardingComplete = (user as any).onboardingComplete;
       }
 
       // 2. When updateSession() is called from the client, this runs.
