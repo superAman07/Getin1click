@@ -24,6 +24,13 @@ enum QuestionInputType {
   MULTIPLE_CHOICE
 }
 
+enum CompanySize {
+  SOLO
+  SMALL_TEAM   // 2-10 employees
+  MEDIUM_TEAM  // 11-50 employees
+  LARGE_TEAM   // 51+ employees
+}
+
 model User {
   id                 String   @id @default(cuid())
   email              String   @unique
@@ -71,16 +78,38 @@ model ProfessionalProfile {
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
   companyName String?
-  bio         String?
-  phoneNumber String?
+  companyLogoUrl String?    
+  profilePictureUrl String? 
+  companyEmail String?     
+  companyPhoneNumber String? 
+  websiteUrl  String?
+
   postcode    String?
   location    String?
+
+  companySize   CompanySize? @default(SOLO) 
+  yearFounded   Int?         
+  bio           String?      @db.Text 
+
+  photos        ProfilePhoto[]
+  socialMedia   Json?  
+
+  phoneNumber String?
   isVerified  Boolean   @default(false)
   services    Service[] @relation("ProfessionalServices")
   bookings    Booking[]
   reviews     Review[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model ProfilePhoto {
+  id          String   @id @default(cuid())
+  url         String
+  caption     String?
+  profileId   String
+  profile     ProfessionalProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 }
 
 model ProfessionalAnswer {

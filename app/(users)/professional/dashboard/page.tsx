@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { TrendingUp, Users, DollarSign, Star, ArrowRight, Zap, Target, Award } from "lucide-react"
+import Link from "next/link"
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
 
@@ -88,16 +89,19 @@ const Index = () => {
     {
       label: "Browse Leads",
       icon: Users,
+      href: "#",
       color: "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white",
     },
     {
       label: "View Analytics",
       icon: TrendingUp,
+      href: "#",
       color: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white",
     },
     {
       label: "Update Profile",
       icon: Target,
+      href: '/professional/dashboard/update-profile',
       color: "bg-slate-200 hover:bg-slate-300 text-slate-900",
     },
   ]
@@ -167,7 +171,8 @@ const Index = () => {
           <h2 className={sectionTitle}>Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {quickActions.map((action, index) => (
-              <button
+              <Link
+                href={action.href}
                 key={action.label}
                 className={[
                   cardBase,
@@ -185,7 +190,7 @@ const Index = () => {
                   </div>
                   <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition-transform duration-200 ease-out" />
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
