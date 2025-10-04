@@ -7,7 +7,6 @@ import { useEffect, useMemo, useState, memo } from "react"
 import toast from "react-hot-toast"
 import type { ProfessionalProfileData, ProfilePhoto, QAItem, Service } from "@/types/profileTypes"
 
-// Inline SVG Icons (no external libs)
 const IconChevron = ({ open }: { open: boolean }) => (
   <svg
     aria-hidden="true"
@@ -50,7 +49,6 @@ const IconSpinner = () => (
 type SectionStatus = "complete" | "in-progress" | "incomplete"
 type SectionHeaderProps = { title: string; status: SectionStatus; open: boolean; onToggle: () => void }
 
-// memo to avoid unnecessary re-renders; identity is now stable across page re-renders
 const SectionHeader = memo(function SectionHeader({ title, status, open, onToggle }: SectionHeaderProps) {
   return (
     <button
@@ -83,22 +81,25 @@ const Card = ({ children }: { children: React.ReactNode }) => (
   <div className="rounded-lg border border-[#e5e7eb] bg-[#ffffff] p-4">{children}</div>
 )
 
-type ActionBarProps = { onCancel: () => void; onSave: () => void }
-const ActionBar = ({ onCancel, onSave }: ActionBarProps) => (
+type ActionBarProps = { onCancel: () => void; onSave: () => void; hasChanges: boolean; isSaving: boolean; }
+const ActionBar = ({ onCancel, onSave, hasChanges, isSaving }: ActionBarProps) => (
   <div className="mt-4 flex items-center gap-3">
     <button
       type="button"
       onClick={onCancel}
-      className="cursor-pointer rounded-md border border-[#e5e7eb] bg-[#ffffff] px-4 py-2 text-sm text-[#0f172a] transition-colors duration-150 hover:bg-[#f8fafc]"
+      disabled={!hasChanges || isSaving}
+      className="cursor-pointer rounded-md border border-[#e5e7eb] bg-[#ffffff] px-4 py-2 text-sm text-[#0f172a] transition-colors duration-150 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      Cancel
+      {hasChanges ? 'Cancel' : 'Reset'}
     </button>
     <button
       type="button"
       onClick={onSave}
-      className="cursor-pointer rounded-md bg-[#2563eb] px-4 py-2 text-sm text-[#ffffff] transition-transform duration-150 hover:brightness-110 active:scale-[0.98]"
+      disabled={!hasChanges || isSaving}
+      className="cursor-pointer rounded-md bg-[#25252b] px-4 py-2 text-sm text-[#ffffff] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
     >
-      Save
+      {isSaving && <IconSpinner />}
+      {hasChanges ? 'Save' : 'Saved'}
     </button>
   </div>
 )
@@ -106,7 +107,8 @@ const ActionBar = ({ onCancel, onSave }: ActionBarProps) => (
 export default memo(function SettingsPage() {
   const { data: session } = useSession()
   const [isLoading, setIsLoading] = useState(true)
-  const [activeSection, setActiveSection] = useState<string | null>("about")
+  const [isSaving, setIsSaving] = useState(false);
+  const [initialState, setInitialState] = useState<any>(null);
 
   const [open, setOpen] = useState<Record<string, boolean>>({
     about: true,
@@ -136,16 +138,12 @@ export default memo(function SettingsPage() {
   const [allServices, setAllServices] = useState<Service[]>([])
   const [serviceQuery, setServiceQuery] = useState("")
 
-  // CHANGE add state to track last focused input/textarea
   const [lastFocusedId, setLastFocusedId] = useState<string | null>(null)
 
-  // FIX 2: `yourName` is now correctly defined from the session.
   const yourName = session?.user?.name || ""
 
-  // FIX 8 & 9: `aboutCompanyLimit` is now defined.
   const aboutCompanyLimit = 500
 
-  // --- Data Fetching ---
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true)
@@ -159,31 +157,53 @@ export default memo(function SettingsPage() {
         const data: ProfessionalProfileData = profileRes.data
         setAllServices(servicesRes.data)
 
-        // Populate state from fetched profile data
-        setCompanyName(data.companyName || "")
-        setCompanyLogo(data.companyLogoUrl || null)
-        setProfilePic(data.profilePictureUrl || null)
-        setCompanyEmail(data.companyEmail || "")
-        setCompanyPhone(data.companyPhoneNumber || "")
-        setWebsite(data.websiteUrl || "")
-        setCompanySize(data.companySize || "")
-        setYearInBusiness(data.yearFounded?.toString() || "")
-        setAboutCompany(data.bio || "")
-        setSelectedServices(data.services || [])
-        setPhotos(data.photos || [])
+        const loadedState = {
+          companyName: data.companyName || "",
+          companyLogo: data.companyLogoUrl || null,
+          profilePic: data.profilePictureUrl || null,
+          companyEmail: data.companyEmail || "",
+          companyPhone: data.companyPhoneNumber || "",
+          website: data.websiteUrl || "",
+          companySize: data.companySize || "",
+          yearInBusiness: data.yearFounded?.toString() || "",
+          aboutCompany: data.bio || "",
+          selectedServices: data.services || [],
+          photos: data.photos || [],
+          linkedIn: data.socialMedia?.linkedin || "",
+          twitter: data.socialMedia?.twitter || "",
+          facebook: data.socialMedia?.facebook || "",
+          instagram: data.socialMedia?.instagram || "",
+          qas: data.qas.map(q => {
+            const existingAnswer = data.user.professionalAnswers.find(a => a.questionId === q.id);
+            return { id: q.id, question: q.text, answer: existingAnswer?.answerText || "" };
+          })
+        };
+        setInitialState(JSON.parse(JSON.stringify(loadedState))); // Deep copy
 
-        if (data.socialMedia) {
-          setLinkedIn(data.socialMedia.linkedin || "")
-          setTwitter(data.socialMedia.twitter || "")
-          setFacebook(data.socialMedia.facebook || "")
-          setInstagram(data.socialMedia.instagram || "")
-        }
-
-        const fetchedQAs = data.qas.map((q) => {
-          const existingAnswer = data.user.professionalAnswers.find((a) => a.questionId === q.id)
-          return { id: q.id, question: q.text, answer: existingAnswer?.answerText || "" }
-        })
-        setQAs(fetchedQAs)
+        // Populate editable state
+        Object.keys(loadedState).forEach(key => {
+          const setter = `set${key.charAt(0).toUpperCase() + key.slice(1)}`;
+          const stateSetter = (window as any)[setter]; // A bit of a hack for brevity, in a real app use a reducer
+          if (typeof stateSetter === 'function') {
+            stateSetter(loadedState[key as keyof typeof loadedState]);
+          }
+        });
+        setCompanyName(loadedState.companyName);
+        setCompanyLogo(loadedState.companyLogo);
+        setProfilePic(loadedState.profilePic);
+        setCompanyEmail(loadedState.companyEmail);
+        setCompanyPhone(loadedState.companyPhone);
+        setWebsite(loadedState.website);
+        setCompanySize(loadedState.companySize);
+        setYearInBusiness(loadedState.yearInBusiness);
+        setAboutCompany(loadedState.aboutCompany);
+        setSelectedServices(loadedState.selectedServices);
+        setPhotos(loadedState.photos);
+        setLinkedIn(loadedState.linkedIn);
+        setTwitter(loadedState.twitter);
+        setFacebook(loadedState.facebook);
+        setInstagram(loadedState.instagram);
+        setQAs(loadedState.qas);
       } catch (error) {
         toast.error("Failed to load page data.")
         console.error(error)
@@ -220,10 +240,10 @@ export default memo(function SettingsPage() {
     requestAnimationFrame(() => {
       const stillThere = document.getElementById(lastFocusedId)
       if (!stillThere) return
-      ;(stillThere as HTMLInputElement | HTMLTextAreaElement).focus({ preventScroll: true })
+        ; (stillThere as HTMLInputElement | HTMLTextAreaElement).focus({ preventScroll: true })
       try {
         const val = (stillThere as HTMLInputElement).value ?? (stillThere as HTMLTextAreaElement).value ?? ""
-        ;(stillThere as any).setSelectionRange?.(val.length, val.length)
+          ; (stillThere as any).setSelectionRange?.(val.length, val.length)
       } catch {
         // no-op if setSelectionRange isn't supported
       }
@@ -332,27 +352,29 @@ export default memo(function SettingsPage() {
   }
 
   const onCancel = () => {
-    // FIX 6: `onCancel` now resets to empty/initial state correctly.
-    setCompanyName("")
-    setCompanyLogo(null)
-    setProfilePic(null)
-    setCompanyEmail("")
-    setCompanyPhone("")
-    setWebsite("")
-    setCompanySize("")
-    setYearInBusiness("")
-    setAboutCompany("")
-    setSelectedServices([])
-    setPhotos([])
-    setLinkedIn("")
-    setTwitter("")
-    setFacebook("")
-    setInstagram("")
-    setQAs((prev) => prev.map((q) => ({ ...q, answer: "" })))
-    toast("Changes have been cancelled.")
+    if (initialState) {
+      setCompanyName(initialState.companyName);
+      setCompanyLogo(initialState.companyLogo);
+      setProfilePic(initialState.profilePic);
+      setCompanyEmail(initialState.companyEmail);
+      setCompanyPhone(initialState.companyPhone);
+      setWebsite(initialState.website);
+      setCompanySize(initialState.companySize);
+      setYearInBusiness(initialState.yearInBusiness);
+      setAboutCompany(initialState.aboutCompany);
+      setSelectedServices(initialState.selectedServices);
+      setPhotos(initialState.photos);
+      setLinkedIn(initialState.linkedIn);
+      setTwitter(initialState.twitter);
+      setFacebook(initialState.facebook);
+      setInstagram(initialState.instagram);
+      setQAs(initialState.qas);
+      toast("Changes have been reset.");
+    }
   }
 
   const onSave = async () => {
+    setIsSaving(true);
     const toastId = toast.loading("Saving your profile...")
     try {
       const payload = {
@@ -388,12 +410,17 @@ export default memo(function SettingsPage() {
     } catch (error) {
       toast.error("Failed to save your profile.", { id: toastId })
       console.error(error)
+    } finally {
+      setIsSaving(false);
     }
   }
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading profile...</div>
   }
+
+  const currentState = { companyName, companyLogo, profilePic, companyEmail, companyPhone, website, companySize, yearInBusiness, aboutCompany, selectedServices, photos, linkedIn, twitter, facebook, instagram, qas };
+  const hasUnsavedChanges = JSON.stringify(initialState) !== JSON.stringify(currentState);
 
   return (
     // CHANGE capture focus events at the page root to remember which field the user is typing in
@@ -898,8 +925,8 @@ export default memo(function SettingsPage() {
               qas.length > 0 && qas.every((q) => q.answer.trim().length > 5)
                 ? "complete"
                 : qas.some((q) => q.answer.trim())
-                ? "in-progress"
-                : "incomplete"
+                  ? "in-progress"
+                  : "incomplete"
             }
           />
           {open.qas && (
@@ -932,7 +959,7 @@ export default memo(function SettingsPage() {
           )}
         </section>
 
-        <ActionBar onCancel={onCancel} onSave={onSave} />
+        <ActionBar onCancel={onCancel} onSave={onSave} hasChanges={hasUnsavedChanges} isSaving={isSaving} />
       </div>
     </main>
   )
