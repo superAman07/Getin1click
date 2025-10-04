@@ -8,7 +8,7 @@ export async function PUT(
   try {
     const { id } = params;
     const body = await request.json();
-    
+
     const { name, description, imageUrl, categoryId, isActive, questions } = body;
 
     const updatedService = await prisma.$transaction(async (tx) => {
@@ -24,35 +24,80 @@ export async function PUT(
       });
 
       if (questions && Array.isArray(questions)) {
+        // const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
+        // const existingQuestionIds = existingQuestions.map(q => q.id);
+        // if (existingQuestionIds.length > 0) {
+        //   await tx.option.deleteMany({ where: { questionId: { in: existingQuestionIds } } });
+        //   await tx.question.deleteMany({ where: { id: { in: existingQuestionIds } } });
+        // }
         const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
-        const existingQuestionIds = existingQuestions.map(q => q.id);
-        if (existingQuestionIds.length > 0) {
-          await tx.option.deleteMany({ where: { questionId: { in: existingQuestionIds } } });
-          await tx.question.deleteMany({ where: { id: { in: existingQuestionIds } } });
+        const existingQuestionIds = new Set(existingQuestions.map(q => q.id));
+        const incomingQuestionIds = new Set(questions.map(q => q.id).filter(Boolean));
+
+        // Find questions to delete (exist in DB but not in incoming payload)
+        const questionsToDelete = existingQuestions.filter(q => !incomingQuestionIds.has(q.id));
+        const questionIdsToDelete = questionsToDelete.map(q => q.id);
+
+        if (questionIdsToDelete.length > 0) {
+          // THIS IS THE FIX: Delete answers before deleting questions
+          await tx.professionalAnswer.deleteMany({ where: { questionId: { in: questionIdsToDelete } } });
+          await tx.option.deleteMany({ where: { questionId: { in: questionIdsToDelete } } });
+          await tx.question.deleteMany({ where: { id: { in: questionIdsToDelete } } });
         }
 
-        for (const [qIndex, questionData] of questions.entries()) {
-          const newQuestion = await tx.question.create({
-            data: {
-              text: questionData.text,
-              order: qIndex + 1,
-              type: questionData.type,
-              inputType: questionData.inputType,
-              serviceId: service.id,
-            },
+        //   for (const [qIndex, questionData] of questions.entries()) {
+        //     const newQuestion = await tx.question.create({
+        //       data: {
+        //         text: questionData.text,
+        //         order: qIndex + 1,
+        //         type: questionData.type,
+        //         inputType: questionData.inputType,
+        //         serviceId: service.id,
+        //       },
+        //     });
+
+        //     if (questionData.options && Array.isArray(questionData.options)) {
+        //       await tx.option.createMany({
+        //         data: questionData.options.map((opt: { text: string }) => ({
+        //           text: opt.text,
+        //           questionId: newQuestion.id,
+        //         })),
+        //       });
+        //     }
+        //   }
+        // }
+        for (const [qIndex, qData] of questions.entries()) {
+          const questionPayload = {
+            text: qData.text,
+            order: qIndex + 1,
+            type: qData.type,
+            inputType: qData.inputType,
+            serviceId: service.id,
+          };
+
+          const question = await tx.question.upsert({
+            where: { id: qData.id || '' },
+            update: questionPayload,
+            create: questionPayload,
           });
 
-          if (questionData.options && Array.isArray(questionData.options)) {
-            await tx.option.createMany({
-              data: questionData.options.map((opt: { text: string }) => ({
-                text: opt.text,
-                questionId: newQuestion.id,
-              })),
-            });
+          // Update options for the question
+          if (qData.options && Array.isArray(qData.options)) {
+            // Delete old options first
+            await tx.option.deleteMany({ where: { questionId: question.id } });
+            // Create new options
+            if (qData.options.length > 0) {
+              await tx.option.createMany({
+                data: qData.options.map((opt: { text: string }) => ({
+                  text: opt.text,
+                  questionId: question.id,
+                })),
+              });
+            }
           }
         }
       }
-      
+
       return service;
     }, {
       maxWait: 10000,
@@ -66,12 +111,9 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest,{ params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await prisma.service.delete({
       where: { id },
     });

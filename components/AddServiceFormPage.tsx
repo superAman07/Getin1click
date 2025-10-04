@@ -42,7 +42,7 @@ interface Question {
   id: string;
   text: string;
   options: Option[];
-  type: 'CUSTOMER' | 'PROFESSIONAL';
+  type: 'CUSTOMER' | 'PROFESSIONAL' | 'PROFILE_FAQ';
   inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
 }
 
@@ -63,7 +63,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [activeQuestionTab, setActiveQuestionTab] = useState<'CUSTOMER' | 'PROFESSIONAL'>('CUSTOMER');
+  const [activeQuestionTab, setActiveQuestionTab] = useState<'CUSTOMER' | 'PROFESSIONAL' | 'PROFILE_FAQ'>('CUSTOMER');
   const [questions, setQuestions] = useState<Question[]>([
     { id: '1', text: '', options: [{ id: '1-1', text: '' }, { id: '1-2', text: '' }], type: 'CUSTOMER', inputType: 'SINGLE_CHOICE' }
   ]);
@@ -122,9 +122,9 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
     const newQuestion: Question = {
       id: Date.now().toString(),
       text: '',
-      options: [{ id: `${Date.now()}-1`, text: '' }, { id: `${Date.now()}-2`, text: '' }],
+      options: [],
       type: activeQuestionTab,
-      inputType: 'SINGLE_CHOICE',
+      inputType: 'TEXT',
     };
     setQuestions([...questions, newQuestion]);
   };
@@ -241,8 +241,8 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
       questions: questions.map(q => ({
         id: isEditMode ? q.id : undefined,
         text: q.text,
-        type: q.type, 
-        inputType: q.inputType, 
+        type: q.type,
+        inputType: q.inputType,
         options: q.inputType !== 'TEXT' ? q.options.map(opt => ({
           id: isEditMode ? opt.id : undefined,
           text: opt.text
@@ -394,6 +394,9 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                 <button onClick={() => setActiveQuestionTab('PROFESSIONAL')} className={`px-4 py-3 cursor-pointer font-medium text-sm ${activeQuestionTab === 'PROFESSIONAL' ? 'border-b-2 border-purple-500 text-purple-600' : 'text-slate-500'}`}>
                   For Professionals
                 </button>
+                <button onClick={() => setActiveQuestionTab('PROFILE_FAQ')} className={`px-4 py-3 cursor-pointer font-medium text-sm ${activeQuestionTab === 'PROFILE_FAQ' ? 'border-b-2 border-green-500 text-green-600' : 'text-slate-500'}`}>
+                  For Profile Q&A
+                </button>
               </div>
 
               <div className="space-y-4">
@@ -413,17 +416,19 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                           )}
                         </div>
                         <input type="text" value={question.text} onChange={(e) => updateQuestion(question.id, e.target.value)} placeholder="Enter your question..." className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200" />
-                        <div className="flex items-center gap-4">
-                          <label className="text-sm font-medium text-slate-700">Answer Type:</label>
-                          <div className="flex items-center gap-2 text-xs border border-slate-200 rounded-lg p-1">
-                            <button onClick={() => updateQuestionInputType(question.id, 'SINGLE_CHOICE')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'SINGLE_CHOICE' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
-                              <CheckSquare size={12} /> Single Choice
-                            </button>
-                            <button onClick={() => updateQuestionInputType(question.id, 'TEXT')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'TEXT' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
-                              <Type size={12} /> Text Input
-                            </button>
+                        {activeQuestionTab !== 'PROFILE_FAQ' && (
+                          <div className="flex items-center gap-4">
+                            <label className="text-sm font-medium text-slate-700">Answer Type:</label>
+                            <div className="flex items-center gap-2 text-xs border border-slate-200 rounded-lg p-1">
+                              <button onClick={() => updateQuestionInputType(question.id, 'SINGLE_CHOICE')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'SINGLE_CHOICE' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
+                                <CheckSquare size={12} /> Single Choice
+                              </button>
+                              <button onClick={() => updateQuestionInputType(question.id, 'TEXT')} className={`px-2 py-1 rounded-md flex items-center gap-1 ${question.inputType === 'TEXT' ? 'bg-blue-500 text-white' : 'text-slate-600'}`}>
+                                <Type size={12} /> Text Input
+                              </button>
+                            </div>
                           </div>
-                        </div>
+                        )}
                         {question.inputType !== 'TEXT' && (<div className="space-y-3">
                           <label className="block text-sm font-medium text-slate-700">Answer Options</label>
                           {question.options.map((option, optionIndex) => (
@@ -449,7 +454,10 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                 ))}
                 <button onClick={addQuestion} className="w-full border-2 cursor-pointer border-dashed border-slate-300 rounded-xl p-6 text-slate-600 hover:text-cyan-600 hover:border-cyan-400 hover:bg-cyan-50 transition-all duration-200 flex items-center justify-center gap-3 font-medium">
                   <Plus className="w-5 h-5" />
-                  Add Another Question for {activeQuestionTab === 'CUSTOMER' ? 'Customers' : 'Professionals'}
+                  Add Another Question for {
+                    activeQuestionTab === 'CUSTOMER' ? 'Customers' :
+                      activeQuestionTab === 'PROFESSIONAL' ? 'Onboarding' : 'Profile Q&A'
+                  }
                 </button>
               </div>
             </div>

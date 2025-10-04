@@ -38,7 +38,7 @@ export async function GET() {
     const serviceQuestions = await prisma.question.findMany({
       where: {
         serviceId: { in: serviceIds },
-        type: 'PROFESSIONAL', // Fetch the Q&A questions
+        type: 'PROFILE_FAQ', // Fetch the Q&A questions
       },
     });
 
