@@ -71,9 +71,9 @@ export function NavbarProfessional() {
             {/* Logo */}
             <Link href="/professional/dashboard" className="flex items-center gap-2 cursor-pointer select-none">
               <span className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 will-change-transform">
-                P
+                G1C
               </span>
-              <span className="font-semibold text-[17px] text-slate-800">Professional</span>
+              <span className="font-semibold text-[17px] text-slate-800">GetIn1Click</span>
             </Link>
 
             {/* Desktop Nav */}
