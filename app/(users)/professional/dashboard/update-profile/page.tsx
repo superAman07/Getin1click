@@ -824,7 +824,7 @@ export default memo(function SettingsPage() {
             title="Social Media & Links"
             open={open.social}
             onToggle={() => toggle("social")}
-            status={[linkedIn, twitter, facebook, instagram].some((v) => v.trim()) ? "in-progress" : "incomplete"}
+            status={[linkedIn, twitter, facebook, instagram].some((v) => v.trim()) ? "complete" : "incomplete"}
           />
           {open.social && (
             <div
@@ -894,7 +894,13 @@ export default memo(function SettingsPage() {
             title="Q&As"
             open={open.qas}
             onToggle={() => toggle("qas")}
-            status={qas.some((q) => q.answer.trim()) ? "in-progress" : "incomplete"}
+            status={
+              qas.length > 0 && qas.every((q) => q.answer.trim().length > 5)
+                ? "complete"
+                : qas.some((q) => q.answer.trim())
+                ? "in-progress"
+                : "incomplete"
+            }
           />
           {open.qas && (
             <div
