@@ -56,7 +56,7 @@ export async function GET() {
 }
 
 // PUT handler to update the professional's profile
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return new NextResponse('Unauthorized', { status: 401 });
@@ -64,30 +64,38 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const {
-      companyName, companyLogoUrl, profilePictureUrl, companyEmail,
-      companyPhoneNumber, websiteUrl, companySize, yearFounded, bio,
-      services, photos, socialMedia, qas, // `qas` will be an object of { questionId: answer }
-    } = body;
+    
+    const dataToUpdate: any = {};
+    if (body.companyName !== undefined) dataToUpdate.companyName = body.companyName;
+    if (body.companyLogoUrl !== undefined) dataToUpdate.companyLogoUrl = body.companyLogoUrl;
+    if (body.profilePictureUrl !== undefined) dataToUpdate.profilePictureUrl = body.profilePictureUrl;
+    if (body.companyEmail !== undefined) dataToUpdate.companyEmail = body.companyEmail;
+    if (body.companyPhoneNumber !== undefined) dataToUpdate.companyPhoneNumber = body.companyPhoneNumber;
+    if (body.websiteUrl !== undefined) dataToUpdate.websiteUrl = body.websiteUrl;
+    if (body.companySize !== undefined) dataToUpdate.companySize = body.companySize;
+    if (body.yearFounded !== undefined) dataToUpdate.yearFounded = body.yearFounded;
+    if (body.bio !== undefined) dataToUpdate.bio = body.bio;
+    if (body.socialMedia !== undefined) dataToUpdate.socialMedia = body.socialMedia;
+    if (body.services !== undefined) {
+      dataToUpdate.services = { set: body.services.map((s: { id: string }) => ({ id: s.id })) };
+    }
+    if (body.photos !== undefined) {
+      dataToUpdate.photos = {
+        deleteMany: {},
+        create: body.photos.map((p: { url: string, caption?: string }) => ({ url: p.url, caption: p.caption })),
+      };
+    }
 
     const updatedProfile = await prisma.$transaction(async (tx) => {
-      // 1. Update the main profile
+      // 1. Update the main profile with only the provided data
       const profile = await tx.professionalProfile.update({
         where: { userId: session.user.id },
-        data: {
-          companyName, companyLogoUrl, profilePictureUrl, companyEmail,
-          companyPhoneNumber, websiteUrl, companySize, yearFounded, bio, socialMedia,
-          services: services ? { set: services.map((s: { id: string }) => ({ id: s.id })) } : undefined,
-          photos: photos ? {
-            deleteMany: {},
-            create: photos.map((p: { url: string, caption?: string }) => ({ url: p.url, caption: p.caption })),
-          } : undefined,
-        },
+        data: dataToUpdate,
       });
 
-      // 2. Upsert the answers for the Q&A section
-      if (qas) {
-        for (const [questionId, answerText] of Object.entries(qas)) {
+      // 2. Upsert the answers for the Q&A section (this logic is already correct)
+      if (body.qas) {
+        for (const [questionId, answerText] of Object.entries(body.qas)) {
           if (typeof answerText === 'string' && answerText.trim() !== '') {
             await tx.professionalAnswer.upsert({
               where: { userId_questionId: { userId: session.user.id, questionId } },
@@ -98,7 +106,11 @@ export async function PUT(request: Request) {
         }
       }
       return profile;
-    });
+    }, {
+      maxWait: 10000,
+      timeout: 30000,
+    }
+  );
 
     return NextResponse.json(updatedProfile);
   } catch (error) {

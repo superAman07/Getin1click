@@ -622,10 +622,10 @@ export default memo(function SettingsPage() {
                       className="cursor-pointer rounded-md border border-[#e5e7eb] bg-[#ffffff] px-3 py-2 text-sm text-[#0f172a] transition-colors duration-150 focus:border-[#2563eb] outline-none"
                     >
                       <option value="">Select company size</option>
-                      <option value="solo">Just me (Solo)</option>
-                      <option value="2-10">2-10 employees</option>
-                      <option value="11-50">11-50 employees</option>
-                      <option value="51+">51+ employees</option>
+                      <option value="SOLO">Just me (Solo)</option>
+                      <option value="SMALL_TEAM">2-10 employees</option>
+                      <option value="MEDIUM_TEAM">11-50 employees</option>
+                      <option value="LARGE_TEAM">51+ employees</option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
