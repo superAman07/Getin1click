@@ -117,11 +117,11 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       </div>
       {isFormOpen && (
         <AddServiceForm
-        onClose={closeForm}
-        onSave={() => {
-          window.location.reload();
-        }}
-        serviceToEdit={editingService}
+          onClose={closeForm}
+          onSave={() => {
+            window.location.reload();
+          }}
+          serviceToEdit={editingService}
         />
       )}
     </>
