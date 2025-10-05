@@ -269,3 +269,8 @@ model Transaction {
   professionalId String
   professional   User            @relation(fields: [professionalId], references: [id])
 }
+
+model Configuration {
+  key   String @id
+  value String
+}
