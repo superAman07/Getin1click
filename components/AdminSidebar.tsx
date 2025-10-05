@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, Users, Settings, LayoutGrid, UserCheck, X } from 'lucide-react';
+import { Home, Briefcase, Users, Settings, LayoutGrid, UserCheck, X, CreditCard } from 'lucide-react';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -18,6 +18,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
     { id: 'services', href: '/admin/services', label: 'Services', icon: Briefcase },
     { id: 'categories', href: '/admin/categories', label: 'Categories', icon: LayoutGrid },
     { id: 'professionals', href: '/admin/professionals', label: 'Professionals', icon: UserCheck },
+    { id: 'credit-bundles', href: '/admin/credit-bundles', label: 'Credit Bundles', icon: CreditCard },
     { id: 'customers', href: '/admin/customers', label: 'Customers', icon: Users },
     { id: 'settings', href: '/admin/settings', label: 'Settings', icon: Settings },
   ];

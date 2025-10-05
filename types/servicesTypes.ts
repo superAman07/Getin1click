@@ -8,6 +8,8 @@ export interface Service {
   questions: {
     id: string;
     text: string;
+    type: 'CUSTOMER' | 'PROFESSIONAL' | 'PROFILE_FAQ';
+    inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
     options: { id: string; text: string }[];
   }[];
   category: {

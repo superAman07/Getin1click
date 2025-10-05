@@ -16,26 +16,11 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { Service } from '@/types/servicesTypes';
 
 interface Option {
   id: string;
   text: string;
-}
-
-interface Service {
-  id: string;
-  name: string;
-  description: string | null;
-  imageUrl: string | null;
-  isActive: boolean;
-  categoryId: string;
-  questions: {
-    id: string;
-    text: string;
-    type: 'CUSTOMER' | 'PROFESSIONAL';
-    inputType: 'TEXT' | 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE';
-    options: { id: string; text: string }[];
-  }[];
 }
 
 interface Question {

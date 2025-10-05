@@ -27,9 +27,9 @@ enum QuestionInputType {
 
 enum CompanySize {
   SOLO
-  SMALL_TEAM   // 2-10 employees
-  MEDIUM_TEAM  // 11-50 employees
-  LARGE_TEAM   // 51+ employees
+  SMALL_TEAM // 2-10 employees
+  MEDIUM_TEAM // 11-50 employees
+  LARGE_TEAM // 51+ employees
 }
 
 model User {
@@ -39,9 +39,11 @@ model User {
   password           String
   role               UserRole @default(CUSTOMER)
   onboardingComplete Boolean  @default(false)
-  credits            Int      @default(0)
 
   professionalProfile ProfessionalProfile?
+  postedLeads         Lead[]               @relation("CustomerLeads")
+  purchasedLeads      Lead[]               @relation("PurchasedLeads")
+  transactions        Transaction[]
   customerRequests    CustomerRequest[]
   bookings            Booking[]
   reviews             Review[]
@@ -75,25 +77,26 @@ model CreditPurchase {
 }
 
 model ProfessionalProfile {
-  id          String    @id @default(cuid())
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [id])
-  companyName String?
-  companyLogoUrl String?    
-  profilePictureUrl String? 
-  companyEmail String?     
-  companyPhoneNumber String? 
-  websiteUrl  String?
+  id                 String  @id @default(cuid())
+  userId             String  @unique
+  user               User    @relation(fields: [userId], references: [id])
+  credits            Int     @default(0)
+  companyName        String?
+  companyLogoUrl     String?
+  profilePictureUrl  String?
+  companyEmail       String?
+  companyPhoneNumber String?
+  websiteUrl         String?
 
-  postcode    String?
-  location    String?
+  postcode String?
+  location String?
 
-  companySize   CompanySize? @default(SOLO) 
-  yearFounded   Int?         
-  bio           String?      @db.Text 
+  companySize CompanySize? @default(SOLO)
+  yearFounded Int?
+  bio         String?      @db.Text
 
-  photos        ProfilePhoto[]
-  socialMedia   Json?  
+  photos      ProfilePhoto[]
+  socialMedia Json?
 
   phoneNumber String?
   isVerified  Boolean   @default(false)
@@ -105,12 +108,12 @@ model ProfessionalProfile {
 }
 
 model ProfilePhoto {
-  id          String   @id @default(cuid())
-  url         String?
-  caption     String?
-  profileId   String
-  profile     ProfessionalProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id        String              @id @default(cuid())
+  url       String?
+  caption   String?
+  profileId String
+  profile   ProfessionalProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime            @default(now())
 }
 
 model ProfessionalAnswer {
@@ -147,6 +150,7 @@ model Service {
   professionals    ProfessionalProfile[] @relation("ProfessionalServices")
   questions        Question[]
   customerRequests CustomerRequest[]
+  leads            Lead[]
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
 }
@@ -215,4 +219,53 @@ model Review {
   professionalId String
   professional   ProfessionalProfile @relation(fields: [professionalId], references: [id])
   createdAt      DateTime            @default(now())
+}
+
+model CreditBundle {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  credits     Int
+  currency    String   @default("INR")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  location    String
+  budget      String?
+  urgency     String // Could be an enum: HIGH, MEDIUM, LOW
+  creditCost  Int
+  status      String   @default("OPEN") // OPEN, ASSIGNED, COMPLETED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customerId String
+  customer   User   @relation("CustomerLeads", fields: [customerId], references: [id])
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  purchasedBy User[] @relation("PurchasedLeads")
+}
+
+enum TransactionType {
+  PURCHASE // Buying credits
+  SPEND // Spending credits on a lead
+}
+
+model Transaction {
+  id             String          @id @default(cuid())
+  amountCredits  Int // Can be positive (purchase) or negative (spend)
+  amountCurrency Float? // Price paid for the credits
+  type           TransactionType
+  description    String
+  createdAt      DateTime        @default(now())
+  professionalId String
+  professional   User            @relation(fields: [professionalId], references: [id])
 }
