@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Loader as Loader2, Package, X, CreditCard as Edit2, Trash2, MoveVertical as MoreVertical, Coins, ArrowRight, Settings } from 'lucide-react';
+import { Plus, Loader as Loader2, Package, X, CreditCard as Edit2, Trash2, MoveVertical as MoreVertical, Coins, ArrowRight, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CreditBundle {
     id: string;
@@ -37,6 +37,7 @@ export default function CreditBundlesClient() {
     const [tempRate, setTempRate] = useState<string>('1');
     const [converterRupees, setConverterRupees] = useState<string>('');
     const [converterCredits, setConverterCredits] = useState<string>('');
+    const [isConverterExpanded, setIsConverterExpanded] = useState(false);
 
     const showToast = (message: string, type: 'success' | 'error' | 'loading') => {
         console.log(`[${type.toUpperCase()}] ${message}`);
@@ -195,7 +196,7 @@ export default function CreditBundlesClient() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 py-8 sm:py-4">
                 <div className="mb-8 sm:mb-12">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
@@ -213,131 +214,158 @@ export default function CreditBundlesClient() {
                 </div>
 
                 <div className="mb-8">
-                    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-2.5">
-                                <Settings size={24} className="text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">Credit Converter</h2>
-                                <p className="text-sm text-gray-600">Set conversion rate and calculate credits</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-5 border border-blue-200">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                        <Coins size={16} className="text-blue-600" />
-                                        Current Conversion Rate
-                                    </h3>
-                                    {!isEditingRate && (
-                                        <button
-                                            onClick={() => {
-                                                setIsEditingRate(true);
-                                                setTempRate(String(conversionRate));
-                                            }}
-                                            className="cursor-pointer text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
-                                        >
-                                            Edit
-                                        </button>
-                                    )}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-300">
+                        <button
+                            onClick={() => setIsConverterExpanded(!isConverterExpanded)}
+                            className="cursor-pointer w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-2.5">
+                                    <Settings size={24} className="text-white" />
                                 </div>
-
-                                {isEditingRate ? (
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm text-gray-600 whitespace-nowrap">₹</span>
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                value={tempRate}
-                                                onChange={(e) => setTempRate(e.target.value)}
-                                                className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                                placeholder="Enter rate"
-                                            />
-                                            <span className="text-sm text-gray-600 whitespace-nowrap">per credit</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={updateConversionRate}
-                                                className="cursor-pointer flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setIsEditingRate(false);
-                                                    setTempRate(String(conversionRate));
-                                                }}
-                                                className="cursor-pointer flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
+                                <div className="text-left">
+                                    <h2 className="text-xl font-bold text-gray-900">Credit Converter</h2>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-sm text-gray-600">Current Rate:</span>
+                                        <span className="text-lg font-bold text-blue-600">₹{conversionRate.toFixed(2)}</span>
+                                        <span className="text-sm text-gray-600">per credit</span>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500">
+                                    {isConverterExpanded ? 'Collapse' : 'Expand'}
+                                </span>
+                                {isConverterExpanded ? (
+                                    <ChevronUp size={20} className="text-gray-500" />
                                 ) : (
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-3xl font-bold text-gray-900">₹{conversionRate.toFixed(2)}</span>
-                                        <span className="text-gray-600">per credit</span>
-                                    </div>
+                                    <ChevronDown size={20} className="text-gray-500" />
                                 )}
                             </div>
+                        </button>
 
-                            <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-lg p-5 border border-green-200">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                                    <ArrowRight size={16} className="text-green-600" />
-                                    Calculate Conversion
-                                </h3>
-
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative flex-1">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                value={converterRupees}
-                                                onChange={(e) => {
-                                                    setConverterRupees(e.target.value);
-                                                    setConverterCredits('');
-                                                }}
-                                                className="cursor-text w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                                                placeholder="Rupees"
-                                            />
+                        <div
+                            className={`transition-all duration-300 ease-in-out ${
+                                isConverterExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                            } overflow-hidden`}
+                        >
+                            <div className="px-6 pb-6 border-t border-gray-200">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                                    <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-5 border border-blue-200">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                                <Coins size={16} className="text-blue-600" />
+                                                Update Conversion Rate
+                                            </h3>
+                                            {!isEditingRate && (
+                                                <button
+                                                    onClick={() => {
+                                                        setIsEditingRate(true);
+                                                        setTempRate(String(conversionRate));
+                                                    }}
+                                                    className="cursor-pointer text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                                                >
+                                                    Edit
+                                                </button>
+                                            )}
                                         </div>
-                                        <button
-                                            onClick={() => handleConvert(true)}
-                                            className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-                                        >
-                                            To Credits
-                                        </button>
+
+                                        {isEditingRate ? (
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-sm text-gray-600 whitespace-nowrap">₹</span>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={tempRate}
+                                                        onChange={(e) => setTempRate(e.target.value)}
+                                                        className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                        placeholder="Enter rate"
+                                                    />
+                                                    <span className="text-sm text-gray-600 whitespace-nowrap">per credit</span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={updateConversionRate}
+                                                        className="cursor-pointer flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                                    >
+                                                        Save
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsEditingRate(false);
+                                                            setTempRate(String(conversionRate));
+                                                        }}
+                                                        className="cursor-pointer flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-3xl font-bold text-gray-900">₹{conversionRate.toFixed(2)}</span>
+                                                <span className="text-gray-600">per credit</span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center justify-center">
-                                        <div className="h-px flex-1 bg-gray-300"></div>
-                                        <span className="px-3 text-xs text-gray-500 font-medium">OR</span>
-                                        <div className="h-px flex-1 bg-gray-300"></div>
-                                    </div>
+                                    <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-lg p-5 border border-green-200">
+                                        <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                            <ArrowRight size={16} className="text-green-600" />
+                                            Calculate Conversion
+                                        </h3>
 
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            value={converterCredits}
-                                            onChange={(e) => {
-                                                setConverterCredits(e.target.value);
-                                                setConverterRupees('');
-                                            }}
-                                            className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                                            placeholder="Credits"
-                                        />
-                                        <button
-                                            onClick={() => handleConvert(false)}
-                                            className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-                                        >
-                                            To Rupees
-                                        </button>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className="relative flex-1">
+                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={converterRupees}
+                                                        onChange={(e) => {
+                                                            setConverterRupees(e.target.value);
+                                                            setConverterCredits('');
+                                                        }}
+                                                        className="cursor-text w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                                                        placeholder="Rupees"
+                                                    />
+                                                </div>
+                                                <button
+                                                    onClick={() => handleConvert(true)}
+                                                    className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+                                                >
+                                                    To Credits
+                                                </button>
+                                            </div>
+
+                                            <div className="flex items-center justify-center">
+                                                <div className="h-px flex-1 bg-gray-300"></div>
+                                                <span className="px-3 text-xs text-gray-500 font-medium">OR</span>
+                                                <div className="h-px flex-1 bg-gray-300"></div>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={converterCredits}
+                                                    onChange={(e) => {
+                                                        setConverterCredits(e.target.value);
+                                                        setConverterRupees('');
+                                                    }}
+                                                    className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                                                    placeholder="Credits"
+                                                />
+                                                <button
+                                                    onClick={() => handleConvert(false)}
+                                                    className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+                                                >
+                                                    To Rupees
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
