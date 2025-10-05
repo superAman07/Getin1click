@@ -1,8 +1,8 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Loader as Loader2, Package, X, CreditCard as Edit2, Trash2, MoveVertical as MoreVertical, Coins, ArrowRight, Settings, ChevronDown, ChevronUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface CreditBundle {
     id: string;
@@ -24,6 +24,9 @@ export default function CreditBundlesClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBundle, setEditingBundle] = useState<CreditBundle | null>(null);
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isUpdatingRate, setIsUpdatingRate] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -39,17 +42,13 @@ export default function CreditBundlesClient() {
     const [converterCredits, setConverterCredits] = useState<string>('');
     const [isConverterExpanded, setIsConverterExpanded] = useState(false);
 
-    const showToast = (message: string, type: 'success' | 'error' | 'loading') => {
-        console.log(`[${type.toUpperCase()}] ${message}`);
-    };
-
     const fetchBundles = async () => {
         try {
             setLoading(true);
             const response = await axios.get('/api/admin/credit-bundles');
             setBundles(response.data);
         } catch (error) {
-            showToast('Failed to fetch credit bundles.', 'error');
+            toast.error('Failed to fetch credit bundles');
         } finally {
             setLoading(false);
         }
@@ -68,18 +67,22 @@ export default function CreditBundlesClient() {
     const updateConversionRate = async () => {
         const rate = parseFloat(tempRate);
         if (isNaN(rate) || rate <= 0) {
-            showToast('Please enter a valid conversion rate', 'error');
+            toast.error('Please enter a valid conversion rate');
             return;
         }
 
+        setIsUpdatingRate(true);
+        const toastId = toast.loading('Updating conversion rate...');
+
         try {
-            showToast('Updating conversion rate...', 'loading');
             await axios.post('/api/admin/configuration/credit_conversion_rate', { rupeesPerCredit: rate });
             setConversionRate(rate);
             setIsEditingRate(false);
-            showToast('Conversion rate updated successfully!', 'success');
+            toast.success('Conversion rate updated successfully!', { id: toastId });
         } catch (error) {
-            showToast('Failed to update conversion rate', 'error');
+            toast.error('Failed to update conversion rate', { id: toastId });
+        } finally {
+            setIsUpdatingRate(false);
         }
     };
 
@@ -128,7 +131,9 @@ export default function CreditBundlesClient() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        showToast(editingBundle ? 'Updating bundle...' : 'Creating bundle...', 'loading');
+
+        setIsSaving(true);
+        const toastId = toast.loading(editingBundle ? 'Updating bundle...' : 'Creating bundle...');
 
         const apiEndpoint = editingBundle
             ? `/api/admin/credit-bundles/${editingBundle.id}`
@@ -137,11 +142,13 @@ export default function CreditBundlesClient() {
 
         try {
             await axios[apiMethod](apiEndpoint, formData);
-            showToast(`Bundle ${editingBundle ? 'updated' : 'created'} successfully!`, 'success');
+            toast.success(`Bundle ${editingBundle ? 'updated' : 'created'} successfully!`, { id: toastId });
             handleCloseModal();
             fetchBundles();
         } catch (error) {
-            showToast('An error occurred.', 'error');
+            toast.error('An error occurred while saving the bundle', { id: toastId });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -154,6 +161,7 @@ export default function CreditBundlesClient() {
             setFormData ({...formData, price, credits: ''});
         }
     }
+
     const handleFormCreditsChange = (credits: string) => {
         const creditsValue = parseFloat(credits);
         if(!isNaN(creditsValue) && creditsValue>=0 && conversionRate > 0 ){
@@ -166,13 +174,17 @@ export default function CreditBundlesClient() {
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this bundle?')) {
-            showToast('Deleting bundle...', 'loading');
+            setIsDeleting(true);
+            const toastId = toast.loading('Deleting bundle...');
+
             try {
                 await axios.delete(`/api/admin/credit-bundles/${id}`);
-                showToast('Bundle deleted.', 'success');
+                toast.success('Bundle deleted successfully', { id: toastId });
                 fetchBundles();
             } catch (error) {
-                showToast('Failed to delete bundle.', 'error');
+                toast.error('Failed to delete bundle', { id: toastId });
+            } finally {
+                setIsDeleting(false);
             }
         }
     };
@@ -279,7 +291,8 @@ export default function CreditBundlesClient() {
                                                         step="0.01"
                                                         value={tempRate}
                                                         onChange={(e) => setTempRate(e.target.value)}
-                                                        className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                        disabled={isUpdatingRate}
+                                                        className="cursor-text flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                                                         placeholder="Enter rate"
                                                     />
                                                     <span className="text-sm text-gray-600 whitespace-nowrap">per credit</span>
@@ -287,8 +300,10 @@ export default function CreditBundlesClient() {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={updateConversionRate}
-                                                        className="cursor-pointer flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                                        disabled={isUpdatingRate}
+                                                        className="cursor-pointer flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                     >
+                                                        {isUpdatingRate && <Loader2 size={16} className="animate-spin" />}
                                                         Save
                                                     </button>
                                                     <button
@@ -296,7 +311,8 @@ export default function CreditBundlesClient() {
                                                             setIsEditingRate(false);
                                                             setTempRate(String(conversionRate));
                                                         }}
-                                                        className="cursor-pointer flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                                                        disabled={isUpdatingRate}
+                                                        className="cursor-pointer flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         Cancel
                                                     </button>
@@ -438,7 +454,8 @@ export default function CreditBundlesClient() {
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(bundle.id)}
-                                                            className="cursor-pointer w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                                            disabled={isDeleting}
+                                                            className="cursor-pointer w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         >
                                                             <Trash2 size={16} />
                                                             Delete Bundle
@@ -481,7 +498,8 @@ export default function CreditBundlesClient() {
                                 </h3>
                                 <button
                                     onClick={handleCloseModal}
-                                    className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    disabled={isSaving}
+                                    className="cursor-pointer p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <X size={20} className="text-gray-500" />
                                 </button>
@@ -496,7 +514,8 @@ export default function CreditBundlesClient() {
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                        disabled={isSaving}
+                                        className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="e.g., Starter Pack"
                                         required
                                     />
@@ -509,7 +528,8 @@ export default function CreditBundlesClient() {
                                     <textarea
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                                        disabled={isSaving}
+                                        className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                                         rows={3}
                                         placeholder="Describe this bundle..."
                                     ></textarea>
@@ -526,7 +546,8 @@ export default function CreditBundlesClient() {
                                                 type="number"
                                                 value={formData.price}
                                                 onChange={(e) => handleFormPriceChange(e.target.value)}
-                                                className="cursor-text w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                disabled={isSaving}
+                                                className="cursor-text w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                                 placeholder="0"
                                                 required
                                             />
@@ -541,7 +562,8 @@ export default function CreditBundlesClient() {
                                             type="number"
                                             value={formData.credits}
                                             onChange={(e) => handleFormCreditsChange(e.target.value)}
-                                            className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                            disabled={isSaving}
+                                            className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                             placeholder="0"
                                             required
                                         />
@@ -558,7 +580,8 @@ export default function CreditBundlesClient() {
                                     <button
                                         type="button"
                                         onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
-                                        className={`cursor-pointer relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                        disabled={isSaving}
+                                        className={`cursor-pointer relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                                             formData.isActive ? 'bg-blue-600' : 'bg-gray-300'
                                         }`}
                                     >
@@ -574,14 +597,17 @@ export default function CreditBundlesClient() {
                                     <button
                                         type="button"
                                         onClick={handleCloseModal}
-                                        className="cursor-pointer flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                                        disabled={isSaving}
+                                        className="cursor-pointer flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="cursor-pointer flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40"
+                                        disabled={isSaving}
+                                        className="cursor-pointer flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
+                                        {isSaving && <Loader2 size={18} className="animate-spin" />}
                                         {editingBundle ? 'Update' : 'Create'} Bundle
                                     </button>
                                 </div>
