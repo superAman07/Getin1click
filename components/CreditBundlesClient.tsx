@@ -144,6 +144,25 @@ export default function CreditBundlesClient() {
         }
     };
 
+    const handleFormPriceChange = (price: string) => {
+        const priceValue = parseFloat(price);
+        if(!isNaN(priceValue) && priceValue >= 0 && conversionRate > 0){
+            const newCredits = Math.round(priceValue / conversionRate)
+            setFormData ({...formData, price, credits: String(newCredits)});
+        }else {
+            setFormData ({...formData, price, credits: ''});
+        }
+    }
+    const handleFormCreditsChange = (credits: string) => {
+        const creditsValue = parseFloat(credits);
+        if(!isNaN(creditsValue) && creditsValue>=0 && conversionRate > 0 ){
+            const newPrice = creditsValue * conversionRate;
+            setFormData ({...formData, credits, price: String(newPrice)});
+        }else {
+            setFormData ({...formData, credits, price: ''});
+        }
+    }
+
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this bundle?')) {
             showToast('Deleting bundle...', 'loading');
@@ -443,7 +462,7 @@ export default function CreditBundlesClient() {
                             <form onSubmit={handleSave} className="p-6 space-y-5">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Bundle Name *
+                                        Bundle Name <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -471,14 +490,14 @@ export default function CreditBundlesClient() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Price (₹) *
+                                            Price (₹) <span className="text-red-500">*</span>
                                         </label>
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium pointer-events-none">₹</span>
                                             <input
                                                 type="number"
                                                 value={formData.price}
-                                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                                onChange={(e) => handleFormPriceChange(e.target.value)}
                                                 className="cursor-text w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                                 placeholder="0"
                                                 required
@@ -488,12 +507,12 @@ export default function CreditBundlesClient() {
 
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Credits *
+                                            Credits <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="number"
                                             value={formData.credits}
-                                            onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
+                                            onChange={(e) => handleFormCreditsChange(e.target.value)}
                                             className="cursor-text w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                             placeholder="0"
                                             required
