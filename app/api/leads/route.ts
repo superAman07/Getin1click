@@ -3,11 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
 
-// POST a new lead
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
-    // Ensure user is a logged-in customer
     if (!session?.user?.id || session.user.role !== 'CUSTOMER') {
         return new NextResponse('Unauthorized', { status: 401 });
     }
