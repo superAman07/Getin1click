@@ -27,8 +27,6 @@ export async function GET() {
             },
           },
         },
-        services: true,
-        photos: true,
       }
     });
 
