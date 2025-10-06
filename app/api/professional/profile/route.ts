@@ -13,6 +13,9 @@ export async function GET() {
     const profile = await prisma.professionalProfile.findUnique({
       where: { userId: session.user.id },
       include: {
+        services: true,
+        photos: true,
+        locations: true,
         user: {
           select: {
             name: true,
@@ -33,16 +36,14 @@ export async function GET() {
       return new NextResponse('Profile not found', { status: 404 });
     }
 
-    // Get all questions for the services this professional offers
     const serviceIds = profile.services.map(s => s.id);
     const serviceQuestions = await prisma.question.findMany({
       where: {
         serviceId: { in: serviceIds },
-        type: 'PROFILE_FAQ', // Fetch the Q&A questions
+        type: 'PROFILE_FAQ',
       },
     });
 
-    // Combine profile data with the questions for the Q&A section
     const responseData = {
       ...profile,
       qas: serviceQuestions,
@@ -55,7 +56,6 @@ export async function GET() {
   }
 }
 
-// PUT handler to update the professional's profile
 export async function PUT(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -97,13 +97,11 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedProfile = await prisma.$transaction(async (tx) => {
-      // 1. Update the main profile with only the provided data
       const profile = await tx.professionalProfile.update({
         where: { userId: session.user.id },
         data: dataToUpdate,
       });
 
-      // 2. Upsert the answers for the Q&A section (this logic is already correct)
       if (body.qas) {
         for (const [questionId, answerText] of Object.entries(body.qas)) {
           if (typeof answerText === 'string' && answerText.trim() !== '') {
