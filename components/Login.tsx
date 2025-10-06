@@ -64,9 +64,11 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
     if (status === 'authenticated') {
       if (session?.user?.role === 'ADMIN') {
         router.push('/admin');
-      } else if (session?.user?.role === 'PROFESSIONAL'){
+      } else if (session?.user?.role === 'PROFESSIONAL') {
         router.push('/professional')
-      }else {
+      } else if (session?.user?.role === 'CUSTOMER') { // <-- Add this block
+        router.push('/customer/dashboard');
+      } else {
         router.push('/');
       }
     }

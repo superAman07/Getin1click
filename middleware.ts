@@ -28,11 +28,14 @@ export async function middleware(req: NextRequest) {
                 return NextResponse.redirect(new URL('/admin', req.url));
             }
         } else if (token.role === 'CUSTOMER') {
-            if (isAuthPage) {
-                return NextResponse.redirect(new URL('/', req.url));
+            if (pathname === '/') {
+                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
             }
-            if (isAdminDashboard) {
-                return NextResponse.redirect(new URL('/', req.url));
+            if (isAuthPage) {
+                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
+            }
+            if (isAdminDashboard || isProfessionalRoute) {
+                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
             }
         }
     }
@@ -44,5 +47,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/professional/:path*', '/auth/:path*'],
+    matcher: ['/admin/:path*', '/professional/:path*', '/customer/:path*', '/auth/:path*'],
 };
