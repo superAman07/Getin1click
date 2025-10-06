@@ -53,7 +53,7 @@ export default function HeroPage() {
   };
 
   const handleSelectService = (serviceId: string) => {
-    router.push(`/post-a-job?serviceId=${serviceId}`);
+    router.push(`/customer/post-a-job?serviceId=${serviceId}`);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
