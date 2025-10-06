@@ -188,6 +188,7 @@ export default function ProfessionalOnboarding() {
 
     const handleFinishOnboarding = async () => {
         setIsLoading(true);
+        toast.loading('Finalizing your setup...');
         try {
             const payload = {
                 companyName,
@@ -209,6 +210,7 @@ export default function ProfessionalOnboarding() {
             console.error("Onboarding finish error:", error);
             toast.error('Could not finalize your setup. Please try again.');
         } finally {
+            toast.dismiss();
             setIsLoading(false);
         }
     };
