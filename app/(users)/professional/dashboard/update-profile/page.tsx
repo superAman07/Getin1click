@@ -764,7 +764,7 @@ export default memo(function SettingsPage() {
                       className="w-full mt-1 rounded-md border border-[#e5e7eb] bg-[#ffffff] px-3 py-2 text-sm text-[#0f172a] outline-none transition-colors duration-150 focus:border-[#2563eb]"
                     />
                   </div>
-                  <button onClick={addLocation} disabled={isPincodeLoading} className="rounded-md bg-[#2563eb] px-4 py-2 text-sm text-[#ffffff] transition-transform duration-150 hover:brightness-110 active:scale-[0.98] disabled:opacity-50">
+                  <button onClick={addLocation} disabled={isPincodeLoading} className="rounded-md bg-[#2563eb] px-4 py-2 cursor-pointer text-sm text-[#ffffff] transition-transform duration-150 hover:brightness-110 active:scale-[0.98] disabled:opacity-50">
                     {isPincodeLoading ? <IconSpinner /> : 'Add'}
                   </button>
                 </div>
@@ -777,8 +777,8 @@ export default memo(function SettingsPage() {
                         {loc.isPrimary && <span className="ml-2 text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Primary</span>}
                       </div>
                       <div className="flex items-center gap-2">
-                        {!loc.isPrimary && <button onClick={() => setPrimaryLocation(loc.postcode)} className="text-xs text-blue-600 hover:underline">Make Primary</button>}
-                        <button onClick={() => removeLocation(loc.postcode)} className="text-red-500 hover:text-red-700">
+                        {!loc.isPrimary && <button onClick={() => setPrimaryLocation(loc.postcode)} className="text-xs text-blue-600 hover:underline cursor-pointer">Make Primary</button>}
+                        <button onClick={() => removeLocation(loc.postcode)} className="text-red-500 hover:text-red-700 cursor-pointer">
                           <X size={16} />
                         </button>
                       </div>
