@@ -11,7 +11,6 @@ export async function GET(request: Request) {
     }
 
     try {
-        // Find services that match the search query and have active professionals in the given postcode.
         const availableServices = await prisma.service.findMany({
             where: {
                 name: {
@@ -19,14 +18,16 @@ export async function GET(request: Request) {
                     mode: 'insensitive',
                 },
                 isActive: true,
-                // Check if there is at least one professional profile linked to this service
-                // that also has a matching postcode.
                 professionals: {
                     some: {
-                        postcode: {
-                            equals: postcode,
-                            mode: 'insensitive',
-                        },
+                        locations: {
+                            some: {
+                                postcode: {
+                                    equals: postcode,
+                                    mode: 'insensitive',
+                                },
+                            }
+                        }
                     },
                 },
             },

@@ -33,6 +33,7 @@ export interface ProfessionalProfileData {
   };
   services: Service[];
   photos: ProfilePhoto[];
+  locations: { id: string; postcode: string; locationName: string; isPrimary: boolean }[];
   qas: { id: string; text: string }[];
   user: {
     name?: string;

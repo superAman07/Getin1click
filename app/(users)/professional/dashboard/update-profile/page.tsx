@@ -6,6 +6,14 @@ import type React from "react"
 import { useEffect, useMemo, useState, memo } from "react"
 import toast from "react-hot-toast"
 import type { ProfessionalProfileData, ProfilePhoto, QAItem, Service } from "@/types/profileTypes"
+import { X } from "lucide-react"
+
+interface LocationItem {
+  id: string;
+  postcode: string;
+  locationName: string;
+  isPrimary: boolean;
+}
 
 const IconChevron = ({ open }: { open: boolean }) => (
   <svg
@@ -135,6 +143,10 @@ export default memo(function SettingsPage() {
   const [instagram, setInstagram] = useState("")
   const [qas, setQAs] = useState<QAItem[]>([])
 
+  const [locations, setLocations] = useState<LocationItem[]>([]);
+  const [newPostcode, setNewPostcode] = useState("");
+  const [isPincodeLoading, setIsPincodeLoading] = useState(false);
+
   const [allServices, setAllServices] = useState<Service[]>([])
   const [serviceQuery, setServiceQuery] = useState("")
 
@@ -173,6 +185,7 @@ export default memo(function SettingsPage() {
           twitter: data.socialMedia?.twitter || "",
           facebook: data.socialMedia?.facebook || "",
           instagram: data.socialMedia?.instagram || "",
+          locations: data.locations || [],
           qas: data.qas.map(q => {
             const existingAnswer = data.user.professionalAnswers.find(a => a.questionId === q.id);
             return { id: q.id, question: q.text, answer: existingAnswer?.answerText || "" };
@@ -203,6 +216,7 @@ export default memo(function SettingsPage() {
         setTwitter(loadedState.twitter);
         setFacebook(loadedState.facebook);
         setInstagram(loadedState.instagram);
+        setLocations(loadedState.locations);
         setQAs(loadedState.qas);
       } catch (error) {
         toast.error("Failed to load page data.")
@@ -373,6 +387,42 @@ export default memo(function SettingsPage() {
     }
   }
 
+  const addLocation = async () => {
+    if (newPostcode.length !== 6 || locations.some(l => l.postcode === newPostcode)) {
+      toast.error("Enter a valid, unique 6-digit postcode.");
+      return;
+    }
+    setIsPincodeLoading(true);
+    try {
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${newPostcode}`);
+      if (response.data && response.data[0].Status === 'Success') {
+        const postOffice = response.data[0].PostOffice[0];
+        const locationName = `${postOffice.District}, ${postOffice.State}`;
+        setLocations(prev => [...prev, {
+          id: `new-${Date.now()}`,
+          postcode: newPostcode,
+          locationName,
+          isPrimary: prev.length === 0 // Make first one primary
+        }]);
+        setNewPostcode("");
+      } else {
+        toast.error('Invalid Pincode.');
+      }
+    } catch (error) {
+      toast.error('Failed to verify pincode.');
+    } finally {
+      setIsPincodeLoading(false);
+    }
+  };
+
+  const removeLocation = (postcode: string) => {
+    setLocations(prev => prev.filter(l => l.postcode !== postcode));
+  };
+
+  const setPrimaryLocation = (postcode: string) => {
+    setLocations(prev => prev.map(l => ({ ...l, isPrimary: l.postcode === postcode })));
+  };
+
   const onSave = async () => {
     setIsSaving(true);
     const toastId = toast.loading("Saving your profile...")
@@ -393,6 +443,7 @@ export default memo(function SettingsPage() {
           facebook: facebook,
           instagram: instagram,
         },
+        locations,
         photos,
         // Convert answers array back to object for API
         qas: qas.reduce(
@@ -684,6 +735,56 @@ export default memo(function SettingsPage() {
                       {aboutCompany.length}/{aboutCompanyLimit}
                     </div>
                   </div>
+                </div>
+              </Card>
+            </div>
+          )}
+        </section>
+
+        <section className="mb-5">
+          <SectionHeader
+            title="Service Areas"
+            open={open.locations}
+            onToggle={() => toggle("locations")}
+            status={locations.length > 0 ? "complete" : "incomplete"}
+          />
+          {open.locations && (
+            <div className="mt-3">
+              <Card>
+                <h3 className="mb-3 text-[15px] font-medium text-[#0f172a]">Your Postcodes</h3>
+                <div className="flex items-end gap-2 mb-4">
+                  <div className="flex-grow">
+                    <label htmlFor="postcode-input" className="text-sm text-[#0f172a]">Add Postcode</label>
+                    <input
+                      id="postcode-input"
+                      value={newPostcode}
+                      onChange={(e) => setNewPostcode(e.target.value)}
+                      maxLength={6}
+                      placeholder="Enter 6-digit postcode"
+                      className="w-full mt-1 rounded-md border border-[#e5e7eb] bg-[#ffffff] px-3 py-2 text-sm text-[#0f172a] outline-none transition-colors duration-150 focus:border-[#2563eb]"
+                    />
+                  </div>
+                  <button onClick={addLocation} disabled={isPincodeLoading} className="rounded-md bg-[#2563eb] px-4 py-2 text-sm text-[#ffffff] transition-transform duration-150 hover:brightness-110 active:scale-[0.98] disabled:opacity-50">
+                    {isPincodeLoading ? <IconSpinner /> : 'Add'}
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {locations.map(loc => (
+                    <div key={loc.postcode} className="flex items-center justify-between p-2 rounded-md bg-slate-50">
+                      <div>
+                        <span className="font-medium">{loc.postcode}</span>
+                        <span className="text-sm text-slate-600 ml-2">{loc.locationName}</span>
+                        {loc.isPrimary && <span className="ml-2 text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Primary</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!loc.isPrimary && <button onClick={() => setPrimaryLocation(loc.postcode)} className="text-xs text-blue-600 hover:underline">Make Primary</button>}
+                        <button onClick={() => removeLocation(loc.postcode)} className="text-red-500 hover:text-red-700">
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {locations.length === 0 && <p className="text-sm text-slate-500 text-center py-2">Add postcodes where you provide services.</p>}
                 </div>
               </Card>
             </div>

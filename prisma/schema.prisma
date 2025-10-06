@@ -88,8 +88,9 @@ model ProfessionalProfile {
   companyPhoneNumber String?
   websiteUrl         String?
 
-  postcode String?
-  location String?
+  // postcode String?
+  // location String?
+  locations ProfessionalLocation[]
 
   companySize CompanySize? @default(SOLO)
   yearFounded Int?
@@ -105,6 +106,18 @@ model ProfessionalProfile {
   reviews     Review[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model ProfessionalLocation {
+  id           String  @id @default(cuid())
+  postcode     String
+  locationName String
+  isPrimary    Boolean @default(false)
+
+  profileId String
+  profile   ProfessionalProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, postcode])
 }
 
 model ProfilePhoto {

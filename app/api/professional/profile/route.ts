@@ -12,7 +12,7 @@ export async function GET() {
   try {
     const profile = await prisma.professionalProfile.findUnique({
       where: { userId: session.user.id },
-      include : {
+      include: {
         user: {
           select: {
             name: true,
@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    
+
     const dataToUpdate: any = {};
     if (body.companyName !== undefined) dataToUpdate.companyName = body.companyName;
     if (body.companyLogoUrl !== undefined) dataToUpdate.companyLogoUrl = body.companyLogoUrl;
@@ -75,6 +75,16 @@ export async function PUT(request: NextRequest) {
     if (body.companySize !== undefined) dataToUpdate.companySize = body.companySize;
     if (body.yearFounded !== undefined) dataToUpdate.yearFounded = body.yearFounded;
     if (body.bio !== undefined) dataToUpdate.bio = body.bio;
+    if (body.locations !== undefined) {
+      dataToUpdate.locations = {
+        deleteMany: {},
+        create: body.locations.map((loc: { postcode: string; locationName: string; isPrimary: boolean }) => ({
+          postcode: loc.postcode,
+          locationName: loc.locationName,
+          isPrimary: loc.isPrimary,
+        })),
+      };
+    }
     if (body.socialMedia !== undefined) dataToUpdate.socialMedia = body.socialMedia;
     if (body.services !== undefined) {
       dataToUpdate.services = { set: body.services.map((s: { id: string }) => ({ id: s.id })) };
@@ -110,7 +120,7 @@ export async function PUT(request: NextRequest) {
       maxWait: 10000,
       timeout: 30000,
     }
-  );
+    );
 
     return NextResponse.json(updatedProfile);
   } catch (error) {
@@ -119,7 +129,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -149,21 +159,32 @@ export async function POST(request: Request) {
         update: {
           companyName: companyName,
           phoneNumber: phoneNumber,
-          postcode: pincode,
-          location: locationName,
           services: {
             set: selectedServiceIds.map((id: string) => ({ id })), // Use `set` to overwrite existing services
           },
+          locations: {
+            deleteMany: {},
+            create: {
+              postcode: pincode,
+              locationName: locationName,
+              isPrimary: true,
+            }
+          }
         },
         create: {
           userId: session.user.id,
           companyName: companyName,
           phoneNumber: phoneNumber,
-          postcode: pincode,
-          location: locationName,
           services: {
             connect: selectedServiceIds.map((id: string) => ({ id })),
           },
+          locations: {
+            create: {
+              postcode: pincode,
+              locationName: locationName,
+              isPrimary: true,
+            }
+          }
         },
       });
 
