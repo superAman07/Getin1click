@@ -285,7 +285,7 @@ export default function HeroPage() {
                 className="relative w-72 sm:w-96 h-48 sm:h-64 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 group cursor-pointer"
               >
                 <Image
-                  src={service.imageUrl || ""}
+                  src={service.imageUrl || "/placeholder.svg"}
                   alt={service.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -339,7 +339,7 @@ export default function HeroPage() {
                 >
                   <div className="relative w-full h-56 overflow-hidden">
                     <Image
-                      src={service.imageUrl || ""}
+                      src={service.imageUrl || "/placeholder.svg"}
                       alt={service.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
