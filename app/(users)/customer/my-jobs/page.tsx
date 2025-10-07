@@ -83,6 +83,27 @@ export default function MyJobsPage() {
         }
     };
 
+    const handleModalPincodeChange = async (newPincode: string) => {
+        if (!editingLead) return;
+        const currentLocationName = editingLead.location.split(', ')[1] || '';
+        setEditingLead({ ...editingLead, location: `${newPincode}, ${currentLocationName}` });
+
+        if (newPincode.length === 6) {
+            try {
+                const res = await axios.get(`https://api.postalpincode.in/pincode/${newPincode}`);
+                if (res.data && res.data[0].Status === 'Success') {
+                    const postOffice = res.data[0].PostOffice[0];
+                    const locationName = `${postOffice.District}, ${postOffice.State}`;
+                    setEditingLead({ ...editingLead, location: `${newPincode}, ${locationName}` });
+                } else {
+                    setEditingLead({ ...editingLead, location: `${newPincode}, Invalid Pincode` });
+                }
+            } catch (error) {
+                setEditingLead({ ...editingLead, location: `${newPincode}, Could not verify` });
+            }
+        }
+    };
+
     const handleEditSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!editingLead) return;
@@ -245,11 +266,10 @@ export default function MyJobsPage() {
 
                                     <div className="mt-6 pt-5 border-t border-gray-100 flex flex-wrap items-center gap-3">
                                         <span
-                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${
-                                                lead.status === 'OPEN'
+                                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${lead.status === 'OPEN'
                                                     ? 'bg-green-100 text-green-800 border border-green-200'
                                                     : 'bg-gray-100 text-gray-800 border border-gray-200'
-                                            }`}
+                                                }`}
                                         >
                                             {lead.status}
                                         </span>
@@ -338,15 +358,15 @@ export default function MyJobsPage() {
                                     Location
                                 </label>
                                 <div className="relative">
-                                    <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                     <input
                                         type="text"
-                                        value={editingLead.location}
-                                        onChange={e => setEditingLead({ ...editingLead, location: e.target.value })}
-                                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-medium"
-                                        placeholder="City, State"
+                                        value={editingLead.location.split(',')[0].trim()}
+                                        onChange={e => handleModalPincodeChange(e.target.value)}
+                                        maxLength={6}
+                                        className="w-full mt-1 p-2 border rounded"
                                         required
                                     />
+                                    <p className="text-xs mt-1 text-gray-500">{editingLead.location.split(', ').slice(1).join(', ')}</p>
                                 </div>
                             </div>
 
