@@ -3,6 +3,32 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
 
+export async function GET(request: Request) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id || session.user.role !== 'CUSTOMER') {
+        return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    try {
+        const leads = await prisma.lead.findMany({
+            where: { customerId: session.user.id },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                service: {
+                    select: { name: true }
+                },
+                _count: {
+                    select: { purchasedBy: true }
+                }
+            }
+        });
+        return NextResponse.json(leads);
+    } catch (error) {
+        console.error("Error fetching customer leads:", error);
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
+}
+
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
@@ -12,9 +38,9 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { title, description, location, budget, urgency, serviceId } = body;
+        const { title, description, location, budget, urgency, serviceId, answers } = body;
 
-        if (!title || !description || !location || !urgency || !serviceId) {
+        if (!title || !description || !location || !budget || !urgency || !serviceId) { 
             return new NextResponse('Missing required fields', { status: 400 });
         }
 
@@ -33,6 +59,7 @@ export async function POST(request: Request) {
                 urgency,
                 serviceId,
                 creditCost,
+                answers,
                 customerId: session.user.id,
                 status: 'OPEN',
             },

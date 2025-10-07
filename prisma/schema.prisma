@@ -255,6 +255,7 @@ model Lead {
   urgency     String // Could be an enum: HIGH, MEDIUM, LOW
   creditCost  Int
   status      String   @default("OPEN") // OPEN, ASSIGNED, COMPLETED
+  answers     Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
