@@ -57,7 +57,7 @@ model CreditPackage {
   id             String           @id @default(cuid())
   name           String
   description    String?
-  credits        Int // How many credits this package gives
+  credits        Int 
   price          Float // The price in your currency
   isActive       Boolean          @default(true)
   createdAt      DateTime         @default(now())
@@ -235,15 +235,16 @@ model Review {
 }
 
 model CreditBundle {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  credits     Int
-  currency    String   @default("INR")
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  credits      Int
+  currency     String        @default("INR")
+  isActive     Boolean       @default(true)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Lead {
@@ -268,20 +269,35 @@ model Lead {
   purchasedBy User[] @relation("PurchasedLeads")
 }
 
-enum TransactionType {
-  PURCHASE // Buying credits
-  SPEND // Spending credits on a lead
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentProvider {
+  PHONEPE
+  STRIPE
+  RAZORPAY
 }
 
 model Transaction {
-  id             String          @id @default(cuid())
-  amountCredits  Int // Can be positive (purchase) or negative (spend)
-  amountCurrency Float? // Price paid for the credits
-  type           TransactionType
-  description    String
-  createdAt      DateTime        @default(now())
-  professionalId String
-  professional   User            @relation(fields: [professionalId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  bundleId String?
+  bundle   CreditBundle? @relation(fields: [bundleId], references: [id])
+
+  amount  Float
+  credits Int
+
+  status                TransactionStatus @default(PENDING)
+  provider              PaymentProvider
+  merchantTransactionId String            @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Configuration {

@@ -90,8 +90,8 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
         toast.error(result.error, { id: toastId });
       } else {
         toast.success('Logged in successfully!', { id: toastId });
-        router.push("/")
-        router.refresh()
+        // router.push("/")
+        // router.refresh()
       }
     } catch (err) {
       toast.error('An unexpected error occurred.', { id: toastId });

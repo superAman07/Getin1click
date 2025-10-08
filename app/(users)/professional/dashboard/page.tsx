@@ -2,19 +2,40 @@
 
 import { useEffect, useRef, useState } from "react"
 import { TrendingUp, Users, DollarSign, Star, ArrowRight, Zap, Target, Award } from "lucide-react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import toast from "react-hot-toast"
 import Link from "next/link"
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
 
 const Index = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { update: updateSession } = useSession();
   const [mounted, setMounted] = useState(false)
   const [counters, setCounters] = useState({ leads: 0, responses: 0, revenue: 0, rating: 0 })
   const rafRef = useRef<number | null>(null)
 
-  // Smooth 60fps counters using requestAnimationFrame
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment');
+    if (paymentStatus === 'success') {
+      const bundleName = searchParams.get('bundle_name');
+      const creditsAdded = searchParams.get('credits_added');
+      
+      toast.success(`Purchase successful! ${creditsAdded} credits for "${bundleName}" have been added.`);
+      
+      updateSession();
+    
+      setTimeout(() => {
+        router.replace('/professional/dashboard', { scroll: false });
+      }, 500);
+    }
+  }, [searchParams, router, updateSession]);
+  
   useEffect(() => {
     const targets = { leads: 127, responses: 89, revenue: 15420, rating: 4.8 }
-    const duration = 1200 // ms for a snappy, smooth animation
+    const duration = 1200
 
     const start = performance.now()
     const tick = (now: number) => {
