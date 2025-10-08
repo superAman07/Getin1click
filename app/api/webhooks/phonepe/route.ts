@@ -39,10 +39,11 @@ export async function POST(request: NextRequest) {
             }
 
             await prisma.$transaction(async (tx) => {
-                await tx.professionalProfile.update({
+                const updatedProfile = await tx.professionalProfile.update({
                     where: { userId: transaction.userId },
                     data: { credits: { increment: bundle.credits } },
                 });
+                console.log(`[WEBHOOK] User ${transaction.userId} credits updated to: ${updatedProfile.credits}`);
                 await tx.transaction.update({
                     where: { id: transaction.id },
                     data: { status: 'SUCCESS' },

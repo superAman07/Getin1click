@@ -22,17 +22,18 @@ const Index = () => {
     if (paymentStatus === 'success') {
       const bundleName = searchParams.get('bundle_name');
       const creditsAdded = searchParams.get('credits_added');
-      
+
       toast.success(`Purchase successful! ${creditsAdded} credits for "${bundleName}" have been added.`);
-      
-      updateSession();
-    
-      setTimeout(() => {
-        router.replace('/professional/dashboard', { scroll: false });
-      }, 500);
+
+      const sessionUpdateTimeout = setTimeout(() => {
+        updateSession({ creditsUpdated: true });
+      }, 1500);
+
+      router.replace('/professional/dashboard', { scroll: false });
+      return () => clearTimeout(sessionUpdateTimeout);
     }
   }, [searchParams, router, updateSession]);
-  
+
   useEffect(() => {
     const targets = { leads: 127, responses: 89, revenue: 15420, rating: 4.8 }
     const duration = 1200

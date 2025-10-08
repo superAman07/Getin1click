@@ -47,6 +47,8 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
+      console.log(`[JWT CALLBACK] Trigger: ${trigger}`);
+
       if (user) {
         token.sub = user.id;
         token.role = (user as any).role;
@@ -69,7 +71,11 @@ export const authOptions: AuthOptions = {
           token.onboardingComplete = dbUserWithProfile.onboardingComplete;
           token.role = dbUserWithProfile.role;
           // Get credits from the profile, defaulting to 0 if no profile exists.
-          token.credits = dbUserWithProfile.professionalProfile?.credits ?? 0;
+          const newCredits = dbUserWithProfile.professionalProfile?.credits ?? 0;
+          console.log(`[JWT CALLBACK] Fetched credits from DB: ${token.credits}`);
+          if (newCredits > (token.credits ?? 0) || trigger !== 'update' || !session?.creditsUpdated) {
+            token.credits = newCredits;
+          }
         }
       }
 
@@ -81,6 +87,8 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role;
         session.user.onboardingComplete = token.onboardingComplete;
         session.user.credits = token.credits;
+        console.log(`[SESSION CALLBACK] Final session credits: ${session.user.credits}`);
+
       }
       return session;
     },
