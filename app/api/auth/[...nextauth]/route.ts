@@ -46,35 +46,30 @@ export const authOptions: AuthOptions = {
     maxAge: 24 * 60 * 60,
   },
   callbacks: {
-    // session({ session, token }) {
-    //   if (session.user && token.sub) {
-    //     session.user.id = token.sub as string;
-    //     session.user.role = (token as JWT).role ?? null;
-    //   }
-    //   return session;
-    // },
-    // jwt({ token, user }) {
-    //   if (user) {
-    //     token.role = (user as any).role ?? token.role;
-    //     token.onboardingComplete = (user as any).onboardingComplete;
-    //   }
-    //   return token;
     async jwt({ token, user, trigger, session }) {
-      // 1. On initial sign-in, persist the user data to the token.
       if (user) {
         token.sub = user.id;
         token.role = (user as any).role;
         token.onboardingComplete = (user as any).onboardingComplete;
       }
 
-      // 2. When updateSession() is called from the client, this runs.
-      if (trigger === "update") {
-        // Refetch the user from the database to get the latest data.
-        const dbUser = await prisma.user.findUnique({ where: { id: token.sub } });
-        if (dbUser) {
-          // Update the token with the fresh data.
-          token.role = dbUser.role;
-          token.onboardingComplete = dbUser.onboardingComplete;
+      if (token.sub) {
+        const dbUserWithProfile = await prisma.user.findUnique({
+          where: { id: token.sub },
+          include: {
+            professionalProfile: {
+              select: {
+                credits: true,
+              },
+            },
+          },
+        });
+
+        if (dbUserWithProfile) {
+          token.onboardingComplete = dbUserWithProfile.onboardingComplete;
+          token.role = dbUserWithProfile.role;
+          // Get credits from the profile, defaulting to 0 if no profile exists.
+          token.credits = dbUserWithProfile.professionalProfile?.credits ?? 0;
         }
       }
 
@@ -85,6 +80,7 @@ export const authOptions: AuthOptions = {
         session.user.id = token.sub as string;
         session.user.role = token.role;
         session.user.onboardingComplete = token.onboardingComplete;
+        session.user.credits = token.credits;
       }
       return session;
     },

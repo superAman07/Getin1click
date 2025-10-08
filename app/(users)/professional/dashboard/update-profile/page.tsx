@@ -274,47 +274,38 @@ export default memo(function SettingsPage() {
   }, [serviceQuery, allServices, selectedServices])
 
   const completion = useMemo(() => {
-    // ... (completion logic is now correct because `yourName` is defined) ...
-    let total = 0,
-      done = 0
-    const add = (cond: boolean) => {
-      total++
-      if (cond) done++
-    }
-    add(companyName.trim().length > 1)
-    add(!!companyLogo)
-    add(yourName.trim().length > 0)
-    add(!!profilePic)
-    add(companyEmail.trim().length > 3)
-    add(companyPhone.trim().length > 6)
-    add(website.trim().length > 5)
-    add(companySize.trim().length > 0)
-    add(!!yearInBusiness)
-    add(aboutCompany.trim().length > 50)
-    add(selectedServices.length > 0)
-    add(photos.length > 0)
-    add([linkedIn, twitter, facebook, instagram].some((v) => v.trim().length > 0))
-    add(qas.some((q) => q.answer.trim().length > 0))
-    return Math.min(100, Math.round((done / total) * 100) || 0)
-  }, [
-    aboutCompany,
-    companyEmail,
-    companyLogo,
-    companyName,
-    companyPhone,
-    companySize,
-    photos.length,
-    profilePic,
-    qas,
-    selectedServices.length,
-    website,
-    yearInBusiness,
-    yourName,
-    linkedIn,
-    twitter,
-    facebook,
-    instagram,
-  ])
+    const coreRequirements = [
+      { weight: 20, filled: !!profilePic },
+      { weight: 20, filled: aboutCompany.trim().length > 50 },
+      { weight: 20, filled: selectedServices.length > 0 },
+      { weight: 20, filled: locations.length > 0 },
+      { weight: 20, filled: companyPhone.trim().length > 6 },
+    ];
+
+    const bonusPoints = [
+      { weight: 5, filled: photos.length > 0 },
+      { weight: 5, filled: !!companyLogo },
+      { weight: 5, filled: !!website.trim() },
+      { weight: 5, filled: [linkedIn, twitter, facebook, instagram].some(v => v.trim()) },
+      { weight: 5, filled: qas.every(q => q.answer.trim().length > 10) },
+    ];
+
+    const totalCoreWeight = coreRequirements.reduce((sum, item) => sum + item.weight, 0);
+    const achievedCoreWeight = coreRequirements.reduce((sum, item) => sum + (item.filled ? item.weight : 0), 0);
+    
+    // You are "active" if you meet all core requirements
+    const isReady = achievedCoreWeight === totalCoreWeight;
+
+    // For the progress bar, we can add bonus points
+    const totalBonusWeight = bonusPoints.reduce((sum, item) => sum + item.weight, 0);
+    const achievedBonusWeight = bonusPoints.reduce((sum, item) => sum + (item.filled ? item.weight : 0), 0);
+
+    const totalPossibleWeight = totalCoreWeight + totalBonusWeight;
+    const totalAchievedWeight = achievedCoreWeight + achievedBonusWeight;
+
+    return Math.round((totalAchievedWeight / totalPossibleWeight) * 100);
+
+  }, [profilePic, aboutCompany, selectedServices.length, locations.length, companyPhone, photos.length, companyLogo, website, linkedIn, twitter, facebook, instagram, qas]);
 
   // Handlers
   const toggle = (key: keyof typeof open) => setOpen((s) => ({ ...s, [key]: !s[key] }))
@@ -543,9 +534,9 @@ export default memo(function SettingsPage() {
             open={open.about}
             onToggle={() => toggle("about")}
             status={
-              companyName && companyEmail && companyPhone && companySize && aboutCompany.length > 50
+              companyName.trim() && companyEmail.trim() && companyPhone.trim() && aboutCompany.length > 30
                 ? "complete"
-                : aboutCompany.length > 0 || companyName || companyEmail || companyPhone
+                : aboutCompany.length > 0 || companyName.trim() || companyEmail.trim() || companyPhone.trim()
                   ? "in-progress"
                   : "incomplete"
             }
