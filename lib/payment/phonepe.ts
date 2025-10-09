@@ -9,6 +9,7 @@ const PHONEPE_SALT_INDEX = 1;
 const PHONEPE_HOST_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox"; // UAT/Test URL
 const APP_BASE_URL = process.env.NEXT_PUBLIC_APP_URL!;
 const PHONEPE_CALLBACK_URL = `${APP_BASE_URL}/api/webhooks/phonepe`;
+const RETURN_URL = `${APP_BASE_URL}/api/professional/wallet/return`;
 
 interface PaymentRequestPayload {
     merchantId: string;
@@ -54,7 +55,7 @@ export async function initiatePhonePePayment(userId: string, bundleId: string) {
             merchantTransactionId,
             merchantUserId: userId,
             amount: amountInPaise,
-            redirectUrl: `${APP_BASE_URL}/api/professional/wallet/return?txId=${merchantTransactionId}`,
+            redirectUrl: `${RETURN_URL}?txId=${merchantTransactionId}`,
             redirectMode: 'POST',
             callbackUrl: PHONEPE_CALLBACK_URL,
             mobileNumber: '9999999999',

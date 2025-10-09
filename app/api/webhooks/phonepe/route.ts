@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto-js';
+import crypto from 'crypto';
 import prisma from '@/lib/db';
 
 const PHONEPE_SALT_KEY = process.env.PHONEPE_CLIENT_SECRET!;
@@ -8,17 +8,31 @@ const PHONEPE_SALT_INDEX = 1;
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
+        console.log("[WEBHOOK] Received payload:", JSON.stringify(body));
+
         const base64Response = body.response;
         const xVerifyHeader = request.headers.get('X-VERIFY') || '';
 
-        const calculatedChecksum = crypto.SHA256(base64Response + PHONEPE_SALT_KEY).toString() + '###' + PHONEPE_SALT_INDEX;
+        console.log("[WEBHOOK] Headers:", JSON.stringify(Object.fromEntries(request.headers.entries())));
+
+        const stringToHash = base64Response + PHONEPE_SALT_KEY;
+        const calculatedChecksum = crypto.createHash('sha256').update(stringToHash).digest('hex') + '###' + PHONEPE_SALT_INDEX;
+
+        console.log("[WEBHOOK] Calculated checksum:", calculatedChecksum);
+        console.log("[WEBHOOK] Received X-VERIFY:", xVerifyHeader);
+
         if (xVerifyHeader !== calculatedChecksum) {
             console.error("PhonePe Webhook: Checksum mismatch.");
             return new NextResponse('Checksum mismatch', { status: 400 });
         }
 
         const decodedResponse = JSON.parse(Buffer.from(base64Response, 'base64').toString());
-        const { code, merchantTransactionId } = decodedResponse.data;
+        console.log("[WEBHOOK] Decoded response:", JSON.stringify(decodedResponse));
+
+        const code = decodedResponse.code;
+        const merchantTransactionId = decodedResponse.data.merchantTransactionId; console.log("[WEBHOOK] Payment code:", code);
+        console.log("[WEBHOOK] Payment code:", code);
+        console.log("[WEBHOOK] merchantTransactionId:", merchantTransactionId);
 
         const transaction = await prisma.transaction.findUnique({
             where: { merchantTransactionId },
@@ -30,7 +44,7 @@ export async function POST(request: NextRequest) {
             return new NextResponse('Transaction not found', { status: 404 });
         }
 
-        if (code === 'PAYMENT_SUCCESS' && transaction.status === 'PENDING') {
+        if ((code === 'PAYMENT_SUCCESS' || code === 'SUCCESS' || code?.includes('SUCCESS')) && transaction.status === 'PENDING') {
             const bundle = transaction.bundle;
             if (!bundle) {
                 console.error(`Webhook: Bundle not found for successful transaction ${merchantTransactionId}. Cannot grant credits.`);

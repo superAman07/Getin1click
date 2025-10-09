@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
             return Response.redirect(new URL('/professional/wallet', request.url));
         }
         
-        const redirectUrl = new URL('/professional/dashboard', request.url);
+        const redirectUrl = new URL('/professional/dashboard', process.env.NEXT_PUBLIC_APP_URL);
         redirectUrl.searchParams.set('payment', 'success');
         redirectUrl.searchParams.set('bundle_name', transaction.bundle.name);
         redirectUrl.searchParams.set('credits_added', String(transaction.bundle.credits));
