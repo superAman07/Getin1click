@@ -229,7 +229,6 @@ export default memo(function SettingsPage() {
     fetchInitialData()
   }, [])
 
-  // CHANGE add an effect to restore focus if it's unintentionally lost between renders
   useEffect(() => {
     if (!lastFocusedId) return
 
@@ -239,10 +238,8 @@ export default memo(function SettingsPage() {
 
     const active = document.activeElement as Element | null
 
-    // If the same element already has focus, do nothing
     if (active === el) return
 
-    // If another input/textarea has focus (user intentionally moved), do nothing
     if (
       active &&
       (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.getAttribute("contenteditable") === "true")
@@ -250,7 +247,6 @@ export default memo(function SettingsPage() {
       return
     }
 
-    // Otherwise, restore focus to the last focused field
     requestAnimationFrame(() => {
       const stillThere = document.getElementById(lastFocusedId)
       if (!stillThere) return
@@ -259,12 +255,10 @@ export default memo(function SettingsPage() {
         const val = (stillThere as HTMLInputElement).value ?? (stillThere as HTMLTextAreaElement).value ?? ""
           ; (stillThere as any).setSelectionRange?.(val.length, val.length)
       } catch {
-        // no-op if setSelectionRange isn't supported
       }
     })
   }, [lastFocusedId])
 
-  // --- Derived State & Handlers (Corrected) ---
 
   const filteredServices = useMemo(() => {
     const selectedIds = new Set(selectedServices.map((s) => s.id))
@@ -293,10 +287,8 @@ export default memo(function SettingsPage() {
     const totalCoreWeight = coreRequirements.reduce((sum, item) => sum + item.weight, 0);
     const achievedCoreWeight = coreRequirements.reduce((sum, item) => sum + (item.filled ? item.weight : 0), 0);
     
-    // You are "active" if you meet all core requirements
     const isReady = achievedCoreWeight === totalCoreWeight;
 
-    // For the progress bar, we can add bonus points
     const totalBonusWeight = bonusPoints.reduce((sum, item) => sum + item.weight, 0);
     const achievedBonusWeight = bonusPoints.reduce((sum, item) => sum + (item.filled ? item.weight : 0), 0);
 
@@ -720,7 +712,7 @@ export default memo(function SettingsPage() {
                       onChange={(e) => setAboutCompany(e.target.value.slice(0, aboutCompanyLimit))}
                       rows={5}
                       className="rounded-md border border-[#e5e7eb] bg-[#ffffff] p-3 text-sm text-[#0f172a] outline-none transition-colors duration-150 focus:border-[#2563eb]"
-                      placeholder="Tell customers about your company, values, and services..."
+                      placeholder="Tell customers about your company (or about you if solo), values, and services...(At leat 51 characters)"
                     />
                     <div className="text-right text-xs text-[#0f172a]">
                       {aboutCompany.length}/{aboutCompanyLimit}

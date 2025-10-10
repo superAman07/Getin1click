@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // 1. Fetch the professional's services and locations
         const professionalProfile = await prisma.professionalProfile.findUnique({
             where: { userId: session.user.id },
             include: {
@@ -20,30 +19,29 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        if (!professionalProfile || professionalProfile.services.length === 0 || professionalProfile.locations.length === 0) {
-            // If profile is incomplete, return no leads
+        if (!professionalProfile || professionalProfile.services.length === 0) {
             return NextResponse.json([]);
         }
 
         const serviceIds = professionalProfile.services.map(s => s.id);
         const postcodes = professionalProfile.locations.map(l => l.postcode);
 
-        // 2. Find leads that match the professional's profile
         const leads = await prisma.lead.findMany({
             where: {
                 status: 'OPEN',
-                // Lead's service is one the professional offers
                 serviceId: {
                     in: serviceIds,
                 },
-                // Lead's location (pincode) is one the professional serves
-                location: {
-                    // This checks if the location string starts with any of the professional's postcodes
-                    in: postcodes.map(pc => `${pc}, ${pc}`), // This is a simplification, a more robust solution is below
-                    // A more robust way if location format varies:
-                    // OR: postcodes.map(pc => ({ location: { startsWith: pc } })),
-                },
-                // The professional has not already purchased this lead
+                // location: {
+                //     in: postcodes.map(pc => `${pc}, ${pc}`),
+                // },
+                ...(postcodes.length > 0 ? {
+                    OR: postcodes.map(pc => ({
+                        location: {
+                            contains: pc,
+                        }
+                    }))
+                } : {}),
                 purchasedBy: {
                     none: {
                         id: session.user.id,
@@ -70,7 +68,6 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        // 3. Process location to protect customer privacy (show only district/city)
         const leadsWithPartialLocation = leads.map(lead => {
             const locationParts = lead.location.split(', ');
             const partialLocation = locationParts.length > 1 ? locationParts.slice(1).join(', ') : lead.location;
