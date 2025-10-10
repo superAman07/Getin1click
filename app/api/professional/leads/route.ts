@@ -32,9 +32,6 @@ export async function GET(request: NextRequest) {
                 serviceId: {
                     in: serviceIds,
                 },
-                // location: {
-                //     in: postcodes.map(pc => `${pc}, ${pc}`),
-                // },
                 ...(postcodes.length > 0 ? {
                     OR: postcodes.map(pc => ({
                         location: {
