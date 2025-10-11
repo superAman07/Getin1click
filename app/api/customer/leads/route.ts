@@ -44,12 +44,6 @@ export async function POST(request: Request) {
             return new NextResponse('Missing required fields', { status: 400 });
         }
 
-        // Simple logic to determine credit cost. This can be made more complex later.
-        // For now: Low urgency = 2, Medium = 3, High = 4 credits.
-        let creditCost = 2;
-        if (urgency === 'MEDIUM') creditCost = 3;
-        if (urgency === 'HIGH') creditCost = 4;
-
         const newLead = await prisma.lead.create({
             data: {
                 title,
@@ -58,7 +52,6 @@ export async function POST(request: Request) {
                 budget,
                 urgency,
                 serviceId,
-                creditCost,
                 answers,
                 customerId: session.user.id,
                 status: 'OPEN',

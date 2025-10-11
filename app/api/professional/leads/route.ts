@@ -50,13 +50,13 @@ export async function GET(request: NextRequest) {
                 title: true,
                 description: true,
                 createdAt: true,
-                creditCost: true,
                 location: true,
                 budget: true,
                 urgency: true,
                 service: {
                     select: {
                         name: true,
+                        creditCost: true,
                     },
                 },
             },
@@ -65,7 +65,12 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        const leadsWithPartialLocation = leads.map(lead => {
+        const leadsWithCost = leads.map(lead => ({
+            ...lead,
+            creditCost: lead.service.creditCost ?? 1,
+        }));
+
+        const leadsWithPartialLocation = leadsWithCost.map(lead => {
             const locationParts = lead.location.split(', ');
             const partialLocation = locationParts.length > 1 ? locationParts.slice(1).join(', ') : lead.location;
             return { ...lead, location: partialLocation };

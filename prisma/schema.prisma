@@ -250,7 +250,7 @@ model Lead {
   location    String
   budget      String?
   urgency     String 
-  creditCost  Int
+  // creditCost  Int
   status      String   @default("OPEN")
   answers     Json?
   createdAt   DateTime @default(now())
