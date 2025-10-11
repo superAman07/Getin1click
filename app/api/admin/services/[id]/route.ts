@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const id = (await params).id;
     const body = await request.json();
 
-    const { name, description, imageUrl, categoryId, isActive, questions } = body;
+    const { name, description, imageUrl, categoryId, isActive, questions, creditCost } = body;
 
     const updatedService = await prisma.$transaction(async (tx) => {
       const service = await tx.service.update({
@@ -17,6 +17,7 @@ export async function PUT(
         data: {
           name,
           description,
+          creditCost,
           imageUrl,
           categoryId,
           isActive,
@@ -24,48 +25,19 @@ export async function PUT(
       });
 
       if (questions && Array.isArray(questions)) {
-        // const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
-        // const existingQuestionIds = existingQuestions.map(q => q.id);
-        // if (existingQuestionIds.length > 0) {
-        //   await tx.option.deleteMany({ where: { questionId: { in: existingQuestionIds } } });
-        //   await tx.question.deleteMany({ where: { id: { in: existingQuestionIds } } });
-        // }
         const existingQuestions = await tx.question.findMany({ where: { serviceId: id } });
         const existingQuestionIds = new Set(existingQuestions.map(q => q.id));
         const incomingQuestionIds = new Set(questions.map(q => q.id).filter(Boolean));
 
-        // Find questions to delete (exist in DB but not in incoming payload)
         const questionsToDelete = existingQuestions.filter(q => !incomingQuestionIds.has(q.id));
         const questionIdsToDelete = questionsToDelete.map(q => q.id);
 
         if (questionIdsToDelete.length > 0) {
-          // THIS IS THE FIX: Delete answers before deleting questions
           await tx.professionalAnswer.deleteMany({ where: { questionId: { in: questionIdsToDelete } } });
           await tx.option.deleteMany({ where: { questionId: { in: questionIdsToDelete } } });
           await tx.question.deleteMany({ where: { id: { in: questionIdsToDelete } } });
         }
 
-        //   for (const [qIndex, questionData] of questions.entries()) {
-        //     const newQuestion = await tx.question.create({
-        //       data: {
-        //         text: questionData.text,
-        //         order: qIndex + 1,
-        //         type: questionData.type,
-        //         inputType: questionData.inputType,
-        //         serviceId: service.id,
-        //       },
-        //     });
-
-        //     if (questionData.options && Array.isArray(questionData.options)) {
-        //       await tx.option.createMany({
-        //         data: questionData.options.map((opt: { text: string }) => ({
-        //           text: opt.text,
-        //           questionId: newQuestion.id,
-        //         })),
-        //       });
-        //     }
-        //   }
-        // }
         for (const [qIndex, qData] of questions.entries()) {
           const questionPayload = {
             text: qData.text,

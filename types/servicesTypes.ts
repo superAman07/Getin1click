@@ -2,6 +2,7 @@ export interface Service {
   id: string;
   name: string;
   description: string | null;
+  creditCost: number;
   imageUrl: string | null;
   isActive: boolean;
   categoryId: string;

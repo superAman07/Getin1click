@@ -46,6 +46,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
   const [serviceName, setServiceName] = useState('');
   const [serviceDescription, setServiceDescription] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [creditCost, setCreditCost] = useState('0');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [activeQuestionTab, setActiveQuestionTab] = useState<'CUSTOMER' | 'PROFESSIONAL' | 'PROFILE_FAQ'>('CUSTOMER');
@@ -63,6 +64,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
     if (serviceToEdit) {
       setServiceName(serviceToEdit.name);
       setServiceDescription(serviceToEdit.description || '');
+      setCreditCost(String(serviceToEdit.creditCost || 0));
       setSelectedCategoryId(serviceToEdit.categoryId);
       setImageUrl(serviceToEdit.imageUrl || null);
       if (serviceToEdit.questions && Array.isArray(serviceToEdit.questions) && serviceToEdit.questions.length > 0) {
@@ -221,6 +223,7 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
     const payload = {
       name: serviceName,
       description: serviceDescription,
+      creditCost: parseInt(creditCost, 10) || 0,
       categoryId: selectedCategoryId,
       imageUrl: imageUrl,
       questions: questions.map(q => ({
@@ -317,6 +320,11 @@ const AddServiceForm: React.FC<AddServiceFormProps> = ({ onClose, onSave, servic
                         ))}
                       </div>
                     )}
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="creditCost" className="block text-sm font-medium text-gray-700 mb-1">Credit Cost</label>
+                    <input type="number" id="creditCost" value={creditCost} onChange={(e) => setCreditCost(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" min="0" required />
+                    <p className="text-xs text-gray-500 mt-1">The number of credits a professional must pay to unlock this lead.</p>
                   </div>
                 </div>
 
