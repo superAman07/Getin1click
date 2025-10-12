@@ -28,15 +28,17 @@ interface ProfessionalSummary {
     professionalProfile: {
         credits: number;
         companyName: string | null;
-        phoneNumber?: string | null;
-        locations?: string[] | null;
-        services?: string[] | null;
     } | null;
 }
 
 interface ProfessionalDetails extends ProfessionalSummary {
-    // Add more detailed fields that will be fetched for a single professional
-    // This can be expanded based on the GET [id] endpoint
+    professionalProfile: {
+        credits: number;
+        companyName: string | null;
+        phoneNumber?: string | null;
+        services: { id: string; name: string }[];
+        locations: { id: string; postcode: string; locationName: string }[];
+    } | null;
 }
 
 export default function ManageProfessionalsPage() {
