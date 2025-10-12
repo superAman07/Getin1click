@@ -92,6 +92,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         return new NextResponse('Unauthorized', { status: 401 });
     }
 
+    const id = (await params).id;
     try {
         const professionalId = (await params).id;
 
@@ -107,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         return new NextResponse(null, { status: 204 });
     } catch (error) {
-        console.error(`Error deleting professional ${params.id}:`, error);
+        console.error(`Error deleting professional ${id}:`, error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
