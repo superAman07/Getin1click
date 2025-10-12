@@ -16,6 +16,7 @@ import {
   CreditCard,
   ChevronDown
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // Define interfaces for the data we'll be handling
 interface ProfessionalSummary {
@@ -323,10 +324,14 @@ export default function ManageProfessionalsPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <button
+                                                    disabled={isUpdating}
+                                                    aria-disabled={isUpdating}
+                                                    aria-busy={isUpdating}
+                                                    title={isUpdating ? 'Loading...' : 'View Details'}
                                                     onClick={() => handleViewDetails(professional.id)}
                                                     className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-sm hover:shadow-md"
                                                 >
-                                                    View Details
+                                                    {isUpdating ? 'Loading...' : 'View Details'}
                                                 </button>
                                             </td>
                                         </tr>
