@@ -32,13 +32,20 @@ enum CompanySize {
   LARGE_TEAM // 51+ employees
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
 model User {
-  id                 String   @id @default(cuid())
-  email              String   @unique
+  id                 String     @id @default(cuid())
+  email              String     @unique
   name               String?
   password           String
-  role               UserRole @default(CUSTOMER)
-  onboardingComplete Boolean  @default(false)
+  role               UserRole   @default(CUSTOMER)
+  status             UserStatus @default(ACTIVE)
+  onboardingComplete Boolean    @default(false)
 
   professionalProfile ProfessionalProfile?
   postedLeads         Lead[]               @relation("CustomerLeads")
@@ -71,7 +78,7 @@ model CreditPurchase {
   creditPackageId String
   creditPackage   CreditPackage @relation(fields: [creditPackageId], references: [id])
   amountPaid      Float
-  transactionId   String        @unique 
+  transactionId   String        @unique
   purchasedAt     DateTime      @default(now())
 }
 
@@ -249,7 +256,7 @@ model Lead {
   description String
   location    String
   budget      String?
-  urgency     String 
+  urgency     String
   // creditCost  Int
   status      String   @default("OPEN")
   answers     Json?
