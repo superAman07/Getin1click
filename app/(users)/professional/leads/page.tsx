@@ -22,21 +22,20 @@ import {
 interface LeadTeaser {
   id: string;
   title: string;
+  description: string; 
   createdAt: string;
   creditCost: number;
   location: string;
+  budget: string;
+  urgency: string;
+  customerName: string;
+  responses: number;
   service: {
     name: string;
   };
 }
 
-interface FullLead extends LeadTeaser {
-  description: string;
-  budget: string;
-  customerName: string;
-  customerRating: number;
-  responses: number;
-}
+type FullLead = LeadTeaser;
 
 interface ExtendedUser {
   onboardingComplete?: boolean;
@@ -79,18 +78,10 @@ const Leads = () => {
     return matchesSearch
   })
 
-  const handleLeadClick = (lead: LeadTeaser) => {
-    const fullLead: FullLead = {
-      ...lead,
-      description: "This is a placeholder description for the selected lead. Full details would be loaded from the API.",
-      budget: "$5,000 - $10,000",
-      customerName: "John Doe",
-      customerRating: 4.8,
-      responses: 3,
-    }
-    setSelectedLead(fullLead)
-    setShowMobileDetail(true)
-  }
+  const handleLeadClick = (lead: LeadTeaser) => { 
+    setSelectedLead(lead);
+    setShowMobileDetail(true);
+  };
 
   const closeMobileDetail = () => {
     setShowMobileDetail(false)
@@ -321,22 +312,11 @@ const Leads = () => {
                         <div className="text-xl font-bold text-slate-900 truncate">
                           {selectedLead.customerName}
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                          <span className="text-base font-semibold text-slate-900">{selectedLead.customerRating}</span>
-                          <span className="text-slate-600 text-sm">rating</span>
-                        </div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                      <div className="flex items-center gap-2.5 text-sm bg-white rounded-lg p-3 border border-blue-100">
-                        <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-slate-700 font-medium">(555) 123-4567</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-sm bg-white rounded-lg p-3 border border-blue-100">
-                        <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-slate-700 font-medium truncate">customer@email.com</span>
-                      </div>
+                    {/* Contact info will be shown here AFTER purchase */}
+                    <div className="text-center p-3 bg-white/60 rounded-lg border-2 border-dashed border-blue-200">
+                        <p className="text-sm font-semibold text-blue-800">Contact details will be revealed after unlocking the lead.</p>
                     </div>
                   </div>
 
@@ -449,11 +429,6 @@ const Leads = () => {
                       <div className="min-w-0">
                         <div className="text-lg font-bold text-slate-900 truncate">
                           {selectedLead.customerName}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                          <span className="text-base font-semibold text-slate-900">{selectedLead.customerRating}</span>
-                          <span className="text-slate-600 text-sm">rating</span>
                         </div>
                       </div>
                     </div>

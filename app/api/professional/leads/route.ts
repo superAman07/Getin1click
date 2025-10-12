@@ -59,6 +59,16 @@ export async function GET(request: NextRequest) {
                         creditCost: true,
                     },
                 },
+                customer: {
+                    select: {
+                        name: true,
+                    }
+                },
+                _count: {
+                    select: {
+                        purchasedBy: true,
+                    },
+                },
             },
             orderBy: {
                 createdAt: 'desc',
@@ -68,6 +78,8 @@ export async function GET(request: NextRequest) {
         const leadsWithCost = leads.map(lead => ({
             ...lead,
             creditCost: lead.service.creditCost ?? 1,
+            customerName: lead.customer?.name || 'Valued Customer',
+            responses: lead._count.purchasedBy,
         }));
 
         const leadsWithPartialLocation = leadsWithCost.map(lead => {
