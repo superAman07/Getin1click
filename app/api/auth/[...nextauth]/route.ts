@@ -37,6 +37,13 @@ export const authOptions: AuthOptions = {
           throw new Error("Incorrect password. Please try again.");
         }
 
+        if (user.status !== 'ACTIVE') {
+          if (user.status === 'SUSPENDED') {
+            throw new Error("Your account has been suspended. Please contact support.");
+          }
+          throw new Error("Your account is not active. Please contact support.");
+        }
+
         return user;
       },
     }),
