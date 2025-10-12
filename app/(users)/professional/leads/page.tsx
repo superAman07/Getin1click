@@ -195,7 +195,7 @@ const Leads = () => {
                     <div
                       key={lead.id}
                       onClick={() => handleLeadClick(lead)}
-                      className={`p-4 cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                      className={`p-4 cursor-pointer transition-all duration-200 hover:bg-blue-500 ${
                         selectedLead?.id === lead.id
                           ? "bg-blue-600 text-white hover:bg-blue-700"
                           : "bg-white"
