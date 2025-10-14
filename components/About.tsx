@@ -1,15 +1,78 @@
 
+'use client';
+import { motion, useAnimation } from 'framer-motion';
+import { useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { GraduationCap, Brain, Heart, Dumbbell } from "lucide-react";
 
 export default function About() {
+    const controls = useAnimation();
+  const [ref, inView] = useInView({ threshold: 0.2 });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start('visible');
+    }
+  }, [controls, inView]);
+
+  const textVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+  };
+
+  const imageVariants = {
+    hidden: { y: 0 },
+    visible: { y: -30, transition: { duration: 1.5 } }, // subtle parallax
+  };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 " >
-      <h1 className="text-4xl font-bold mb-6 mt-5 ">The people behind the platform </h1>
-      <p className="max-w-2xl text-center mb-4">
-        GetInOncClick  is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.      </p>
+     <div className="relative bg-blue-50 py-16 px-6 lg:px-20 overflow-hidden">
+      {/* Decorative shapes */}
+      <div className="absolute inset-0">
+        <div className="bg-blue-200 w-72 h-72 rounded-full -top-20 -left-16 opacity-30"></div>
+        <div className="bg-blue-300 w-96 h-96 rounded-full -bottom-24 -right-20 opacity-20"></div>
+      </div>
 
+      <div ref={ref} className="relative flex flex-col lg:flex-row items-center gap-10">
+        {/* Text Section */}
+        <motion.div 
+          className="lg:w-1/2 text-center lg:text-left"
+          variants={textVariants}
+          initial="hidden"
+          animate={controls}
+        >
+          <h1 className="text-4xl lg:text-5xl font-extrabold mb-6" style={{ color: '#2596be' }}>
+            The people behind the platform
+          </h1>
+          <p className="text-gray-700 mb-6 text-lg lg:text-xl leading-relaxed">
+            GetInOncClick is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.
+          </p>
+          <button 
+            className="text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition duration-300" 
+            style={{ backgroundColor: '#2596be' }}
+          >
+            Learn More
+          </button>
+        </motion.div>
 
-      <img src="/gardening.jpg" alt="About Us" />
+        {/* Image Section */}
+        <motion.div 
+          className="lg:w-1/2 flex justify-center lg:justify-end"
+          variants={imageVariants}
+          initial="hidden"
+          animate={controls}
+        >
+          <div className="relative w-full max-w-md lg:max-w-lg">
+            <img 
+              src="/gardening.jpg" 
+              alt="About Us" 
+              className="rounded-3xl shadow-2xl border-4 border-white object-cover w-full"
+            />
+            <div className="absolute top-0 left-0 w-full h-full rounded-3xl border-2 border-purple-300 pointer-events-none animate-pulse"></div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
 
 
       {/* job services */}
