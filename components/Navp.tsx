@@ -67,7 +67,7 @@ export default function Navp() {
   <div className="relative" ref={profileRef}>
     <button
       onClick={() => setProfileOpen(!profileOpen)}
-      className="w-12 h-12 rounded-full  flex items-center justify-center text-black font-bold text-lg hover:bg-blue-600 transition shadow-md"
+      className="w-12 h-12 rounded-full  flex items-center cursor-pointer justify-center text-black font-bold text-lg hover:bg-blue-600 transition shadow-md"
     >
       <UserIcon className="w-6 h-6" />
     </button>
