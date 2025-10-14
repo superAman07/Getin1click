@@ -141,22 +141,22 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden mt-2 mx-4 mb-4 px-4 pb-4 pt-2 space-y-2 bg-white shadow-md rounded-md">
-          <Link href="/Home" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">
+          <Link href="/" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">
             Home
           </Link>
           <Link
-            href="/About"
+            href="/about"
             className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition"
           >
             About
           </Link>
           <Link
-            href="/Career"
+            href="/career"
             className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition"
           >
             Career
           </Link>
-          <Link href="/Blog" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">
+          <Link href="/blog" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">
             Blog
           </Link>
 
