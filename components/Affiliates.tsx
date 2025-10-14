@@ -4,13 +4,13 @@ export default function Affiliates() {
         <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800">
      
 <section className="w-full bg-gradient-to-b from-white via-[#eef1fb] to-white py-16 flex flex-col items-center">
-     <h1 className=" font-bold " style={{fontSize : "50px" , marginTop:"-60px"}}>Bark Affiliate Programme </h1>
+     <h1 className=" font-bold " style={{fontSize : "50px" , marginTop:"-60px"}}>GetInOncClick  Affiliate Programme </h1>
           <p className="text-lg max-w-2xl text-center">
 Start earning by referring people who need  service <br/> providers to do their everyday jobs          </p>
 
       {/* Button */}
       <button className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition mt-10">
-        Join Bark Affiliate via AWIN
+        Join GetInOncClick  Affiliate via AWIN
       </button>
 
       {/* Options */}
@@ -24,7 +24,7 @@ Start earning by referring people who need  service <br/> providers to do their 
             Send us <span className="text-indigo-600">people</span> looking for services
           </h2>
           <p className="mt-4 text-gray-600 text-lg-bold ">
-            Up to $100/£80 for every project (we call them Barks) placed on our site from a
+            Up to $100/£80 for every project (we call them GetInOncClick s) placed on our site from a
             customer who's clicked one of your affiliate links.
           </p>
           <p className="mt-4 text-gray-500 text-lg">
@@ -65,15 +65,15 @@ Start earning by referring people who need  service <br/> providers to do their 
             </div>
             <div className="ml-6">
               <h2 className="text-lg md:text-xl font-semibold text-gray-900">
-                Join the Bark Affiliate program on <span className="text-orange-500">AWIN</span>
+                Join the GetInOncClick  Affiliate program on <span className="text-orange-500">AWIN</span>
               </h2>
               <p className="mt-2 text-gray-600 max-w-2xl">
-                We operate the Bark Affiliate programme using a software platform called Awin.
-                To get started as a Bark Affiliate, simply sign up for Awin and then apply for
-                the Bark programme. We'll confirm and then you're ready to go!
+                We operate the GetInOncClick  Affiliate programme using a software platform called Awin.
+                To get started as a GetInOncClick  Affiliate, simply sign up for Awin and then apply for
+                the GetInOncClick  programme. We'll confirm and then you're ready to go!
               </p>
               <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition">
-                Join Bark Affiliate via AWIN
+                Join GetInOncClick  Affiliate via AWIN
               </button>
             </div>
           </div>
@@ -89,7 +89,7 @@ Start earning by referring people who need  service <br/> providers to do their 
               </h2>
               <p className="mt-2 text-gray-600 max-w-2xl">
                 Send people our way who are looking for local service professionals and
-                businesses to help with their tasks. You can do this by linking to Bark from
+                businesses to help with their tasks. You can do this by linking to GetInOncClick  from
                 any content you create, i.e. on your website, in emails or newsletters, or
                 across social media.
               </p>
@@ -113,18 +113,18 @@ Start earning by referring people who need  service <br/> providers to do their 
 
 
 <section className="w-full bg-white py-16 flex justify-center items-center flex-col">
-       <h1 className=" font-bold text-center " style={{fontSize : "50px" , marginTop:"-60px"}}>How Bark works</h1>
+       <h1 className=" font-bold text-center " style={{fontSize : "50px" , marginTop:"-60px"}}>How GetInOncClick  works</h1>
 
       <div className="relative max-w-4xl w-full px-6 mt-10">
         {/* Vertical line */}
 
-        <p>Bark helps people find great local professionals or businesses for absolutely anything they want to be done. With over 1,500 service categories to choose from, we connect customers and professionals for almost every service imaginable.</p>
+        <p>GetInOncClick  helps people find great local professionals or businesses for absolutely anything they want to be done. With over 1,500 service categories to choose from, we connect customers and professionals for almost every service imaginable.</p>
         <br/>
-<p>Bark is an online website and app that connects ‘buyers’, i.e. people looking for a service to complete a task or project, with ‘sellers’ who can provide those services.</p>
+<p>GetInOncClick  is an online website and app that connects ‘buyers’, i.e. people looking for a service to complete a task or project, with ‘sellers’ who can provide those services.</p>
         <br/> 
-<p>On one side, we attract people who want to buy and use a specific service, such as house cleaning, preparing a tax return, or creating a new website. We capture their details and some information about the project they’re looking to complete so we can present them as leads (e.g., Bark) to professionals and businesses who can deliver these services.</p>
+<p>On one side, we attract people who want to buy and use a specific service, such as house cleaning, preparing a tax return, or creating a new website. We capture their details and some information about the project they’re looking to complete so we can present them as leads (e.g., GetInOncClick ) to professionals and businesses who can deliver these services.</p>
         <br/>
-<p>These service providers buy packs of credits on Bark that they can then exchange for the project details generated above to find high-value new leads for their business.</p>
+<p>These service providers buy packs of credits on GetInOncClick  that they can then exchange for the project details generated above to find high-value new leads for their business.</p>
 
       </div>
     </section>
@@ -140,12 +140,12 @@ Start earning by referring people who need  service <br/> providers to do their 
         <br/>
 <p>a) we haven’t tracked the lead coming from another source within the last 30 days, and</p>
         <br/> 
-<p>On one side, we attract people who want to buy and use a specific service, such as house cleaning, preparing a tax return, or creating a new website. We capture their details and some information about the project they’re looking to complete so we can present them as leads (e.g., Bark) to professionals and businesses who can deliver these services.
+<p>On one side, we attract people who want to buy and use a specific service, such as house cleaning, preparing a tax return, or creating a new website. We capture their details and some information about the project they’re looking to complete so we can present them as leads (e.g., GetInOncClick ) to professionals and businesses who can deliver these services.
 
 
 </p>
         <br/>
-<p>These service providers buy packs of credits on Bark that they can then exchange for the project details generated above to find high-value new leads for their business.</p>
+<p>These service providers buy packs of credits on GetInOncClick  that they can then exchange for the project details generated above to find high-value new leads for their business.</p>
 
       </div>
     </section>
@@ -153,7 +153,7 @@ Start earning by referring people who need  service <br/> providers to do their 
 
 
     <section className="w-full bg-white py-16 flex justify-center items-center flex-col">
-       <h1 className=" font-bold text-center " style={{fontSize : "50px" , marginTop:"-60px"}}>What are the benefits of <br /> being a Bark Affiliate?</h1>
+       <h1 className=" font-bold text-center " style={{fontSize : "50px" , marginTop:"-60px"}}>What are the benefits of <br /> being a GetInOncClick  Affiliate?</h1>
 
       <div className="relative max-w-4xl w-full px-6 mt-10">
         {/* Vertical line */}

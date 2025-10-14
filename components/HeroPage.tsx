@@ -402,7 +402,7 @@ export default function HeroPage() {
             </div>
           </div>
           <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-relaxed mb-6">
-            "I have used Bark twice now for two completely different services
+            "I have used GetInOncClick  twice now for two completely different services
             and I've had a fantastic experience both times!"
           </p>
           <p className="text-lg font-bold text-gray-800 mb-2">Jayne</p>

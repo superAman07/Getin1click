@@ -6,7 +6,7 @@ export default function About() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 " >
       <h1 className="text-4xl font-bold mb-6 mt-5 ">The people behind the platform </h1>
       <p className="max-w-2xl text-center mb-4">
-        Bark is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.      </p>
+        GetInOncClick  is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.      </p>
 
 
       <img src="/gardening.jpg" alt="About Us" />
@@ -466,7 +466,7 @@ export default function About() {
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-8">Our People</h1>
           <p className="text-lg text-gray-700 leading-relaxed max-w-5xl mx-auto">
-            At Bark, we hire for skills and shared values and that's pretty much it. We know that being brilliant in your role has 
+            At GetInOncClick , we hire for skills and shared values and that's pretty much it. We know that being brilliant in your role has 
             nothing to do with who you love or what you believe in and that people perform best when they can be their 
             unapologetic selves. We're intent on building a workforce as diverse as our platform and are proud to have a workplace 
             culture that's genuinely inclusive. To us, representation isn't just a tick-box exercise. Diversity is one of our strongest 
@@ -602,7 +602,7 @@ export default function About() {
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
             The average person spends more than a third of their life at work so we understand that jobs have to offer more than just
-            a salary. Bark's perks and benefits are selected to not only enhance your career, but enrich your personal growth too.
+            a salary. GetInOncClick 's perks and benefits are selected to not only enhance your career, but enrich your personal growth too.
           </p>
         </div>
 
@@ -640,7 +640,7 @@ export default function About() {
             </div>
             <h3 className="text-2xl font-semibold text-slate-800 mb-4">Wellness</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
-              Bark encourages living a healthy, active lifestyle. Our wellness 
+              GetInOncClick  encourages living a healthy, active lifestyle. Our wellness 
               initiative provides health subscriptions and a diverse range 
               of fitness classes.
             </p>
@@ -655,7 +655,7 @@ export default function About() {
             </div>
             <h3 className="text-2xl font-semibold text-slate-800 mb-4">Skill Development</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
-              Your growth is our growth. Bark has a 'learning and development' 
+              Your growth is our growth. GetInOncClick  has a 'learning and development' 
               budget so we can offer you training and educational 
               programs run by leading providers.
             </p>
