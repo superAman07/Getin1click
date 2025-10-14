@@ -3,7 +3,7 @@ import { FaEnvelope, FaPhone } from "react-icons/fa";
 
 export default function Helpcenter(){
     return (
-       <div className="bg-gray-50">
+       <div className="bg-gray-50 mt-20">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-green-200 via-blue-300 to-blue-100 py-16" style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' , padding: '0 20px', boxSizing: 'border-box',backgroundImage: 'url(helpcenter.png)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
         <div className="container mx-auto flex flex-col items-center justify-center">

@@ -1,7 +1,7 @@
 export default function Pricing(){
     return(
 
-        <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800">
+        <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800 mt-20">
                <section className="w-full bg-gradient-to-b from-white via-[#eef1fb] to-white py-16 flex flex-col items-center">
      <h1 className=" font-bold " style={{fontSize : "50px", marginTop:"-50px"}}>Pricing</h1>
           <p className="text-lg max-w-2xl text-center" style={{fontSize: "18px"}}>

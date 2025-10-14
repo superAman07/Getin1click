@@ -22,7 +22,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-r from-[#6B3F69] via-[#5A3359] to-[#6B3F69] text-white py-12 px-6 relative">
+    <footer className="bg-gradient-to-r from-[#6B3F69] via-[#5A3359] to-[#6B3F69] text-white py-12 px-6 relative mt-20">
       <div className="max-w-7xl mx-auto space-y-10">
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">

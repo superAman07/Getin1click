@@ -1,6 +1,6 @@
 export default function(){
     return(
-          <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800">
+          <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800 mt-20">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#0c1445] leading-snug">
                        Terms & Conditions
                     </h2>

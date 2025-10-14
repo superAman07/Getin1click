@@ -73,7 +73,7 @@ export default function Joinasprofessional() {
   const popularServices = services.slice(0, 8); // Show first 8 as popular
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 mt-20">
       {/* Hero Section */}
       <div className={`transition-all duration-1000 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">

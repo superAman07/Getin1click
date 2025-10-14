@@ -25,7 +25,7 @@ export default function About() {
     visible: { y: -30, transition: { duration: 1.5 } }, // subtle parallax
   };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 " >
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 mt-20" >
      <div className="relative bg-blue-50 py-16 px-6 lg:px-20 overflow-hidden">
       {/* Decorative shapes */}
       <div className="absolute inset-0">
