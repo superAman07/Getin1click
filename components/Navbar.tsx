@@ -150,6 +150,25 @@ export default function Navbar() {
               <Link href="/auth/login" className="text-[#0d1129] font-medium hover:text-blue-600">
                 Login
               </Link>
+              {true && (
+  <div className="relative" ref={profileRef}>
+    <button
+      onClick={() => setProfileOpen(!profileOpen)}
+      className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg hover:bg-blue-600 transition shadow-md"
+    >
+      <UserIcon className="w-6 h-6" />
+    </button>
+    {profileOpen && (
+      <div className="absolute right-0 mt-2 w-60 bg-white border rounded-lg shadow-lg py-4 z-50 animate-slide-down">
+        <div className="px-4 pb-2 border-b text-gray-700 font-semibold">test@user.com</div>
+        <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+          <UserIcon className="w-5 h-5" /> Profile
+        </Link>
+      </div>
+    )}
+  </div>
+)}
+
               <Link
                 href="/joinasprofessional"
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-full shadow-sm"

@@ -1,11 +1,11 @@
 export default function Howitwork(){
     return(
-        <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800">
+        <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800 mt-20">
             <section className="w-full bg-gradient-to-b from-white via-[#eef1fb] to-white py-16 flex flex-col items-center">
      <h3 className=" font-bold " style={{fontSize : "30px" , marginTop:"-60px"}}>How It Work</h3>
-     <h1 className=" font-bold " style={{fontSize : "50px" ,}}>Bark for Pros</h1>
+     <h1 className=" font-bold " style={{fontSize : "50px" ,}}>GetInOncClick  for Pros</h1>
           <p className="text-lg max-w-2xl text-center" style={{fontSize: "18px"}}>
-Bark is the Amazon of services. Millions of people use us  <br /> worldwide to find what they need every day.</p>
+GetInOncClick  is the Amazon of services. Millions of people use us  <br /> worldwide to find what they need every day.</p>
 
       {/* Button */}
       <button className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition mt-10">
@@ -39,7 +39,7 @@ Bark is the Amazon of services. Millions of people use us  <br /> worldwide to f
           customer is looking for.
         </p>
         <p className="text-gray-600 leading-relaxed" style={{fontSize: "18px"}}>
-          Smart customers <span className="font-semibold">Bark it</span>, not{" "}
+          Smart customers <span className="font-semibold">GetInOncClick  it</span>, not{" "}
           <span className="font-semibold">Google it</span>. They know that <br /> we’ll
           provide relevant, professional companies that can <br /> meet their needs.
         </p>
@@ -53,10 +53,10 @@ Bark is the Amazon of services. Millions of people use us  <br /> worldwide to f
       {/* Right Side Text */}
       <div className="w-full md:w-1/2 justify-center mt-20">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-        Customers find you  <br /> on Barks
+        Customers find you  <br /> on GetInOncClick 
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6" style={{fontSize: "18px"}}>
-          Customers then find you on Bark and can reach out to you.  We’ll also <br /> send you all leads matching what you do.
+          Customers then find you on GetInOncClick  and can reach out to you.  We’ll also <br /> send you all leads matching what you do.
         </p>
         <p className="text-gray-600 leading-relaxed" style={{fontSize: "18px"}}>
        We charge a small fee for each introduction and we give you the phone <br />  number and e-mail address of each potential customer so you <br /> can reach out.
@@ -92,7 +92,7 @@ Bark is the Amazon of services. Millions of people use us  <br /> worldwide to f
           Grow your business. <br /> Fast.
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6" style={{fontSize: "18px"}}>
-         We take the hassle out of marketing your services. <br /> Bark professionals receive hot, live leads as  soon <br /> as they are placed.  Join as a professional now and get <br /> instant access to leads for your business.
+         We take the hassle out of marketing your services. <br /> GetInOncClick  professionals receive hot, live leads as  soon <br /> as they are placed.  Join as a professional now and get <br /> instant access to leads for your business.
         </p>
      
       </div>
@@ -108,7 +108,7 @@ Bark is the Amazon of services. Millions of people use us  <br /> worldwide to f
      Plus tons of other  <br /> benefits
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6" style={{fontSize: "18px"}}>
-As a Bark Pro, you’ll get an online profile which boosts your web presence and helps promote your business.         </p>
+As a GetInOncClick  Pro, you’ll get an online profile which boosts your web presence and helps promote your business.         </p>
         <p className="text-gray-600 leading-relaxed" style={{fontSize: "18px"}}>
 You’ll also get access to our award winning customer success team, by both e-mail and telephone who will help you every step of the way.        </p>
       </div>

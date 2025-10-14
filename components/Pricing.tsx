@@ -44,7 +44,7 @@ Credits at the ready
           customer is looking for.
         </p>
         <p className="text-gray-600 leading-relaxed" style={{fontSize: "18px"}}>
-          Smart customers <span className="font-semibold">Bark it</span>, not{" "}
+          Smart customers <span className="font-semibold">GetInOncClick  it</span>, not{" "}
           <span className="font-semibold">Google it</span>. They know that <br /> we’ll
           provide relevant, professional companies that can <br /> meet their needs.
         </p>

@@ -32,9 +32,9 @@ Last Updated: 28 July 2025</h4>
                 </h2>
 
                 <p className="mt-6 text-slate-500 text-base leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  This Privacy Notice explains how and why Bark.com Global Limited (also referred to as
-                  “Bark.com”, “we”, “our” and “us”) collects, uses, discloses and otherwise processes personal data
-                  about individual users of our website <span className="font-medium">www.bark.com</span> (the “Website”)
+                  This Privacy Notice explains how and why GetInOncClick .com Global Limited (also referred to as
+                  “GetInOncClick .com”, “we”, “our” and “us”) collects, uses, discloses and otherwise processes personal data
+                  about individual users of our website <span className="font-medium">www.GetInOncClick .com</span> (the “Website”)
                   or mobile applications (the “App”), and those that access our services through APIs and through
                   third-parties (collectively, the “Services”), including Website Users, Buyers and/or Professionals
                   (whether prospective, current or past), and people that apply to work with us (together, “you”).
@@ -87,7 +87,7 @@ Last Updated: 28 July 2025</h4>
                 <p className="mt-4 text-slate-500 text-base leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
                   {/* placeholder more content that matches the layout and spacing of the screenshot */}
                  
-Whether you are a Buyer, a Professional, a Website User, or a Job Applicant for a vacancy at Bark.com (or a combination of those, as such terms are defined below), Bark.com is a “controller” of your personal data. This means that we make decisions about how and why we process your personal data and are responsible for making sure it is used in accordance with data protection laws. This Privacy Notice describes our privacy practices where we are acting as the controller of personal data. However, this Privacy Notice does not cover or address how our Professionals may process personal data when they provide their services.
+Whether you are a Buyer, a Professional, a Website User, or a Job Applicant for a vacancy at GetInOncClick .com (or a combination of those, as such terms are defined below), GetInOncClick .com is a “controller” of your personal data. This means that we make decisions about how and why we process your personal data and are responsible for making sure it is used in accordance with data protection laws. This Privacy Notice describes our privacy practices where we are acting as the controller of personal data. However, this Privacy Notice does not cover or address how our Professionals may process personal data when they provide their services.
 
 
 
@@ -123,7 +123,7 @@ If you are reviewing this Privacy Notice, then you will fall into at least one o
                 <p className="mt-4 text-slate-500 text-base leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
                   {/* placeholder more content that matches the layout and spacing of the screenshot */}
                   
-(a) prospective, current or past customers of Bark.com who register an account and/or place a buyer request (known as a “bark”) (“Buyers”);
+(a) prospective, current or past customers of GetInOncClick .com who register an account and/or place a buyer request (known as a “GetInOncClick ”) (“Buyers”);
 
                   
                 </p>
@@ -131,7 +131,7 @@ If you are reviewing this Privacy Notice, then you will fall into at least one o
                   {/* placeholder more content that matches the layout and spacing of the screenshot */}
                  
 
-(b) current or past individuals or businesses that register as a Professional on Bark.com to provide a service to Buyers, or businesses who we identify as being of interest to our Buyers and who we may then contact with potential business opportunities relating to our Buyers (“Professionals”);
+(b) current or past individuals or businesses that register as a Professional on GetInOncClick .com to provide a service to Buyers, or businesses who we identify as being of interest to our Buyers and who we may then contact with potential business opportunities relating to our Buyers (“Professionals”);
 
 
                   

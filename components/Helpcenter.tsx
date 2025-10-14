@@ -30,7 +30,7 @@ export default function Helpcenter(){
             {/* Card 1 */}
             <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
               <FaStar className="text-blue-500 text-4xl mb-4 mx-auto" style={{width:"200px",height:"80px"}} />
-              <h3 className="text-lg font-semibold mb-2" style={{fontSize:"20px"}}> New to Bark</h3>
+              <h3 className="text-lg font-semibold mb-2" style={{fontSize:"20px"}}> New to GetInOncClick </h3>
               <p className="text-gray-600 text-lg">
              
 Discover everything you need to <br /> know to start your journey
@@ -42,7 +42,7 @@ Discover everything you need to <br /> know to start your journey
               <FaUsers className="text-green-500 text-4xl mb-4 mx-auto" style={{width:"200px",height:"80px"}}/>
              <h3 className="text-lg font-semibold mb-2" style={{fontSize:"20px"}}> Professionals</h3>
               <p className="text-gray-600 text-lg">
-                How Bark works for professionals
+                How GetInOncClick  works for professionals
               </p>
             </div>
 
@@ -51,7 +51,7 @@ Discover everything you need to <br /> know to start your journey
               <FaTools className="text-orange-500 text-4xl mb-4 mx-auto" style={{width:"200px",height:"80px"}} />
            <h3 className="text-lg font-semibold mb-2" style={{fontSize:"20px"}}>Customers</h3>
               <p className="text-gray-600 text-lg">
-Using Bark and getting quotes
+Using GetInOncClick  and getting quotes
               </p>
             </div>
           </div>
@@ -69,7 +69,7 @@ Using Bark and getting quotes
             {/* Column 1 */}
             <div className="space-y-4">
               <a href="#" className="block hover:underline">
-                What is Bark and how does it work?
+                What is GetInOncClick  and how does it work?
               </a>
               <a href="#" className="block hover:underline">
                 Where do I find my invoices?
@@ -85,13 +85,13 @@ Using Bark and getting quotes
             {/* Column 2 */}
             <div className="space-y-4">
               <a href="#" className="block hover:underline">
-                How does Bark screen leads I receive?
+                How does GetInOncClick  screen leads I receive?
               </a>
               <a href="#" className="block hover:underline">
                 What are Credit Pack Subscriptions?
               </a>
               <a href="#" className="block hover:underline">
-                What is Bark Verified?
+                What is GetInOncClick  Verified?
               </a>
               <a href="#" className="block hover:underline">
                 How many responses can a customer receive?
