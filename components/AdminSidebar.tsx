@@ -15,6 +15,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
 
   const menuItems = [
     { id: 'dashboard', href: '/admin/dashboard', label: 'Dashboard', icon: Home },
+    { id: 'leads', href: '/admin/lead-management', label: 'Lead Management', icon: Home },
     { id: 'services', href: '/admin/services', label: 'Services', icon: Briefcase },
     { id: 'categories', href: '/admin/categories', label: 'Categories', icon: LayoutGrid },
     { id: 'professionals', href: '/admin/professionals', label: 'Professionals', icon: UserCheck },
