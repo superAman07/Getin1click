@@ -87,7 +87,7 @@ export default function Footer() {
           {/* Trust Score & Links */}
           <div className="text-center md:text-right text-gray-300 text-sm space-y-2">
             <div>
-              © 2025 GetInOncClick | 
+              © 2025 GetInOncClick |
               <a href="/Termandcondition" className="hover:text-[#E4C2E7] mx-1">Terms</a>|
               <a href="#" className="hover:text-[#E4C2E7] mx-1">Cookie</a>|
               <a href="/Privacypolicy" className="hover:text-[#E4C2E7] mx-1">Privacy</a>
