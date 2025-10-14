@@ -29,7 +29,7 @@ export default function Footer() {
           {/* Logo & Description */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <span className="text-2xl font-bold tracking-wide">GetInOncClick</span>
+              <span className="text-2xl font-bold tracking-wide">GetIn1Click</span>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed pr-6">
               We connect customers with trusted professionals to get the job done right.
