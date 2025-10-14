@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { LayoutDashboard, FileText, User, BellDot, Settings, Menu, X, ChevronDown, LogOut, Plus, Coins } from "lucide-react"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useRef, useState } from "react"
+import ProfessionalNotifications from "./ProfessionalNotifications"
 
 export function NavbarProfessional() {
   const pathname = usePathname()
@@ -27,28 +28,52 @@ export function NavbarProfessional() {
     setUserOpen(false)
   }, [pathname])
 
+  // useEffect(() => {
+  //   function onDocClick(e: MouseEvent) {
+  //     if (!userOpen) return
+  //     const target = e.target as Node
+  //     if (userMenuRef.current?.contains(target)) return
+  //     if (userBtnRef.current?.contains(target)) return
+  //     setUserOpen(false)
+  //   }
+  //   document.addEventListener("mousedown", onDocClick)
+  //   return () => document.removeEventListener("mousedown", onDocClick)
+  // }, [userOpen])
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (!userOpen) return
-      const target = e.target as Node
-      if (userMenuRef.current?.contains(target)) return
-      if (userBtnRef.current?.contains(target)) return
-      setUserOpen(false)
+      if (
+        userOpen &&
+        userBtnRef.current &&
+        userMenuRef.current &&
+        !userBtnRef.current.contains(e.target as Node) &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserOpen(false)
+      }
     }
     document.addEventListener("mousedown", onDocClick)
     return () => document.removeEventListener("mousedown", onDocClick)
   }, [userOpen])
 
+  // useEffect(() => {
+  //   function onKey(e: KeyboardEvent) {
+  //     if (e.key === "Escape") {
+  //       setMobileOpen(false)
+  //       setUserOpen(false)
+  //     }
+  //   }
+  //   document.addEventListener("keydown", onKey)
+  //   return () => document.removeEventListener("keydown", onKey)
+  // }, [])
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setMobileOpen(false)
-        setUserOpen(false)
+    if (userOpen) {
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setUserOpen(false)
       }
+      document.addEventListener("keydown", handleEscape)
+      return () => document.removeEventListener("keydown", handleEscape)
     }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
-  }, [])
+  }, [userOpen])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-slate-200">
@@ -69,12 +94,9 @@ export function NavbarProfessional() {
             </button>
 
             {/* Logo */}
-            <Link href="/professional/dashboard" className="flex items-center gap-2 cursor-pointer select-none">
-              <span className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 will-change-transform">
-                G1C
-              </span>
-              <span className="font-semibold text-[17px] text-slate-800">GetIn1Click</span>
-            </Link>
+            <Link href="/professional/dashboard" className="font-bold text-xl text-blue-700">
+            GetIn1Click
+          </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
@@ -113,13 +135,8 @@ export function NavbarProfessional() {
               </span>
             </Link>
             {/* Notifications */}
-            <button
-              aria-label="Notifications"
-              className="p-2 rounded-lg text-slate-600 hover:text-blue-700 hover:bg-blue-50 transition-colors duration-200 ease-out cursor-pointer"
-            >
-              <BellDot className="w-5 h-5" />
-            </button>
-
+            <ProfessionalNotifications />
+            
             {/* User */}
             <div className="relative flex items-center">
               <button

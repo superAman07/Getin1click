@@ -60,6 +60,7 @@ model User {
   CreditPurchase      CreditPurchase[]
   LeadAssignment      LeadAssignment[]
   Lead                Lead[]
+  notifications       Notification[]
 }
 
 model CreditPackage {
@@ -329,4 +330,18 @@ model Transaction {
 model Configuration {
   key   String @id
   value String
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // e.g., NEW_LEAD, LEAD_ACCEPTED, etc.
+  message   String
+  read      Boolean  @default(false)
+  data      Json? // Additional context data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

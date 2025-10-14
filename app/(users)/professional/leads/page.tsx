@@ -17,6 +17,9 @@ import {
   Calendar,
   Check,
   ChevronRight,
+  Loader2,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react"
 
 interface LeadTeaser {
@@ -30,12 +33,21 @@ interface LeadTeaser {
   urgency: string;
   customerName: string;
   responses: number;
+  assignmentId: string; // New field for lead assignment
   service: {
     name: string;
   };
 }
 
-type FullLead = LeadTeaser;
+interface CustomerDetails {
+  name: string | null;
+  email: string;
+  phoneNumber: string | null;
+}
+
+type FullLead = LeadTeaser & {
+  customerDetails?: CustomerDetails;
+};
 
 interface ExtendedUser {
   onboardingComplete?: boolean;
@@ -43,18 +55,25 @@ interface ExtendedUser {
 }
 
 const Leads = () => {
+  // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedUrgency, setSelectedUrgency] = useState("all")
   const [showFilters, setShowFilters] = useState(false)
+  
+  // Data states
+  const [leads, setLeads] = useState<FullLead[]>([])
   const [selectedLead, setSelectedLead] = useState<FullLead | null>(null)
-  const [showMobileDetail, setShowMobileDetail] = useState(false)
-  const { data: session } = useSession();
-  const [leads, setLeads] = useState<LeadTeaser[]>([])
   const [loading, setLoading] = useState(true)
+  const [processingLeadId, setProcessingLeadId] = useState<string | null>(null)
+  
+  // UI states
+  const [showMobileDetail, setShowMobileDetail] = useState(false)
+  const { data: session, update: updateSession } = useSession();
 
   const user = session?.user as ExtendedUser | undefined
 
+  // Fetch leads assigned to this professional
   useEffect(() => {
     const fetchLeads = async () => {
       setLoading(true);
@@ -62,7 +81,7 @@ const Leads = () => {
         const response = await axios.get('/api/professional/leads');
         setLeads(response.data);
       } catch (error) {
-        toast.error("Could not load new leads.");
+        toast.error("Could not load assigned leads.");
       } finally {
         setLoading(false);
       }
@@ -70,23 +89,110 @@ const Leads = () => {
     fetchLeads();
   }, []);
 
-  const categories = ["all", "Renovation", "Painting", "Flooring", "Construction"]
-  const urgencyLevels = ["all", "high", "medium", "low"]
-
+  // Filter leads based on search query
   const filteredLeads = leads.filter((lead) => {
-    const matchesSearch = lead.title.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSearch
-  })
+    return lead.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
-  const handleLeadClick = (lead: LeadTeaser) => { 
+  // Handle selecting a lead
+  const handleLeadClick = (lead: FullLead) => { 
     setSelectedLead(lead);
     setShowMobileDetail(true);
   };
 
+  // Close mobile detail view
   const closeMobileDetail = () => {
-    setShowMobileDetail(false)
-  }
+    setShowMobileDetail(false);
+  };
+  
+  // Handle lead acceptance
+  const handleAcceptLead = async (lead: FullLead) => {
+    if (!user?.onboardingComplete) {
+      toast.error("Complete your profile first to accept leads");
+      return;
+    }
+    
+    if ((user?.credits ?? 0) < lead.creditCost) {
+      toast.error("You don't have enough credits");
+      return;
+    }
+    
+    setProcessingLeadId(lead.id);
+    const toastId = toast.loading("Processing...");
+    
+    try {
+      const response = await axios.put(`/api/professional/leads/${lead.assignmentId}`, {
+        action: 'ACCEPT'
+      });
+      
+      toast.success("Lead accepted successfully!", { id: toastId });
+      
+      // Update lead with customer details
+      const updatedLeads = leads.map(l => {
+        if (l.id === lead.id) {
+          return {
+            ...l,
+            customerDetails: response.data.customerDetails
+          };
+        }
+        return l;
+      });
+      
+      setLeads(updatedLeads);
+      
+      // If this is the currently selected lead, update it
+      if (selectedLead && selectedLead.id === lead.id) {
+        setSelectedLead({
+          ...selectedLead,
+          customerDetails: response.data.customerDetails
+        });
+      }
+      
+      // Update session to reflect new credit balance
+      await updateSession({
+        creditsUpdated: true
+      });
+      
+    } catch (error: any) {
+      const errorMessage = error.response?.data || "Failed to accept lead";
+      toast.error(errorMessage, { id: toastId });
+    } finally {
+      setProcessingLeadId(null);
+    }
+  };
+  
+  // Handle lead rejection
+  const handleRejectLead = async (lead: FullLead) => {
+    setProcessingLeadId(lead.id);
+    const toastId = toast.loading("Processing...");
+    
+    try {
+      await axios.put(`/api/professional/leads/${lead.assignmentId}`, {
+        action: 'REJECT'
+      });
+      
+      toast.success("Lead rejected", { id: toastId });
+      
+      // Remove lead from the list
+      setLeads(leads.filter(l => l.id !== lead.id));
+      
+      // If this was the selected lead, clear selection
+      if (selectedLead && selectedLead.id === lead.id) {
+        setSelectedLead(null);
+      }
+      
+    } catch (error: any) {
+      const errorMessage = error.response?.data || "Failed to reject lead";
+      toast.error(errorMessage, { id: toastId });
+    } finally {
+      setProcessingLeadId(null);
+    }
+  };
+  
+  const categories = ["all", "Renovation", "Painting", "Flooring", "Construction"];
+  const urgencyLevels = ["all", "high", "medium", "low"];
 
+  // This is the skeleton UI. The actual UI will be generated by bolt.new
   return (
     <div className="min-h-screen bg-slate-50 mt-14">
       <div className="h-[calc(100vh-3.5rem)] flex flex-col">
@@ -94,10 +200,10 @@ const Leads = () => {
         <div className="px-4 md:px-6 lg:px-8 py-4 md:py-6 bg-white border-b border-slate-200">
           <div className="max-w-[1600px] mx-auto">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Available Leads
+              Your Lead Opportunities
             </h1>
             <p className="text-slate-600 text-sm md:text-base">
-              Find your next project from {filteredLeads.length} opportunities
+              {filteredLeads.length} leads have been assigned to you
             </p>
           </div>
         </div>
@@ -106,67 +212,18 @@ const Leads = () => {
         <div className="px-4 md:px-6 lg:px-8 py-4 bg-white border-b border-slate-200">
           <div className="max-w-[1600px] mx-auto space-y-3">
             <div className="flex flex-col md:flex-row gap-3">
-              <div className="flex-1 relative">
+              {/* Search input and filter toggles - UI will be built by bolt.new */}
+              <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search leads by title or description..."
+                  placeholder="Search leads..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-11 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
-
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="h-11 px-4 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium hover:bg-slate-100 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Filter className="w-4 h-4" />
-                <span>Filters</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`} />
-              </button>
             </div>
-
-            {showFilters && (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 animate-in slide-in-from-top-2 duration-300">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map((category) => (
-                        <button
-                          key={category}
-                          onClick={() => setSelectedCategory(category)}
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer active:scale-95 ${selectedCategory === category
-                              ? "bg-blue-600 text-white shadow-md"
-                              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
-                            }`}
-                        >
-                          {category.charAt(0).toUpperCase() + category.slice(1)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Urgency</label>
-                    <div className="flex flex-wrap gap-2">
-                      {urgencyLevels.map((urgency) => (
-                        <button
-                          key={urgency}
-                          onClick={() => setSelectedUrgency(urgency)}
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer active:scale-95 ${selectedUrgency === urgency
-                              ? "bg-blue-600 text-white shadow-md"
-                              : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
-                            }`}
-                        >
-                          {urgency.charAt(0).toUpperCase() + urgency.slice(1)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -177,85 +234,36 @@ const Leads = () => {
             <div className={`${showMobileDetail ? 'hidden md:block' : 'block'} w-full md:w-[380px] lg:w-[420px] border-r border-slate-200 bg-white overflow-y-auto`}>
               {loading ? (
                 <div className="p-4 space-y-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="bg-slate-100 rounded-lg h-32 animate-pulse" />
-                  ))}
+                  {/* Loading skeleton - UI will be built by bolt.new */}
+                  <div className="flex items-center justify-center p-8">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                  </div>
                 </div>
               ) : filteredLeads.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Search className="w-8 h-8 text-slate-400" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">No leads found</h3>
-                  <p className="text-slate-600 text-sm">Try adjusting your filters or search query</p>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">No leads assigned</h3>
+                  <p className="text-slate-600 text-sm">You don't have any pending leads at the moment</p>
                 </div>
               ) : (
                 <div className="divide-y divide-slate-200">
-                  {filteredLeads.map((lead, index) => (
+                  {filteredLeads.map((lead) => (
                     <div
                       key={lead.id}
                       onClick={() => handleLeadClick(lead)}
-                      className={`p-4 cursor-pointer transition-all duration-200 hover:bg-blue-500 ${
-                        selectedLead?.id === lead.id
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "bg-white"
-                      }`}
-                      style={{
-                        animation: `fadeInLeft 0.3s ease-out ${index * 40}ms both`,
-                      }}
+                      className={`p-4 cursor-pointer transition-all duration-200`}
                     >
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <h3 className={`text-base font-bold line-clamp-2 flex-1 ${
-                          selectedLead?.id === lead.id ? "text-white" : "text-slate-900"
-                        }`}>
-                          {lead.title}
-                        </h3>
-                        <ChevronRight className={`w-5 h-5 flex-shrink-0 ${
-                          selectedLead?.id === lead.id ? "text-white" : "text-slate-400"
-                        }`} />
+                      {/* Lead item - UI will be built by bolt.new */}
+                      <h3 className="font-bold text-slate-900 mb-1">{lead.title}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">{lead.service.name}</span>
+                        <span className="text-blue-600 text-xs font-bold">{lead.creditCost} Credits</span>
                       </div>
-
-                      <div className="flex items-center gap-2 mb-3 flex-wrap">
-                        <span className={`inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full ${
-                          selectedLead?.id === lead.id
-                            ? "bg-blue-500 text-white"
-                            : "bg-blue-100 text-blue-700"
-                        }`}>
-                          {lead.service.name}
-                        </span>
-                        <span className={`text-xs font-semibold ${
-                          selectedLead?.id === lead.id ? "text-blue-100" : "text-slate-500"
-                        }`}>
-                          •
-                        </span>
-                        <span className={`text-xs font-semibold ${
-                          selectedLead?.id === lead.id ? "text-white" : "text-blue-600"
-                        }`}>
-                          {lead.creditCost} Credits
-                        </span>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-2 text-xs">
-                          <MapPin className={`w-3.5 h-3.5 flex-shrink-0 ${
-                            selectedLead?.id === lead.id ? "text-blue-200" : "text-slate-400"
-                          }`} />
-                          <span className={`truncate ${
-                            selectedLead?.id === lead.id ? "text-blue-50" : "text-slate-600"
-                          }`}>
-                            {lead.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs">
-                          <Clock className={`w-3.5 h-3.5 flex-shrink-0 ${
-                            selectedLead?.id === lead.id ? "text-blue-200" : "text-slate-400"
-                          }`} />
-                          <span className={`${
-                            selectedLead?.id === lead.id ? "text-blue-50" : "text-slate-600"
-                          }`}>
-                            Posted {new Date(lead.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
+                      <p className="text-sm text-slate-600 mb-2 line-clamp-2">{lead.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-500">{new Date(lead.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   ))}
@@ -263,31 +271,19 @@ const Leads = () => {
               )}
             </div>
 
-            {/* Right Pane - Lead Details (Desktop) */}
+            {/* Right Pane - Lead Details */}
             <div className="hidden md:block flex-1 bg-slate-50 overflow-y-auto">
               {!selectedLead ? (
                 <div className="h-full flex items-center justify-center p-8">
-                  <div className="text-center max-w-md">
-                    <div className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Search className="w-10 h-10 text-slate-400" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">Select a lead to view details</h3>
-                    <p className="text-slate-600">
-                      Click on any lead from the list to see full project details and contact information
-                    </p>
-                  </div>
+                  {/* Empty state - UI will be built by bolt.new */}
+                  <p className="text-slate-500">Select a lead to view details</p>
                 </div>
               ) : (
-                <div
-                  className="p-6 lg:p-8 animate-in fade-in duration-300"
-                  key={selectedLead.id}
-                >
-                  {/* Header */}
+                <div className="p-6 lg:p-8">
+                  {/* Lead details - UI will be built by bolt.new */}
                   <div className="mb-6">
-                    <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-3 leading-tight">
-                      {selectedLead.title}
-                    </h2>
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-3">{selectedLead.title}</h2>
+                    <div className="flex flex-wrap gap-3 mb-4">
                       <span className="inline-flex items-center px-3 py-1.5 text-sm font-semibold rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                         {selectedLead.service.name}
                       </span>
@@ -295,112 +291,79 @@ const Leads = () => {
                         {selectedLead.creditCost} Credits
                       </span>
                     </div>
+                    <p className="text-slate-700">{selectedLead.description}</p>
                   </div>
 
-                  {/* Customer Info */}
-                  <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 rounded-xl p-5 mb-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg flex-shrink-0">
-                        <span className="text-white font-bold text-xl">
-                          {selectedLead.customerName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xl font-bold text-slate-900 truncate">
-                          {selectedLead.customerName}
-                        </div>
-                      </div>
-                    </div>
-                    {/* Contact info will be shown here AFTER purchase */}
-                    <div className="text-center p-3 bg-white/60 rounded-lg border-2 border-dashed border-blue-200">
-                        <p className="text-sm font-semibold text-blue-800">Contact details will be revealed after unlocking the lead.</p>
-                    </div>
-                  </div>
-
-                  {/* Project Details */}
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-3">Project Details</h3>
-                    <p className="text-slate-700 text-base leading-relaxed mb-5">{selectedLead.description}</p>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <div className="flex items-center gap-3 p-4 rounded-xl bg-white border border-slate-200">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">Location</div>
-                          <div className="font-semibold text-slate-900 text-sm truncate">{selectedLead.location}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-4 rounded-xl bg-white border border-emerald-200">
-                        <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                          <DollarSign className="w-5 h-5 text-emerald-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs text-emerald-600 font-medium uppercase tracking-wide">Budget</div>
-                          <div className="font-semibold text-emerald-700 text-sm truncate">{selectedLead.budget}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-4 rounded-xl bg-white border border-amber-200">
-                        <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                          <Clock className="w-5 h-5 text-amber-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs text-amber-600 font-medium uppercase tracking-wide">Posted</div>
-                          <div className="font-semibold text-amber-700 text-sm truncate">
-                            {new Date(selectedLead.createdAt).toLocaleDateString()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-4 rounded-xl bg-white border border-purple-200">
-                        <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                          <Calendar className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs text-purple-600 font-medium uppercase tracking-wide">Responses</div>
-                          <div className="font-semibold text-purple-700 text-sm truncate">
-                            {selectedLead.responses} professionals
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Action buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 mb-6">
                     <button
-                      className="flex-1 h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
-                      disabled={!user?.onboardingComplete || (user?.credits ?? 0) < selectedLead.creditCost}
-                      title={
-                        !user?.onboardingComplete
-                          ? "Complete your profile to unlock leads"
-                          : (user?.credits ?? 0) < selectedLead.creditCost
-                          ? "Insufficient credits"
-                          : `Unlock for ${selectedLead.creditCost} credits`
-                      }
+                      onClick={() => handleAcceptLead(selectedLead)}
+                      disabled={!!processingLeadId || !user?.onboardingComplete || (user?.credits ?? 0) < selectedLead.creditCost}
+                      className="flex-1 h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg shadow-green-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
                     >
-                      <Check className="w-5 h-5" />
-                      {
-                        !user?.onboardingComplete
-                          ? "Complete Profile First"
-                          : (user?.credits ?? 0) < selectedLead.creditCost
-                          ? "Get More Credits"
-                          : `Contact Customer (${selectedLead.creditCost} Credits)`
-                      }
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <ThumbsUp className="w-5 h-5" />
+                      )}
+                      Accept Lead
                     </button>
-                    <button className="sm:w-auto h-12 px-6 bg-slate-100 hover:bg-slate-200 active:scale-98 text-slate-700 font-semibold rounded-xl transition-all duration-200 cursor-pointer">
-                      Save for Later
+                    <button
+                      onClick={() => handleRejectLead(selectedLead)}
+                      disabled={!!processingLeadId}
+                      className="flex-1 h-12 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <ThumbsDown className="w-5 h-5" />
+                      )}
+                      Reject Lead
                     </button>
                   </div>
+
+                  {/* Lead info cards - UI will be built by bolt.new */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-white p-4 rounded-xl border border-slate-200">
+                      <h3 className="font-medium text-slate-900 mb-2">Location</h3>
+                      <p className="text-slate-700">{selectedLead.location}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200">
+                      <h3 className="font-medium text-slate-900 mb-2">Budget</h3>
+                      <p className="text-slate-700">{selectedLead.budget}</p>
+                    </div>
+                  </div>
+
+                  {/* Customer info - only shown after accepting lead */}
+                  {selectedLead.customerDetails && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6">
+                      <h3 className="text-lg font-bold text-green-800 mb-4">Customer Details</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2.5">
+                          <User className="w-5 h-5 text-green-600" />
+                          <span className="font-medium text-slate-900">{selectedLead.customerDetails.name || 'Customer'}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <Mail className="w-5 h-5 text-green-600" />
+                          <span className="font-medium text-slate-900">{selectedLead.customerDetails.email}</span>
+                        </div>
+                        {selectedLead.customerDetails.phoneNumber && (
+                          <div className="flex items-center gap-2.5">
+                            <Phone className="w-5 h-5 text-green-600" />
+                            <span className="font-medium text-slate-900">{selectedLead.customerDetails.phoneNumber}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Mobile Detail View (Full Screen) */}
+            {/* Mobile Detail View */}
             {showMobileDetail && selectedLead && (
               <div className="md:hidden fixed inset-0 z-50 bg-white mt-14 overflow-y-auto animate-in slide-in-from-right duration-300">
+                {/* Mobile lead detail UI will be built by bolt.new */}
                 <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-200 p-4 flex items-center gap-3 z-10">
                   <button
                     onClick={closeMobileDetail}
@@ -413,132 +376,90 @@ const Leads = () => {
                     {selectedLead.title}
                   </h2>
                 </div>
-
-                <div className="p-4 space-y-6">
-                  {/* Customer Info */}
-                  <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 rounded-xl p-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg flex-shrink-0">
-                        <span className="text-white font-bold text-lg">
-                          {selectedLead.customerName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-lg font-bold text-slate-900 truncate">
-                          {selectedLead.customerName}
-                        </div>
-                      </div>
+                
+                <div className="p-4 space-y-4">
+                  {/* Same content as desktop but optimized for mobile */}
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+                        {selectedLead.service.name}
+                      </span>
+                      <span className="text-lg font-bold bg-gradient-to-br from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                        {selectedLead.creditCost} Credits
+                      </span>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2.5 text-sm bg-white rounded-lg p-3 border border-blue-100">
-                        <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-slate-700 font-medium">(555) 123-4567</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-sm bg-white rounded-lg p-3 border border-blue-100">
-                        <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-slate-700 font-medium truncate">customer@email.com</span>
-                      </div>
-                    </div>
+                    <p className="text-slate-700 text-sm">{selectedLead.description}</p>
                   </div>
 
-                  {/* Project Details */}
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-3">Project Details</h3>
-                    <p className="text-slate-700 text-sm leading-relaxed mb-4">{selectedLead.description}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-slate-200">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs text-slate-500 font-medium">Location</div>
-                          <div className="font-semibold text-slate-900 text-xs truncate">{selectedLead.location}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-emerald-200">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                          <DollarSign className="w-4 h-4 text-emerald-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs text-emerald-600 font-medium">Budget</div>
-                          <div className="font-semibold text-emerald-700 text-xs truncate">{selectedLead.budget}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-amber-200">
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                          <Clock className="w-4 h-4 text-amber-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs text-amber-600 font-medium">Posted</div>
-                          <div className="font-semibold text-amber-700 text-xs truncate">
-                            {new Date(selectedLead.createdAt).toLocaleDateString()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-purple-200">
-                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                          <Calendar className="w-4 h-4 text-purple-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs text-purple-600 font-medium">Responses</div>
-                          <div className="font-semibold text-purple-700 text-xs truncate">
-                            {selectedLead.responses} pros
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-col gap-3 pb-4">
+                  <div className="flex flex-col gap-3">
                     <button
-                      className="h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
-                      disabled={!user?.onboardingComplete || (user?.credits ?? 0) < selectedLead.creditCost}
-                      title={
-                        !user?.onboardingComplete
-                          ? "Complete your profile to unlock leads"
-                          : (user?.credits ?? 0) < selectedLead.creditCost
-                          ? "Insufficient credits"
-                          : `Unlock for ${selectedLead.creditCost} credits`
-                      }
+                      onClick={() => handleAcceptLead(selectedLead)}
+                      disabled={!!processingLeadId || !user?.onboardingComplete || (user?.credits ?? 0) < selectedLead.creditCost}
+                      className="h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg shadow-green-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
                     >
-                      <Check className="w-5 h-5" />
-                      {
-                        !user?.onboardingComplete
-                          ? "Complete Profile First"
-                          : (user?.credits ?? 0) < selectedLead.creditCost
-                          ? "Get More Credits"
-                          : `Contact (${selectedLead.creditCost} Credits)`
-                      }
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <ThumbsUp className="w-5 h-5" />
+                      )}
+                      Accept Lead
                     </button>
-                    <button className="h-12 px-6 bg-slate-100 hover:bg-slate-200 active:scale-98 text-slate-700 font-semibold rounded-xl transition-all duration-200 cursor-pointer">
-                      Save for Later
+                    <button
+                      onClick={() => handleRejectLead(selectedLead)}
+                      disabled={!!processingLeadId}
+                      className="h-12 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                    >
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <ThumbsDown className="w-5 h-5" />
+                      )}
+                      Reject Lead
                     </button>
                   </div>
+
+                  {/* Mobile lead info cards */}
+                  <div className="space-y-3">
+                    <div className="bg-white p-3 rounded-lg border border-slate-200">
+                      <h3 className="font-medium text-slate-900 mb-1 text-sm">Location</h3>
+                      <p className="text-slate-700 text-sm">{selectedLead.location}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-slate-200">
+                      <h3 className="font-medium text-slate-900 mb-1 text-sm">Budget</h3>
+                      <p className="text-slate-700 text-sm">{selectedLead.budget}</p>
+                    </div>
+                  </div>
+
+                  {/* Customer info - only shown after accepting lead */}
+                  {selectedLead.customerDetails && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <h3 className="text-base font-bold text-green-800 mb-3">Customer Details</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-green-600" />
+                          <span className="font-medium text-slate-900 text-sm">{selectedLead.customerDetails.name || 'Customer'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-green-600" />
+                          <span className="font-medium text-slate-900 text-sm">{selectedLead.customerDetails.email}</span>
+                        </div>
+                        {selectedLead.customerDetails.phoneNumber && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-green-600" />
+                            <span className="font-medium text-slate-900 text-sm">{selectedLead.customerDetails.phoneNumber}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </div>
   )
 }
 
-export default Leads
+export default Leads;

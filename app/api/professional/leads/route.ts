@@ -41,11 +41,11 @@ export async function GET(request: NextRequest) {
 
             return {
                 ...lead,
-                assignmentId: assignment.id, // Pass assignment ID for accept/reject actions
+                assignmentId: assignment.id,
                 creditCost: lead.service.creditCost ?? 1,
                 location: partialLocation,
-                customerName: 'Valued Customer', // Name is hidden until accepted
-                responses: 0, // This logic might change
+                customerName: 'Valued Customer',
+                responses: 0,
             };
         });
 
