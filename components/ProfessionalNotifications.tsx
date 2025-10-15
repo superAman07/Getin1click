@@ -88,7 +88,7 @@ export default function ProfessionalNotifications() {
       {/* Notification Bell */}
       <button
         onClick={toggleOpen}
-        className="p-2 rounded-full text-slate-600 hover:bg-slate-100 transition-all duration-200 relative"
+        className="p-2 cursor-pointer rounded-full text-slate-600 hover:bg-slate-100 transition-all duration-200 relative"
       >
         <BellDot className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -105,7 +105,7 @@ export default function ProfessionalNotifications() {
             <h3 className="font-semibold text-slate-900">Notifications</h3>
             <button 
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-full hover:bg-slate-100 text-slate-500"
+              className="p-1 rounded-full hover:bg-slate-100 text-slate-500 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -132,7 +132,7 @@ export default function ProfessionalNotifications() {
                     <div className="flex justify-end gap-2">
                       <Link
                         href="/professional/leads"
-                        className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer transition-colors"
                       >
                         View Lead
                       </Link>

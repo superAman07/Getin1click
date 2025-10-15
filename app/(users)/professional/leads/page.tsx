@@ -20,6 +20,7 @@ import {
   Loader2,
   ThumbsUp,
   ThumbsDown,
+  User,
 } from "lucide-react"
 
 interface LeadTeaser {
@@ -138,20 +139,25 @@ const Leads = () => {
         return l;
       });
       
-      setLeads(updatedLeads);
+      setLeads(updatedLeads.filter(l => l.id !== lead.id));
       
       // If this is the currently selected lead, update it
       if (selectedLead && selectedLead.id === lead.id) {
-        setSelectedLead({
-          ...selectedLead,
-          customerDetails: response.data.customerDetails
-        });
+        setSelectedLead(null); 
       }
       
       // Update session to reflect new credit balance
       await updateSession({
         creditsUpdated: true
       });
+
+      setLeads(leads.filter(l => l.id !== lead.id));
+      
+      // If this was the selected lead, clear selection
+      if (selectedLead && selectedLead.id === lead.id) {
+        setSelectedLead(null);
+        setShowMobileDetail(false);
+      }
       
     } catch (error: any) {
       const errorMessage = error.response?.data || "Failed to accept lead";
@@ -299,7 +305,7 @@ const Leads = () => {
                     <button
                       onClick={() => handleAcceptLead(selectedLead)}
                       disabled={!!processingLeadId || !user?.onboardingComplete || (user?.credits ?? 0) < selectedLead.creditCost}
-                      className="flex-1 h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg shadow-green-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
+                      className="flex-1 h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold cursor-pointer rounded-lg shadow-lg shadow-green-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
                     >
                       {processingLeadId === selectedLead.id ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -311,7 +317,7 @@ const Leads = () => {
                     <button
                       onClick={() => handleRejectLead(selectedLead)}
                       disabled={!!processingLeadId}
-                      className="flex-1 h-12 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                      className="flex-1 h-12 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 cursor-pointer font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
                     >
                       {processingLeadId === selectedLead.id ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

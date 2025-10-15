@@ -26,15 +26,6 @@ export async function POST(
             return new NextResponse('Professional ID missing', { status: 400 });
         }
 
-        const lead = await prisma.lead.findUnique({
-            where: { id: leadId }
-        });
-
-        if (!lead) {
-
-            return new NextResponse('Lead not found', { status: 404 });
-        }
-
         const existingAssignment = await prisma.leadAssignment.findUnique({
             where: {
                 leadId_professionalId: {
@@ -46,6 +37,11 @@ export async function POST(
 
         if (existingAssignment) {
             return new NextResponse('This professional has already been assigned this lead.', { status: 409 });
+        }
+
+        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+        if (!lead) {
+            return new NextResponse('Lead not found', { status: 404 });
         }
 
         const assignment = await prisma.leadAssignment.create({
@@ -63,6 +59,20 @@ export async function POST(
                 }
             }
         });
+
+        if (lead) {
+            await prisma.notification.create({
+                data: {
+                    userId: professionalId,
+                    type: 'NEW_LEAD',
+                    message: `You have been assigned a new lead: "${lead.title}"`,
+                    data: {
+                        leadId: leadId,
+                        assignmentId: assignment.id
+                    }
+                }
+            });
+        }
 
         // Update the lead status
         await prisma.lead.update({
