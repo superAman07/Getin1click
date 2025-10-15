@@ -26,12 +26,9 @@ export default function About() {
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 mt-20" >
-     <div className="relative bg-blue-50 py-16 px-6 lg:px-20 overflow-hidden">
+     <div className="relative bg-purple-50 py-16 px-6 lg:px-20 overflow-hidden">
       {/* Decorative shapes */}
-      <div className="absolute inset-0">
-        <div className="bg-blue-200 w-72 h-72 rounded-full -top-20 -left-16 opacity-30"></div>
-        <div className="bg-blue-300 w-96 h-96 rounded-full -bottom-24 -right-20 opacity-20"></div>
-      </div>
+
 
       <div ref={ref} className="relative flex flex-col lg:flex-row items-center gap-10">
         {/* Text Section */}
@@ -41,15 +38,15 @@ export default function About() {
           initial="hidden"
           animate={controls}
         >
-          <h1 className="text-4xl lg:text-5xl font-extrabold mb-6" style={{ color: '#2596be' }}>
+          <h1 className="text-4xl lg:text-5xl font-extrabold mb-6" style={{ color: '#6B3F69' }}>
             The people behind the platform
           </h1>
-          <p className="text-gray-700 mb-6 text-lg lg:text-xl leading-relaxed">
+          <p className="text-gray-700 mb-6 text-lg lg:text-xl leading-relaxed align-justify">
             GetInOncClick is the world’s fastest growing marketplace and we have no intention of slowing down any time soon. Our sights are set firmly on global expansion and connecting people to services all over the world. We’re a work-hard, praise-hard culture that pushes ourselves to be 1% better everyday and our global team of energetic, passionate and dedicated individuals make work something to look forward to.
           </p>
           <button 
             className="text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition duration-300" 
-            style={{ backgroundColor: '#2596be' }}
+            style={{ backgroundColor: '#6B3F69' }}
           >
             Learn More
           </button>
@@ -85,7 +82,7 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full px-4">
           {/* Job Card */}
           <div className="bg-gray-50 border rounded-lg p-6 transition hover:shadow-lg hover:border-blue-400 cursor-pointer h-50">
-            <h1 className="text-blue-600 font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
+            <h1 className="text-[#6B3F69] font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
               Content Executive
             </h1>
             <h2 className="text-gray-600 mt-2" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
@@ -94,7 +91,7 @@ export default function About() {
           </div>
 
           <div className="bg-gray-50 border rounded-lg p-6 transition hover:shadow-lg hover:border-blue-400 cursor-pointer h-50">
-            <h1 className="text-blue-600 font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
+            <h1 className="text-[#6B3F69] font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
               Senior SDET (Remote, Spain)
             </h1>
             <h2 className="text-gray-600 mt-2" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
@@ -103,7 +100,7 @@ export default function About() {
           </div>
 
           <div className="bg-gray-50 border rounded-lg p-6 transition hover:shadow-lg hover:border-blue-400 cursor-pointer h-50">
-            <h1 className="text-blue-600 font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
+            <h1 className="text-[#6B3F69] font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
 
               Senior LLM Backend Engineer (Remote, Spain)
             </h1>
@@ -113,7 +110,7 @@ export default function About() {
           </div>
 
           <div className="bg-gray-50 border rounded-lg p-6 transition hover:shadow-lg hover:border-blue-400 cursor-pointer h-50">
-            <h1 className="text-blue-600 font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
+            <h1 className="text-[#6B3F69] font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
               Senior Backend Engineer (Remote, Spain)
             </h1>
             <h2 className="text-gray-600 mt-2" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
@@ -122,7 +119,7 @@ export default function About() {
           </div>
 
           <div className="bg-gray-50 border rounded-lg p-6 transition hover:shadow-lg hover:border-blue-400 cursor-pointer h-50">
-            <h1 className="text-blue-600 font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
+            <h1 className="text-[#6B3F69] font-medium text-lg hover:none mt-5" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
               Head of Product - (Remote, Spain)
             </h1>
             <h2 className="text-gray-600 mt-2" style={{ lineHeight: '1.5', fontSize: '22px', textAlign: 'center' }}>
@@ -282,7 +279,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               UK
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -302,7 +299,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               SPAIN
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -323,7 +320,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               AUSTRALIA
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -344,7 +341,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               INDIA
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -362,7 +359,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               GERMANY
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -379,7 +376,7 @@ export default function About() {
           <div className="text-center">
             <h3 className="text-xl font-semibold mb-4 relative inline-block">
               FRANCE
-              <span className="block h-1 bg-gradient-to-r from-blue-300 to-blue-600 mt-2"></span>
+              <span className="block h-1 bg-gradient-to-r from-[#6B3F69] to-[#6B3F69] mt-2"></span>
             </h3>
             <div className="relative overflow-hidden rounded-md">
               <img
@@ -549,7 +546,7 @@ export default function About() {
                 <div 
                   className="absolute inset-0 rounded-full"
                   style={{
-                    background: `conic-gradient(from 0deg, #3b82f6 0deg 208deg, transparent 208deg 360deg)`
+                    background: `conic-gradient(from 0deg, #6B3F69 0deg 208deg, transparent 208deg 360deg)`
                   }}
                 ></div>
                 {/* White center circle */}
@@ -557,7 +554,7 @@ export default function About() {
                 
                 {/* Gender symbols */}
                 <div className="absolute top-4 left-6 text-white text-xl font-bold">♂</div>
-                <div className="absolute bottom-8 left-4 text-blue-500 text-xl font-bold">♀</div>
+                <div className="absolute bottom-8 left-4 text-[#6B3F69] text-xl font-bold">♀</div>
               </div>
             </div>
             <div className="text-center">
@@ -573,12 +570,12 @@ export default function About() {
               <div className="relative">
                 {/* Left hand (blue) */}
                 <div className="absolute -left-8 top-0">
-                  <div className="w-16 h-20 bg-blue-500 rounded-t-full rounded-bl-full transform rotate-12 relative">
+                  <div className="w-16 h-20 bg-[#6B3F69] rounded-t-full rounded-bl-full transform rotate-12 relative">
                     {/* Fingers */}
-                    <div className="absolute -top-3 left-2 w-3 h-8 bg-blue-500 rounded-full transform -rotate-12"></div>
-                    <div className="absolute -top-4 left-5 w-3 h-10 bg-blue-500 rounded-full transform -rotate-6"></div>
-                    <div className="absolute -top-4 left-8 w-3 h-9 bg-blue-500 rounded-full transform rotate-6"></div>
-                    <div className="absolute -top-2 left-11 w-3 h-6 bg-blue-500 rounded-full transform rotate-12"></div>
+                    <div className="absolute -top-3 left-2 w-3 h-8 bg-[#6B3F69] rounded-full transform -rotate-12"></div>
+                    <div className="absolute -top-4 left-5 w-3 h-10 bg-[#6B3F69] rounded-full transform -rotate-6"></div>
+                    <div className="absolute -top-4 left-8 w-3 h-9 bg-[#6B3F69] rounded-full transform rotate-6"></div>
+                    <div className="absolute -top-2 left-11 w-3 h-6 bg-[#6B3F69] rounded-full transform rotate-12"></div>
                   </div>
                 </div>
                 
@@ -611,14 +608,14 @@ export default function About() {
                 
                 {/* Person 2 - Blue */}
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-full mb-2"></div>
-                  <div className="w-16 h-20 bg-blue-500 rounded-t-full"></div>
+                  <div className="w-12 h-12 bg-[#6B3F69] rounded-full mb-2"></div>
+                  <div className="w-16 h-20 bg-[#6B3F69] rounded-t-full"></div>
                 </div>
                 
                 {/* Person 3 - Blue */}
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-full mb-2"></div>
-                  <div className="w-16 h-20 bg-blue-500 rounded-t-full"></div>
+                  <div className="w-12 h-12 bg-[#6B3F69] rounded-full mb-2"></div>
+                  <div className="w-16 h-20 bg-[#6B3F69] rounded-t-full"></div>
                 </div>
               </div>
             </div>
@@ -635,11 +632,11 @@ export default function About() {
                 {/* Globe inside */}
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-white rounded-full">
                   {/* Continents */}
-                  <div className="absolute top-2 left-3 w-6 h-4 bg-blue-500 rounded-full transform rotate-12"></div>
-                  <div className="absolute top-6 right-2 w-8 h-6 bg-blue-500 rounded-full transform -rotate-6"></div>
-                  <div className="absolute bottom-4 left-2 w-5 h-3 bg-blue-500 rounded-full"></div>
-                  <div className="absolute bottom-2 right-4 w-4 h-4 bg-blue-500 rounded-full"></div>
-                  <div className="absolute top-8 left-8 w-3 h-5 bg-blue-500 rounded-full transform rotate-45"></div>
+                  <div className="absolute top-2 left-3 w-6 h-4 bg-[#6B3F69] rounded-full transform rotate-12"></div>
+                  <div className="absolute top-6 right-2 w-8 h-6 bg-[#6B3F69] rounded-full transform -rotate-6"></div>
+                  <div className="absolute bottom-4 left-2 w-5 h-3 bg-[#6B3F69] rounded-full"></div>
+                  <div className="absolute bottom-2 right-4 w-4 h-4 bg-[#6B3F69] rounded-full"></div>
+                  <div className="absolute top-8 left-8 w-3 h-5 bg-[#6B3F69] rounded-full transform rotate-45"></div>
                 </div>
               </div>
             </div>
@@ -660,7 +657,7 @@ export default function About() {
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#6B3F69] mb-8">
             Perks & Benefits
           </h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
@@ -673,10 +670,10 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
           {/* Oliva */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-6 bg-blue-50 rounded-full flex items-center justify-center">
-              <Brain className="w-12 h-12 text-blue-600" strokeWidth={1.5} />
+            <div className="w-24 h-24 mb-6 bg-[#6B3F69] rounded-full flex items-center justify-center">
+              <Brain className="w-12 h-12 text-[#ffffff]" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4">Oliva</h3>
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4">Oliva</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
               Access to Oliva's mental wellbeing platform for therapy and coaching. We offer 6 
               sessions on the house, plus lots of other content.
@@ -685,10 +682,10 @@ export default function About() {
 
           {/* Healthcare */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-6 bg-slate-800 rounded-full flex items-center justify-center">
+            <div className="w-24 h-24 mb-6 bg-[#6B3F69] rounded-full flex items-center justify-center">
               <Heart className="w-12 h-12 text-white" strokeWidth={1.5} fill="currentColor" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4">Healthcare</h3>
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4">Healthcare</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
               We offer top-level private health insurance providers, including 
               optical care, and if you want to add family members to your 
@@ -698,10 +695,10 @@ export default function About() {
 
           {/* Wellness */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-6 bg-blue-50 rounded-2xl flex items-center justify-center border-2 border-blue-200">
-              <Dumbbell className="w-12 h-12 text-blue-600" strokeWidth={1.5} />
+            <div className="w-24 h-24 mb-6 bg-[#6B3F69] rounded-2xl flex items-center justify-center border-2 border-blue-200">
+              <Dumbbell className="w-12 h-12 text-white" strokeWidth={1.5} />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4">Wellness</h3>
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4">Wellness</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
               GetInOncClick  encourages living a healthy, active lifestyle. Our wellness 
               initiative provides health subscriptions and a diverse range 
@@ -711,12 +708,12 @@ export default function About() {
 
           {/* Skill Development */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-6 bg-blue-600 rounded-2xl flex items-center justify-center relative">
+            <div className="w-24 h-24 mb-6 bg-[#6B3F69] rounded-2xl flex items-center justify-center relative">
               <GraduationCap className="w-12 h-12 text-white" strokeWidth={1.5} />
-              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-blue-700 rounded"></div>
-              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-blue-800 rounded"></div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-[#6B3F69] rounded"></div>
+              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-[#6B3F59] rounded"></div>
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4">Skill Development</h3>
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4">Skill Development</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
               Your growth is our growth. GetInOncClick  has a 'learning and development' 
               budget so we can offer you training and educational 
@@ -728,11 +725,11 @@ export default function About() {
           <div className="flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-6 rounded-2xl flex items-center justify-center relative">
               <GraduationCap className="w-12 h-12 text-white" strokeWidth={1.5} />
-              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-blue-700 rounded"></div>
-              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-blue-800 rounded"></div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-[#6B3F59] rounded"></div>
+              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-[#6B3F69] rounded"></div>
               <img src="/bb.webp" alt="" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4">Work-Life Balance</h3>
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4">Work-Life Balance</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
              We can’t tell you how to strike the perfect work/life balance but our hybrid working model and supportive management make the pursuit of it a bit easier.
             </p>
@@ -742,11 +739,11 @@ export default function About() {
           <div className="flex flex-col items-center text-center">
             <div className="w-24 h-24 mb-6 rounded-2xl flex items-center justify-center relative">
               <GraduationCap className="w-12 h-12 text-white" strokeWidth={1.5} />
-              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-blue-700 rounded"></div>
-              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-blue-800 rounded"></div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-6 bg-[#6B3F69] rounded"></div>
+              <div className="absolute -bottom-4 -right-1 w-6 h-4 bg-[#6B3F59] rounded"></div>
               <img src="/cycle.webp" alt="" />
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-4"> 
+            <h3 className="text-2xl font-semibold text-[#6B3F69] mb-4"> 
 Cycle to Work Scheme</h3>
             <p className="text-slate-600 leading-relaxed max-w-sm">
               Choose a greener commute with the Cycle to Work scheme. Upgrade your bike or your gear and cycle to the office - great for you, better for the planet.

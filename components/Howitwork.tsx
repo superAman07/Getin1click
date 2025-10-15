@@ -8,7 +8,7 @@ export default function Howitwork(){
 GetInOncClick  is the Amazon of services. Millions of people use us  <br /> worldwide to find what they need every day.</p>
 
       {/* Button */}
-      <button className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition mt-10">
+      <button className="bg-[#6B3F69] text-white px-6 py-2 rounded-md shadow-md hover:bg-[#6B3F69] transition mt-10">
         Join as a Professional
       </button>
 
@@ -138,7 +138,7 @@ You’ll also get access to our award winning customer success team, by both e-m
           placeholder="What service do you provide?"
           className="flex-1 px-4 py-3 rounded-l-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
         />
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-r-md shadow hover:bg-blue-700 transition">
+        <button className="bg-[#6B3F69] text-white px-6 py-3 rounded-r-md shadow hover:bg-[#6B3F69] transition">
           Get started
         </button>
       </div>

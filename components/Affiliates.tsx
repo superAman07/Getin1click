@@ -9,7 +9,7 @@ export default function Affiliates() {
 Start earning by referring people who need  service <br/> providers to do their everyday jobs          </p>
 
       {/* Button */}
-      <button className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition mt-10">
+      <button className="bg-[#6B3F69] text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition mt-10">
         Join GetInOncClick  Affiliate via AWIN
       </button>
 
@@ -72,7 +72,7 @@ Start earning by referring people who need  service <br/> providers to do their 
                 To get started as a GetInOncClick  Affiliate, simply sign up for Awin and then apply for
                 the GetInOncClick  programme. We'll confirm and then you're ready to go!
               </p>
-              <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition">
+              <button className="mt-4 bg-[#6B3F69] text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-700 transition">
                 Join GetInOncClick  Affiliate via AWIN
               </button>
             </div>

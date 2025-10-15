@@ -27,16 +27,16 @@ export default function Navp() {
     <nav className="w-full bg-white shadow-md fixed top-0 z-50" style={{ height: "74px" }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
         {/* Logo */}
-        <Link href="/Home">
+        <Link href="/HeroPage">
           <img src="/logo.png" alt="Logo" className="h-8" />
         </Link>
 
         {/* Center Links */}
         <div className="hidden md:flex space-x-6 font-medium text-gray-800 justify-center items-center flex-1">
-          <Link href="/Home" className="hover:text-blue-600 transition">Home</Link>
-          <Link href="/About" className="hover:text-blue-600 transition">About</Link>
-          <Link href="/Career" className="hover:text-blue-600 transition">Career</Link>
-          <Link href="/Blog" className="hover:text-blue-600 transition">Blog</Link>
+          <Link href="/HeroPage" className="hover:text-[#6B3F69] transition">Home</Link>
+          <Link href="/about" className="hover:text-[#6B3F69] transition">About</Link>
+          <Link href="/Career" className="hover:text-[#6B3F69] transition">Career</Link>
+          <Link href="/Blog" className="hover:text-[#6B3F69] transition">Blog</Link>
         </div>
 
         {/* Right: Auth/Profile */}
@@ -53,10 +53,10 @@ export default function Navp() {
 
           {status === 'unauthenticated' && (
             <div className="hidden md:flex space-x-2">
-              <Link href="/auth/login" className="hover:text-blue-600 font-medium transition mt-2">Login</Link>
+              <Link href="/auth/login" className="hover:text-[#6B3F69] font-medium transition mt-2">Login</Link>
               <Link
                 href="/joinasprofessional"
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium shadow-sm transition"
+                className="px-4 py-2 bg-[#6B3F69] hover:bg-[#6B3F69] text-white rounded-full font-medium shadow-sm transition"
               >
                 Join as a Professional
               </Link>
@@ -67,14 +67,14 @@ export default function Navp() {
   <div className="relative" ref={profileRef}>
     <button
       onClick={() => setProfileOpen(!profileOpen)}
-      className="w-12 h-12 rounded-full  flex items-center cursor-pointer justify-center text-black font-bold text-lg hover:bg-blue-600 transition shadow-md"
+      className="w-12 h-12 rounded-full  flex items-center cursor-pointer justify-center text-White font-bold text-lg hover:bg-[#6B3F69] transition shadow-md"
     >
       <UserIcon className="w-6 h-6" />
     </button>
     {profileOpen && (
       <div className="absolute right-0 mt-2 w-60 bg-white border rounded-lg shadow-lg py-4 z-50 animate-slide-down">
-        <div className="px-4 pb-2 border-b text-gray-700 font-semibold">User Profile</div>
-        <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+        <div className="px-4 pb-2 border-b text-white-700 font-semibold">User Profile</div>
+        <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-white-700 hover:bg-white-100 transition">
           <UserIcon className="w-5 h-5" /> Profile
         </Link>
       </div>
@@ -89,15 +89,15 @@ export default function Navp() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden mt-2 px-4 pb-4 space-y-2 bg-white shadow-md rounded-md">
-          <Link href="/Home" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">Home</Link>
-          <Link href="/About" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">About</Link>
+          <Link href="/HeroPage" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">Home</Link>
+          <Link href="/about" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">About</Link>
           <Link href="/Career" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">Career</Link>
           <Link href="/Blog" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">Blog</Link>
 
           {status === 'unauthenticated' && (
             <>
               <Link href="/auth/login" className="block py-2 px-2 text-gray-700 font-medium hover:bg-gray-100 rounded transition">Login</Link>
-              <Link href="/joinasprofessional" className="block py-2 px-2 text-white bg-blue-500 hover:bg-blue-600 rounded font-medium text-center transition">Join as a Professional</Link>
+              <Link href="/joinasprofessional" className="block py-2 px-2 text-white bg-[#6B3F69] hover:bg-[#6B3F69] rounded font-medium text-center transition">Join as a Professional</Link>
             </>
           )}
 

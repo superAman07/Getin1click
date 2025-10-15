@@ -80,14 +80,14 @@ export default function HeroPage() {
     <div className="relative mt-20">
       <div className="w-full bg-gradient-to-b from-blue-50 via-white to-white py-16 px-4 sm:py-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-[#6B3F69] px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
             <Sparkles size={16} className="animate-pulse" />
             <span>Find trusted professionals in your area</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-4 animate-slide-up">
             Find the perfect <br className="hidden sm:block" />
-            <span className="text-blue-600">professional</span> for you
+            <span className="text-[#6B3F69]">professional</span> for you
           </h1>
 
           <p className="mt-4 text-lg sm:text-xl text-gray-600 mb-10 animate-slide-up animation-delay-100">
@@ -103,7 +103,7 @@ export default function HeroPage() {
                   value={serviceQuery}
                   onChange={(e) => setServiceQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
                 />
               </div>
 
@@ -114,14 +114,14 @@ export default function HeroPage() {
                   value={postcode}
                   onChange={(e) => setPostcode(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#6B3F69] focus:ring-4 focus:ring-purple-100 transition-all duration-200 group-hover:border-gray-300"
                 />
               </div>
 
               <button
                 onClick={handleSearch}
                 disabled={isLoading}
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4 bg-[#6B3F69] hover:bg-[#6B3F69]-700 active:bg-purple-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" size={22} />
@@ -204,7 +204,7 @@ export default function HeroPage() {
                           <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
                             <Search
                               size={24}
-                              className="text-blue-600 group-hover:text-white transition-colors duration-300"
+                              className="text-[#6B3F69] group-hover:text-white transition-colors duration-300"
                             />
                           </div>
                           <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -414,7 +414,7 @@ export default function HeroPage() {
             <button
               key={dot}
               className={`h-2.5 w-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === 0
-                  ? "bg-blue-600 w-8"
+                  ? "bg-[#6B3F69] w-8"
                   : "bg-gray-300 hover:bg-gray-400"
                 }`}
             ></button>
