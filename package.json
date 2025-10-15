@@ -12,6 +12,7 @@
     "@next-auth/prisma-adapter": "^1.0.7",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.23.22",
     "lax.js": "^2.0.3",
     "lucide-react": "^0.544.0",
