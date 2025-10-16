@@ -7,6 +7,7 @@ export async function middleware(req: NextRequest) {
     const isAuthPage = pathname.startsWith('/auth');
     const isAdminDashboard = pathname.startsWith('/admin');
     const isProfessionalRoute = pathname.startsWith('/professional');
+    const isCustomerRoute = pathname.startsWith('/customer');
     const isOnboardingPage = pathname === '/professional/onboarding';
 
     if (token) {
@@ -39,7 +40,7 @@ export async function middleware(req: NextRequest) {
             }
         }
     }
-    if (!token && (isAdminDashboard || (isProfessionalRoute && !isOnboardingPage))) {
+    if (!token && (isAdminDashboard || isCustomerRoute || (isProfessionalRoute && !isOnboardingPage))) {
         return NextResponse.redirect(new URL('/auth/login', req.url));
     }
 

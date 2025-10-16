@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import { signOut, useSession } from "next-auth/react"
-import { UserIcon } from "lucide-react"
+import { Bell, Briefcase, PlusCircle, UserIcon } from "lucide-react"
 import { HiArrowRightOnRectangle } from "react-icons/hi2"
 
 export default function Navbar() {
@@ -21,6 +21,21 @@ export default function Navbar() {
     return () => window.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  const guestLinks = [
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+    { href: "/career", label: "Career" },
+    { href: "/how-it-works", label: "How It Works" },
+  ];
+
+  const customerLinks = [
+    { href: "/customer/dashboard", label: "Dashboard" },
+    { href: "/customer/my-jobs", label: "My Jobs" },
+    { href: "/customer/post-a-job", label: "Post a Job" },
+  ];
+
+  const mainNavLinks = status === 'authenticated' && session.user.role === 'CUSTOMER' ? customerLinks : guestLinks;
+  
   return (
     <nav className="w-full fixed top-0 z-50 bg-white shadow-md" style={{ height: "74px" }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
@@ -29,19 +44,13 @@ export default function Navbar() {
           <img src="/logo.png" alt="Logo" className="h-8" />
         </Link>
 
+        {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6 font-medium text-gray-800 justify-center items-center flex-1">
-          <Link href="/" className="hover:text-blue-600 transition">
-            Home
-          </Link>
-          <Link href="/about" className="hover:text-blue-600 transition">
-            About
-          </Link>
-          <Link href="/career" className="hover:text-blue-600 transition">
-            Career
-          </Link>
-          <Link href="/blog" className="hover:text-blue-600 transition">
-            Blog
-          </Link>
+          {mainNavLinks.map(link => (
+            <Link key={link.href} href={link.href} className="hover:text-blue-600 transition">
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         {/* Right: Auth/Profile */}
@@ -70,7 +79,6 @@ export default function Navbar() {
             </svg>
           </button>
 
-          {/* Loading state (from navbar.tsx behavior) */}
           {status === "loading" && (
             <div role="status" aria-live="polite" className="flex items-center justify-center">
               <span className="inline-block h-5 w-5 rounded-full border-2 border-gray-300 border-t-transparent animate-spin" />
@@ -93,7 +101,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {status === "authenticated" && (
+          {/* {status === "authenticated" && (
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -131,6 +139,47 @@ export default function Navbar() {
                     <HiArrowRightOnRectangle className="w-5 h-5" />
                     Logout
                   </button>
+                </div>
+              )}
+            </div>
+          )} */}
+          {status === "authenticated" && session.user.role === 'CUSTOMER' && (
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="w-11 h-11 rounded-full flex items-center cursor-pointer justify-center text-black hover:bg-blue-50 transition shadow-sm border border-gray-200"
+                aria-haspopup="menu"
+                aria-expanded={profileOpen}
+              >
+                <UserIcon className="w-6 h-6" />
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 mt-3 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 animate-slide-down">
+                  <div className="px-2 py-2 border-b border-gray-100">
+                    <div className="font-semibold text-gray-800 truncate">{session.user.name || 'Customer'}</div>
+                    <div className="text-sm text-gray-500 truncate">{session.user.email}</div>
+                  </div>
+                  <div className="mt-1">
+                    <Link href="/customer/my-jobs" className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition" role="menuitem">
+                      <Briefcase className="w-5 h-5" /> My Jobs
+                    </Link>
+                    <Link href="/customer/post-a-job" className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition" role="menuitem">
+                      <PlusCircle className="w-5 h-5" /> Post a Job
+                    </Link>
+                    <Link href="/customer/notifications" className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition" role="menuitem">
+                      <Bell className="w-5 h-5" /> Notifications
+                    </Link>
+                  </div>
+                  <div className="mt-1 pt-1 border-t border-gray-100">
+                    <button
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-red-600 hover:bg-red-50 transition rounded-lg"
+                      role="menuitem"
+                    >
+                      <HiArrowRightOnRectangle className="w-5 h-5" />
+                      Logout
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
