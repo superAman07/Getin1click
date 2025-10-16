@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
                             select: {
                                 name: true,
                                 email: true,
-                                phoneNumber: true, // This will now work
-                                address: true      // This will now work
+                                phoneNumber: true, 
+                                address: true      
                             }
                         }
                     }
@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
                 customerDetails: {
                     name: lead.customer.name || 'Customer',
                     email: lead.customer.email,
-                    // Get the phone number from the nested profile
                     phoneNumber: lead.customer.phoneNumber || null,
                     address: lead.customer.address || null
                 }
