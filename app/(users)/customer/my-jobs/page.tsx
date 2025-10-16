@@ -44,11 +44,20 @@ export default function MyJobsPage() {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+    const normalizeUrgency = (urgency: string): string => {
+        const lowerCase = urgency.toLowerCase();
+        return lowerCase.charAt(0).toUpperCase() + lowerCase.slice(1);
+    };
+
     const fetchLeads = useCallback(async () => {
         setLoading(true);
         try {
             const response = await axios.get('/api/customer/leads');
-            setLeads(response.data);
+            const normalizedLeads = response.data.map((lead: any) => ({
+                ...lead,
+                urgency: normalizeUrgency(lead.urgency)
+            }));
+            setLeads(normalizedLeads);
         } catch (error) {
             toast.error('Failed to load your jobs.');
         } finally {
@@ -69,6 +78,27 @@ export default function MyJobsPage() {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [activeMenu]);
+
+    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!editingLead) return;
+        setIsSubmitting(true);
+        try {
+            await axios.put(`/api/customer/leads/${editingLead.id}`, {
+                title: editingLead.title,
+                description: editingLead.description,
+                budget: editingLead.budget,
+                urgency: editingLead.urgency,
+            });
+            toast.success('Job updated successfully!');
+            setEditingLead(null);
+            fetchLeads();
+        } catch (error) {
+            toast.error('Failed to update job.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleDelete = async (leadId: string) => {
         const toastId = toast.loading('Deleting job...');
@@ -133,7 +163,7 @@ export default function MyJobsPage() {
 
     return (
         <>
-            <div className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 min-h-screen">
+            <div className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 min-h-screen mt-10">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-10">
                         <div>
@@ -218,6 +248,23 @@ export default function MyJobsPage() {
                                             <p className="text-gray-700 leading-relaxed line-clamp-2">
                                                 {lead.description}
                                             </p>
+                                            {lead._count.purchasedBy > 0 && (
+                                                <div className="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3 animate-pulse">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                            <Users size={18} className="text-blue-600" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-medium text-blue-800">
+                                                                Professional{lead._count.purchasedBy !== 1 ? 's' : ''} will contact you soon
+                                                            </div>
+                                                            <div className="text-xs text-blue-600">
+                                                                {lead._count.purchasedBy} professional{lead._count.purchasedBy !== 1 ? 's' : ''} ready to help
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="relative menu-container flex-shrink-0">
@@ -267,8 +314,8 @@ export default function MyJobsPage() {
                                     <div className="mt-6 pt-5 border-t border-gray-100 flex flex-wrap items-center gap-3">
                                         <span
                                             className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${lead.status === 'OPEN'
-                                                    ? 'bg-green-100 text-green-800 border border-green-200'
-                                                    : 'bg-gray-100 text-gray-800 border border-gray-200'
+                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                : 'bg-gray-100 text-gray-800 border border-gray-200'
                                                 }`}
                                         >
                                             {lead.status}

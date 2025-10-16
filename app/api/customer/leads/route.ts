@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id || session.user.role !== 'CUSTOMER') {
         return new NextResponse('Unauthorized', { status: 401 });
@@ -18,18 +18,26 @@ export async function GET(request: Request) {
                     select: { name: true }
                 },
                 _count: {
-                    select: { purchasedBy: true }
+                    select: { assignments: true }
                 }
             }
         });
-        return NextResponse.json(leads);
+
+        const formattedLeads = leads.map(lead => ({
+            ...lead,
+            _count: {
+                purchasedBy: lead._count.assignments
+            }
+        }));
+
+        return NextResponse.json(formattedLeads);
     } catch (error) {
         console.error("Error fetching customer leads:", error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id || session.user.role !== 'CUSTOMER') {
