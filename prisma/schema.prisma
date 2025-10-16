@@ -46,6 +46,8 @@ model User {
   role               UserRole   @default(CUSTOMER)
   status             UserStatus @default(ACTIVE)
   onboardingComplete Boolean    @default(false)
+  phoneNumber        String?    @map("phone_number")
+  address            String?
 
   professionalProfile ProfessionalProfile?
   postedLeads         Lead[]               @relation("CustomerLeads")

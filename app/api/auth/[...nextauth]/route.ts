@@ -77,6 +77,8 @@ export const authOptions: AuthOptions = {
         if (dbUserWithProfile) {
           token.onboardingComplete = dbUserWithProfile.onboardingComplete;
           token.role = dbUserWithProfile.role;
+          token.phoneNumber = dbUserWithProfile.phoneNumber;
+          token.address = dbUserWithProfile.address;
           // Get credits from the profile, defaulting to 0 if no profile exists.
           const newCredits = dbUserWithProfile.professionalProfile?.credits ?? 0;
           console.log(`[JWT CALLBACK] Fetched credits from DB: ${token.credits}`);
@@ -94,8 +96,9 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role;
         session.user.onboardingComplete = token.onboardingComplete;
         session.user.credits = token.credits;
+        session.user.phoneNumber = token.phoneNumber;
+        session.user.address = token.address;
         console.log(`[SESSION CALLBACK] Final session credits: ${session.user.credits}`);
-
       }
       return session;
     },

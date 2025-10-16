@@ -27,12 +27,11 @@ export async function GET(request: NextRequest) {
                             }
                         },
                         customer: {
-                            include: {
-                                professionalProfile: {
-                                    select: {
-                                        phoneNumber: true
-                                    }
-                                }
+                            select: {
+                                name: true,
+                                email: true,
+                                phoneNumber: true, // This will now work
+                                address: true      // This will now work
                             }
                         }
                     }
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
                     name: lead.customer.name || 'Customer',
                     email: lead.customer.email,
                     // Get the phone number from the nested profile
-                    phoneNumber: lead.customer.professionalProfile?.phoneNumber || null,
+                    phoneNumber: lead.customer.phoneNumber || null,
                     address: lead.customer.address || null
                 }
             };
