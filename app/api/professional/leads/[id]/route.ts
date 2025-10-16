@@ -29,7 +29,7 @@ export async function PUT(
         const assignment = await prisma.leadAssignment.findUnique({
             where: {
                 id,
-                professionalId: session.user.id, // Ensure it belongs to the user
+                professionalId: session.user.id,
             },
             include: {
                 lead: {
@@ -71,7 +71,6 @@ export async function PUT(
                 return new NextResponse('Insufficient credits to accept this lead.', { status: 402 });
             }
 
-            // Use a transaction to ensure atomicity
             const [, updatedAssignment] = await prisma.$transaction([
                 prisma.professionalProfile.update({
                     where: { userId: session.user.id },
@@ -92,7 +91,7 @@ export async function PUT(
                 },
             });
 
-        } else { // REJECT action
+        } else {
             await prisma.leadAssignment.update({
                 where: { id },
                 data: { status: 'REJECTED' },
