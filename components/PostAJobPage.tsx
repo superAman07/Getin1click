@@ -458,7 +458,7 @@ export default function PostAJobPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:bg-blue-400 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:bg-blue-400 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {isSubmitting ? (
               <>

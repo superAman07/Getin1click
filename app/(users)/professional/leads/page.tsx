@@ -28,7 +28,9 @@ import {
   DollarSign,
   MessageSquare,
   Check,
+  Coins,
 } from "lucide-react"
+import Link from "next/link"
 
 interface LeadTeaser {
   id: string
@@ -308,39 +310,65 @@ const Leads = () => {
 
             {!selectedLead.customerDetails ? (
               /* Accept/Reject buttons */
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => handleAcceptLead(selectedLead)}
-                  disabled={
-                    !!processingLeadId ||
-                    !user?.onboardingComplete ||
-                    (user?.credits ?? 0) < selectedLead.creditCost
-                  }
-                  className="flex-1 h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold cursor-pointer rounded-lg shadow-lg shadow-green-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:shadow-none active:scale-[0.99]"
-                  style={{ willChange: "transform, opacity" }}
-                >
-                  {processingLeadId === selectedLead.id ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <ThumbsUp className="w-5 h-5" />
-                  )}
-                  Accept Lead
-                </button>
-                <button
-                  onClick={() => handleRejectLead(selectedLead)}
-                  disabled={!!processingLeadId}
-                  className="flex-1 h-12 px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 cursor-pointer font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed active:scale-[0.99]"
-                  style={{ willChange: "transform, opacity" }}
-                >
-                  {processingLeadId === selectedLead.id ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <ThumbsDown className="w-5 h-5" />
-                  )}
-                  Reject Lead
-                </button>
-              </div>
-            ) : (
+              (() => {
+                const userCredits = user?.credits ?? 0;
+                const hasEnoughCredits = userCredits >= selectedLead.creditCost;
+                const neededCredits = selectedLead.creditCost - userCredits;
+
+                if (!hasEnoughCredits) {
+                  return (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center space-y-2">
+                      <p className="font-semibold text-amber-800">
+                        You need {neededCredits} more credit{neededCredits > 1 ? 's' : ''} to accept this lead.
+                      </p>
+                      <p className="text-sm text-amber-700">
+                        Your current balance is {userCredits} credits.
+                      </p>
+                      <Link
+                        href="/professional/wallet" 
+                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                      >
+                        <Coins className="w-4 h-4" />
+                        Buy Credits
+                      </Link>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => handleAcceptLead(selectedLead)}
+                      disabled={!!processingLeadId || !user?.onboardingComplete}
+                      className="flex-1 inline-flex items-center cursor-pointer justify-center gap-2 px-4 py-3 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed shadow-sm"
+                    >
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <ThumbsUp className="w-5 h-5" />
+                          Accept Lead ({selectedLead.creditCost} credits)
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleRejectLead(selectedLead)}
+                      disabled={!!processingLeadId}
+                      className="flex-1 inline-flex items-center cursor-pointer justify-center gap-2 px-4 py-3 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors disabled:bg-slate-200 disabled:cursor-not-allowed"
+                    >
+                      {processingLeadId === selectedLead.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <ThumbsDown className="w-5 h-5" />
+                          Reject
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })()
+            ): (
               /* Lead status indicator for accepted leads */
               <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <div className="flex items-center gap-2">
@@ -598,7 +626,7 @@ const Leads = () => {
               <div className="flex border-b border-slate-200">
                 <button
                   onClick={() => setActiveTab("pending")}
-                  className={`flex-1 py-3 text-center font-medium text-sm transition-colors border-b-2 ${
+                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${
                     activeTab === "pending"
                       ? "border-blue-600 text-blue-700"
                       : "border-transparent text-slate-600 hover:text-slate-900"
@@ -608,7 +636,7 @@ const Leads = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("accepted")}
-                  className={`flex-1 py-3 text-center font-medium text-sm transition-colors border-b-2 ${
+                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${
                     activeTab === "accepted"
                       ? "border-blue-600 text-blue-700"
                       : "border-transparent text-slate-600 hover:text-slate-900"

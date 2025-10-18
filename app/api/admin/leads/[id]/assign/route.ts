@@ -26,26 +26,22 @@ export async function POST(
             return new NextResponse('Professional ID missing', { status: 400 });
         }
 
-        const existingAssignment = await prisma.leadAssignment.findUnique({
+        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+        if (!lead) {
+            return new NextResponse('Lead not found', { status: 404 });
+        }
+
+        const assignment = await prisma.leadAssignment.upsert({
             where: {
                 leadId_professionalId: {
                     leadId,
                     professionalId,
                 },
             },
-        });
-
-        if (existingAssignment) {
-            return new NextResponse('This professional has already been assigned this lead.', { status: 409 });
-        }
-
-        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-        if (!lead) {
-            return new NextResponse('Lead not found', { status: 404 });
-        }
-
-        const assignment = await prisma.leadAssignment.create({
-            data: {
+            update: {
+                status: 'PENDING', 
+            },
+            create: {
                 leadId,
                 professionalId,
                 status: 'PENDING',
@@ -60,26 +56,24 @@ export async function POST(
             }
         });
 
-        if (lead) {
-            await prisma.notification.create({
+        await prisma.notification.create({
+            data: {
+                userId: professionalId,
+                type: 'NEW_LEAD',
+                message: `You have been assigned a new lead: "${lead.title}"`,
                 data: {
-                    userId: professionalId,
-                    type: 'NEW_LEAD',
-                    message: `You have been assigned a new lead: "${lead.title}"`,
-                    data: {
-                        leadId: leadId,
-                        assignmentId: assignment.id
-                    }
+                    leadId: leadId,
+                    assignmentId: assignment.id
                 }
-            });
-        }
-
-        // Update the lead status
-        await prisma.lead.update({
-            where: { id: leadId },
-            data: { status: 'ASSIGNED' }
+            }
         });
 
+        if (lead.status === 'OPEN') {
+            await prisma.lead.update({
+                where: { id: leadId },
+                data: { status: 'ASSIGNED' }
+            });
+        }
         return NextResponse.json(assignment);
     } catch (error) {
         console.error(`Error assigning lead ${leadId}:`, error);

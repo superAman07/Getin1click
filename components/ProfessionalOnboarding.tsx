@@ -7,7 +7,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Service } from '@/types/servicesTypes';
-import { X, CheckCircle2, Search, Building2, Phone, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
+import { X, CheckCircle2, Search, Building2, Phone, MapPin, ArrowRight, ArrowLeft, Eye, EyeClosed } from 'lucide-react';
 
 interface Question {
     id: string;
@@ -36,6 +36,7 @@ export default function ProfessionalOnboarding() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
 
     const [allServices, setAllServices] = useState<Service[]>([]);
     const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
@@ -277,15 +278,30 @@ export default function ProfessionalOnboarding() {
                                     className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
                                 />
                             </div>
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Create Password</label>
+                            <div className="relative">
                                 <input
-                                    type="password"
+                                    type={isVisible ? "text" : "password"}
                                     placeholder="Create a strong password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
+                                    className="w-full pr-12 px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300"
+                                    aria-label="Create password"
                                 />
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIsVisible((s) => !s)}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    aria-pressed={isVisible}
+                                    aria-label={isVisible ? "Hide password" : "Show password"}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer p-1 focus:outline-none"
+                                >
+                                    {isVisible ? (
+                                        <EyeClosed className="h-5 w-5" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" />
+                                    )}
+                                </button>
                             </div>
                         </div>
                         <button

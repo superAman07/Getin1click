@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Loader2, Edit, Trash2, Plus, X, MoreVertical, Users, Briefcase, MapPin, DollarSign, Clock, AlertCircle } from 'lucide-react';
+import { Loader2, Edit, Trash2, Plus, X, MoreVertical, Users, Briefcase, MapPin, DollarSign, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface Lead {
@@ -43,6 +43,63 @@ export default function MyJobsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+    const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean; leadId: string | null; isPositive: boolean }>({
+        isOpen: false,
+        leadId: null,
+        isPositive: false
+    });
+    const [rating, setRating] = useState<number>(5);
+    const [feedback, setFeedback] = useState<string>("");
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+    const handleJobStatusUpdate = (lead: Lead, isCompleted: boolean) => {
+        setFeedbackModal({
+            isOpen: true,
+            leadId: lead.id,
+            isPositive: isCompleted
+        });
+        setRating(5);
+        setFeedback("");
+    };
+
+    const handleSubmitFeedback = async () => {
+        if (!feedbackModal.leadId) return;
+
+        setIsSubmittingFeedback(true);
+        const toastId = toast.loading(feedbackModal.isPositive ? "Marking job as completed..." : "Reporting issue...");
+
+        try {
+            await axios.put(`/api/customer/leads/${feedbackModal.leadId}/status`, {
+                status: feedbackModal.isPositive ? 'COMPLETED' : 'ISSUE_REPORTED',
+                rating: feedbackModal.isPositive ? rating : null,
+                feedback
+            });
+
+            // Update leads in the UI
+            setLeads(prevLeads => prevLeads.map(lead => {
+                if (lead.id === feedbackModal.leadId) {
+                    return {
+                        ...lead,
+                        status: feedbackModal.isPositive ? 'COMPLETED' : 'ISSUE_REPORTED'
+                    };
+                }
+                return lead;
+            }));
+
+            toast.success(
+                feedbackModal.isPositive
+                    ? "Job marked as completed! Thank you for your feedback."
+                    : "Issue reported. We'll look into it.",
+                { id: toastId }
+            );
+            setFeedbackModal({ isOpen: false, leadId: null, isPositive: false });
+        } catch (error) {
+            toast.error("Failed to update job status.", { id: toastId });
+        } finally {
+            setIsSubmittingFeedback(false);
+        }
+    };
 
     const normalizeUrgency = (urgency: string): string => {
         const lowerCase = urgency.toLowerCase();
@@ -248,6 +305,49 @@ export default function MyJobsPage() {
                                             <p className="text-gray-700 leading-relaxed line-clamp-2">
                                                 {lead.description}
                                             </p>
+                                            {lead._count.purchasedBy > 0 && (
+                                                <div className="mt-4 border-t border-gray-100 pt-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <div>
+                                                            <span className="text-sm font-medium text-gray-700">Professional response{lead._count.purchasedBy !== 1 ? 's' : ''}: </span>
+                                                            <span className="font-semibold text-blue-700">{lead._count.purchasedBy}</span>
+                                                        </div>
+
+                                                        {lead.status === 'OPEN' && (
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    onClick={() => handleJobStatusUpdate(lead, true)}
+                                                                    className="px-3 py-1.5 bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                                                >
+                                                                    <CheckCircle2 size={16} />
+                                                                    Mark Complete
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleJobStatusUpdate(lead, false)}
+                                                                    className="px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                                                >
+                                                                    <AlertCircle size={16} />
+                                                                    Report Issue
+                                                                </button>
+                                                            </div>
+                                                        )}
+
+                                                        {lead.status === 'COMPLETED' && (
+                                                            <div className="flex items-center gap-2 text-green-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
+                                                                <CheckCircle2 size={16} />
+                                                                <span className="text-sm font-medium">Completed</span>
+                                                            </div>
+                                                        )}
+
+                                                        {lead.status === 'ISSUE_REPORTED' && (
+                                                            <div className="flex items-center gap-2 text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                                                                <AlertCircle size={16} />
+                                                                <span className="text-sm font-medium">Issue Reported</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                             {lead._count.purchasedBy > 0 && (
                                                 <div className="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3 animate-pulse">
                                                     <div className="flex items-center gap-3">
@@ -514,6 +614,89 @@ export default function MyJobsPage() {
                             >
                                 Delete Job
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {feedbackModal.isOpen && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-150 relative">
+                        <button
+                            onClick={() => setFeedbackModal({ isOpen: false, leadId: null, isPositive: false })}
+                            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="p-6">
+                            <div className="text-center mb-6">
+                                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${feedbackModal.isPositive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                                    }`}>
+                                    {feedbackModal.isPositive ? <CheckCircle2 size={32} /> : <AlertCircle size={32} />}
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">
+                                    {feedbackModal.isPositive ? 'Confirm Job Completion' : 'Report an Issue'}
+                                </h3>
+                                <p className="text-gray-600 mt-1">
+                                    {feedbackModal.isPositive
+                                        ? 'Did the professional successfully complete the job?'
+                                        : 'Please let us know what went wrong'}
+                                </p>
+                            </div>
+
+                            {feedbackModal.isPositive && (
+                                <div className="mb-6">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Rate the service</label>
+                                    <div className="flex justify-center gap-1">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                                key={star}
+                                                onClick={() => setRating(star)}
+                                                className="text-2xl transition-transform hover:scale-110 focus:outline-none"
+                                            >
+                                                <span className={star <= rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {feedbackModal.isPositive ? 'Leave feedback (optional)' : 'Describe the issue'}
+                                </label>
+                                <textarea
+                                    value={feedback}
+                                    onChange={(e) => setFeedback(e.target.value)}
+                                    rows={4}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder={feedbackModal.isPositive
+                                        ? "Share your experience with the professional..."
+                                        : "Please describe what went wrong..."}
+                                    required={!feedbackModal.isPositive}
+                                />
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleSubmitFeedback}
+                                    disabled={isSubmittingFeedback || (!feedbackModal.isPositive && !feedback.trim())}
+                                    className={`flex-1 py-3 font-medium rounded-lg flex items-center justify-center gap-2 ${feedbackModal.isPositive
+                                            ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-400'
+                                            : 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-400'
+                                        } disabled:cursor-not-allowed`}
+                                >
+                                    {isSubmittingFeedback && <Loader2 size={18} className="animate-spin" />}
+                                    {feedbackModal.isPositive ? 'Confirm Completion' : 'Submit Report'}
+                                </button>
+                                <button
+                                    onClick={() => setFeedbackModal({ isOpen: false, leadId: null, isPositive: false })}
+                                    disabled={isSubmittingFeedback}
+                                    className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,43 @@ export default function UpdateContactDetailsModal({ onClose, onSuccess }: Props)
   const [phoneNumber, setPhoneNumber] = useState(session?.user?.phoneNumber || '');
   const [address, setAddress] = useState(session?.user?.address || '');
   const [isSaving, setIsSaving] = useState(false);
+  const MAX_PHONE_LENGTH = 10;
+
+  const handlePhoneChange = (e:any) => {
+    // remove any non-digit and limit length
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, MAX_PHONE_LENGTH);
+    setPhoneNumber(digitsOnly);
+  };
+
+  const handleKeyDown = (e:any) => {
+    // allow control keys and digits only
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+      "Tab",
+    ];
+
+    if (allowedKeys.includes(e.key)) return;
+    // allow digits
+    if (/^[0-9]$/.test(e.key)) return;
+
+    // block everything else (letters, e, +, -, etc.)
+    e.preventDefault();
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text");
+    const digitsOnly = pasted.replace(/\D/g, "").slice(0, MAX_PHONE_LENGTH);
+
+    // If you want to append to current caret position you'd need more logic.
+    // Simpler: replace full value with sanitized digits.
+    setPhoneNumber(digitsOnly);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,12 +94,21 @@ export default function UpdateContactDetailsModal({ onClose, onSuccess }: Props)
                 <input
                   id="phone"
                   type="tel"
+                  inputMode="numeric"
+                  pattern="\d{10}"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={handlePhoneChange}
+                  onKeyDown={handleKeyDown}
+                  onPaste={handlePaste}
                   placeholder="Your 10-digit mobile number"
                   required
+                  maxLength={MAX_PHONE_LENGTH}
+                  aria-label="10-digit mobile number"
                   className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 />
+                {phoneNumber.length > 0 && phoneNumber.length !== MAX_PHONE_LENGTH && (
+                  <p className="mt-1 text-xs text-red-600">Phone number must be 10 digits.</p>
+                )}
               </div>
             </div>
             <div>

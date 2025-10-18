@@ -51,11 +51,11 @@ model User {
 
   professionalProfile ProfessionalProfile?
   postedLeads         Lead[]               @relation("CustomerLeads")
-  // purchasedLeads      Lead[]               @relation("PurchasedLeads")
   transactions        Transaction[]
   customerRequests    CustomerRequest[]
   bookings            Booking[]
-  reviews             Review[]
+  reviewsGiven        Review[]             @relation("CustomerReviews")
+  reviewsReceived     Review[]             @relation("ProfessionalReviews")
   professionalAnswers ProfessionalAnswer[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -63,6 +63,8 @@ model User {
   LeadAssignment      LeadAssignment[]
   Lead                Lead[]
   notifications       Notification[]
+  customerSupport     CustomerSupport[]    @relation("CustomerSupportTickets")
+  @@map("users")
 }
 
 model CreditPackage {
@@ -111,7 +113,6 @@ model ProfessionalProfile {
   isVerified  Boolean   @default(false)
   services    Service[] @relation("ProfessionalServices")
   bookings    Booking[]
-  reviews     Review[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -225,21 +226,40 @@ model Booking {
   status            String
   creditsCharged    Int
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  review            Review?
+  updatedAt         DateTime            @updatedAt 
 }
 
 model Review {
-  id             String              @id @default(cuid())
+  id             String   @id @default(cuid())
   rating         Int
-  comment        String?
-  bookingId      String              @unique
-  booking        Booking             @relation(fields: [bookingId], references: [id])
+  comment        String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  leadId         String
+  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
   customerId     String
-  customer       User                @relation(fields: [customerId], references: [id])
+  customer       User     @relation("CustomerReviews", fields: [customerId], references: [id], onDelete: Cascade)
+
   professionalId String
-  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id])
-  createdAt      DateTime            @default(now())
+  professional   User     @relation("ProfessionalReviews", fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, professionalId, customerId])
+}
+
+model CustomerSupport {
+  id         String   @id @default(cuid())
+  issue      String   @db.Text
+  status     String   @default("PENDING") // PENDING, IN_PROGRESS, RESOLVED
+  type       String   // REFUND_REQUEST, GENERAL_INQUIRY
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customerId String
+  customer   User   @relation("CustomerSupportTickets", fields: [customerId], references: [id], onDelete: Cascade)
+
+  leadId     String?
+  lead       Lead?    @relation(fields: [leadId], references: [id])
 }
 
 model CreditBundle {
@@ -261,21 +281,22 @@ model Lead {
   description String
   location    String
   budget      String?
-  urgency     String
-  // creditCost  Int
+  urgency     String 
   status      String   @default("OPEN")
   answers     Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  serviceId   String
+  service     Service          @relation(fields: [serviceId], references: [id])
+  
   customerId String
   customer   User   @relation("CustomerLeads", fields: [customerId], references: [id])
 
-  serviceId   String
-  service     Service          @relation(fields: [serviceId], references: [id])
   assignments LeadAssignment[]
+  reviews          Review[] 
+  customerSupport  CustomerSupport[]
 
-  // purchasedBy User[] @relation("PurchasedLeads")
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
 

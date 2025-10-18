@@ -46,7 +46,7 @@ const IconSpinner = () => (
     className="h-5 w-5 animate-spin"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#2563eb"
+    stroke="#ffffff"
     strokeWidth="2"
   >
     <circle cx="12" cy="12" r="9" strokeOpacity="0.2" />
