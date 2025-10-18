@@ -69,29 +69,19 @@ interface ExtendedUser {
 }
 
 const Leads = () => {
-  // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"pending" | "accepted">("pending")
-
-  // Data states
   const [leads, setLeads] = useState<FullLead[]>([])
   const [selectedLead, setSelectedLead] = useState<FullLead | null>(null)
   const [loading, setLoading] = useState(true)
   const [processingLeadId, setProcessingLeadId] = useState<string | null>(null)
-
-  // const [acceptedLeads, setAcceptedLeads] = useState<FullLead[]>([])
   const [respondedLeads, setRespondedLeads] = useState<FullLead[]>([])
-
   const [justAcceptedId, setJustAcceptedId] = useState<string | null>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
-
   const [rejectingLead, setRejectingLead] = useState<FullLead | null>(null);
   const [respondedStatusFilter, setRespondedStatusFilter] = useState<'ALL' | 'ACCEPTED' | 'REJECTED'>('ALL');
-
-  // UI states
   const [showMobileDetail, setShowMobileDetail] = useState(false)
   const { data: session, update: updateSession } = useSession()
-
   const user = session?.user as ExtendedUser | undefined
 
   useEffect(() => {
@@ -102,10 +92,8 @@ const Leads = () => {
           axios.get("/api/professional/leads"),
           axios.get("/api/professional/leads/responded")
         ]);
-
         setLeads(pendingResponse.data);
         setRespondedLeads(respondedResponse.data);
-
       } catch (error) {
         toast.error("Could not load your leads.");
         console.error(error);
@@ -113,25 +101,16 @@ const Leads = () => {
         setLoading(false)
       }
     };
-
     if (session?.user) {
       fetchAllLeads();
     }
   }, [session?.user]);
 
-  // Filter leads based on search query
   const filteredLeads = leads.filter((lead) => {
     return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.location.toLowerCase().includes(searchQuery.toLowerCase())
   })
-
-  // const filteredAcceptedLeads = acceptedLeads.filter((lead) => {
-  //   return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '')
-  // })
 
   const filteredRespondedLeads = respondedLeads.filter((lead) => {
     const searchMatch = lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -144,13 +123,11 @@ const Leads = () => {
     return searchMatch && statusMatch;
   })
 
-  // Handle selecting a lead
   const handleLeadClick = (lead: FullLead) => {
     setSelectedLead(lead)
     setShowMobileDetail(true)
   }
 
-  // Close mobile detail view
   const closeMobileDetail = () => {
     setShowMobileDetail(false)
   }
@@ -188,16 +165,13 @@ const Leads = () => {
       setJustAcceptedId(lead.id)
       setTimeout(() => setJustAcceptedId(null), 1200)
 
-      // Remove the lead from the pending list
       setLeads((prevLeads) => prevLeads.filter((l) => l.id !== lead.id))
 
-      // If this is the currently selected lead, update it with customer details
       if (selectedLead && selectedLead.id === lead.id) {
         setSelectedLead(accepted)
         setActiveTab("accepted")
       }
 
-      // Update session to reflect new credit balance
       await updateSession({
         creditsUpdated: true,
       })
@@ -210,38 +184,10 @@ const Leads = () => {
     }
   }
 
-  // Handle lead rejection
-  // const handleRejectLead = async (lead: FullLead) => {
-  //   setProcessingLeadId(lead.id)
-  //   const toastId = toast.loading("Processing...")
-
-  //   try {
-  //     await axios.put(`/api/professional/leads/${lead.assignmentId}`, {
-  //       action: "REJECT",
-  //     })
-
-  //     toast.success("Lead rejected", { id: toastId })
-
-  //     // Remove lead from the list
-  //     setLeads((prevLeads) => prevLeads.filter((l) => l.id !== lead.id))
-
-  //     // If this was the selected lead, clear selection
-  //     if (selectedLead && selectedLead.id === lead.id) {
-  //       setSelectedLead(null)
-  //     }
-  //   } catch (error: any) {
-  //     const errorMessage = error.response?.data || "Failed to reject lead"
-  //     toast.error(errorMessage, { id: toastId })
-  //   } finally {
-  //     setProcessingLeadId(null)
-  //   }
-  // }
   const handleRejectLead = async (lead: FullLead) => {
-    // Instead of immediate rejection, open the confirmation modal
     setRejectingLead(lead);
   }
 
-  // This new function will handle the actual rejection after confirmation
   const confirmRejectLead = async () => {
     if (!rejectingLead) return;
 
@@ -252,13 +198,8 @@ const Leads = () => {
       await axios.put(`/api/professional/leads/${rejectingLead.assignmentId}`, {
         action: "REJECT",
       })
-
       toast.success("Lead rejected", { id: toastId })
-
-      // Remove lead from the list
       setLeads((prevLeads) => prevLeads.filter((l) => l.id !== rejectingLead.id))
-
-      // If this was the selected lead, clear selection
       if (selectedLead && selectedLead.id === rejectingLead.id) {
         setSelectedLead(null)
       }
@@ -267,7 +208,7 @@ const Leads = () => {
       toast.error(errorMessage, { id: toastId })
     } finally {
       setProcessingLeadId(null)
-      setRejectingLead(null); // Close the modal
+      setRejectingLead(null);
     }
   }
 
@@ -290,7 +231,6 @@ const Leads = () => {
   const hasPending = filteredLeads.length > 0
   const hasAccepted = filteredRespondedLeads.length > 0
 
-  // Choose what to display in the main area
   const getMainContent = () => {
     if (selectedLead) {
       return (
@@ -443,7 +383,7 @@ const Leads = () => {
                         </div>
                       </div>
                     );
-                  default: // ASSIGNED or other active statuses
+                  default:
                     return (
                       <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
                         <div className="flex items-center gap-2">
