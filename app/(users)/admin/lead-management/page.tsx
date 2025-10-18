@@ -9,7 +9,6 @@ import {
     Check, AlertCircle, ChevronRight
 } from 'lucide-react';
 
-// Define our interfaces
 interface Professional {
     id: string;
     name: string | null;
@@ -30,6 +29,20 @@ interface Assignment {
     };
 }
 
+interface Review {
+    rating: number;
+    comment: string | null;
+    professional: {
+        name: string | null;
+        email: string;
+    };
+}
+
+interface CustomerSupportTicket {
+    issue: string;
+    status: string;
+}
+
 interface Lead {
     id: string;
     title: string;
@@ -42,6 +55,8 @@ interface Lead {
     serviceId: string;
     service: { name: string };
     customer: { name: string | null; email: string };
+    reviews: Review[];
+    customerSupport: CustomerSupportTicket[];
     assignments: Assignment[];
 }
 

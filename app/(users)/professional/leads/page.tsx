@@ -41,6 +41,7 @@ interface LeadTeaser {
   location: string
   budget: string
   urgency: string
+  status: string
   customerName: string
   responses: number
   assignmentId: string
@@ -57,6 +58,7 @@ interface CustomerDetails {
 }
 
 type FullLead = LeadTeaser & {
+
   customerDetails?: CustomerDetails
 }
 
@@ -69,7 +71,7 @@ const Leads = () => {
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"pending" | "accepted">("pending")
-  
+
   // Data states
   const [leads, setLeads] = useState<FullLead[]>([])
   const [selectedLead, setSelectedLead] = useState<FullLead | null>(null)
@@ -94,7 +96,7 @@ const Leads = () => {
           axios.get("/api/professional/leads"),
           axios.get("/api/professional/leads/accepted")
         ]);
-        
+
         setLeads(pendingResponse.data);
         setAcceptedLeads(acceptedResponse.data);
 
@@ -114,15 +116,15 @@ const Leads = () => {
   // Filter leads based on search query
   const filteredLeads = leads.filter((lead) => {
     return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lead.location.toLowerCase().includes(searchQuery.toLowerCase())
+      lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.location.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   const filteredAcceptedLeads = acceptedLeads.filter((lead) => {
     return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '')
+      lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '')
   })
 
   // Handle selecting a lead
@@ -223,7 +225,7 @@ const Leads = () => {
       const date = new Date(dateStr)
       const now = new Date()
       const diffInHours = Math.abs(now.getTime() - date.getTime()) / 36e5
-      
+
       if (diffInHours < 24) {
         return formatDistanceToNow(date, { addSuffix: true })
       } else {
@@ -246,11 +248,10 @@ const Leads = () => {
           <div className="mb-6 bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-start justify-between gap-3 mb-4">
               <h2 className="text-xl lg:text-2xl font-bold text-slate-900">{selectedLead.title}</h2>
-              <span className={`inline-flex items-center gap-1 text-xs font-semibold ${
-                selectedLead.customerDetails 
-                  ? "text-green-700 bg-green-50 border-green-200" 
+              <span className={`inline-flex items-center gap-1 text-xs font-semibold ${selectedLead.customerDetails
+                  ? "text-green-700 bg-green-50 border-green-200"
                   : "text-blue-700 bg-blue-50 border-blue-200"
-              } border rounded-full px-2 py-0.5`}>
+                } border rounded-full px-2 py-0.5`}>
                 {selectedLead.customerDetails ? (
                   <>
                     <BadgeCheck className="w-3.5 h-3.5" />
@@ -301,7 +302,7 @@ const Leads = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Posted date */}
             <div className="flex items-center mb-6 text-sm text-slate-500">
               <Calendar className="w-4 h-4 mr-1.5" />
@@ -325,7 +326,7 @@ const Leads = () => {
                         Your current balance is {userCredits} credits.
                       </p>
                       <Link
-                        href="/professional/wallet" 
+                        href="/professional/wallet"
                         className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                       >
                         <Coins className="w-4 h-4" />
@@ -368,28 +369,50 @@ const Leads = () => {
                   </div>
                 );
               })()
-            ): (
+            ) : (
               /* Lead status indicator for accepted leads */
-              <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                  <span className="text-sm font-medium text-slate-800">Active - Awaiting Customer Confirmation</span>
-                </div>
-                <button className="text-xs font-semibold text-blue-700 hover:text-blue-800 flex items-center gap-1">
-                  View Status <ArrowRightCircle size={14} />
-                </button>
-              </div>
+              (() => {
+                switch (selectedLead.status) {
+                  case 'COMPLETED':
+                    return (
+                      <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <span className="text-sm font-medium text-green-800">Job Completed</span>
+                        </div>
+                        <span className="text-sm font-bold text-green-800">Budget: {selectedLead.budget}</span>
+                      </div>
+                    );
+                  case 'ISSUE_REPORTED':
+                    return (
+                      <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-red-600" />
+                          <span className="text-sm font-medium text-red-800">Job Cancelled - Issue Reported</span>
+                        </div>
+                      </div>
+                    );
+                  default: // ASSIGNED or other active statuses
+                    return (
+                      <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                          <span className="text-sm font-medium text-slate-800">Active - Awaiting Customer Confirmation</span>
+                        </div>
+                      </div>
+                    );
+                }
+              })()
             )}
           </div>
 
           {/* Customer details card for accepted leads */}
           {selectedLead.customerDetails && (
             <div
-              className={`bg-white rounded-xl border mb-6 transition-all duration-300 overflow-hidden ${
-                justAcceptedId === selectedLead.id 
-                ? "border-green-400 shadow-lg shadow-green-100 scale-[1.01]" 
-                : "border-slate-200"
-              }`}
+              className={`bg-white rounded-xl border mb-6 transition-all duration-300 overflow-hidden ${justAcceptedId === selectedLead.id
+                  ? "border-green-400 shadow-lg shadow-green-100 scale-[1.01]"
+                  : "border-slate-200"
+                }`}
               style={{ willChange: "transform, opacity" }}
             >
               <div className="bg-gradient-to-r from-green-50 to-green-100 px-5 py-4 border-b border-green-200 flex items-center justify-between">
@@ -403,7 +426,7 @@ const Leads = () => {
                   </span>
                 )}
               </div>
-              
+
               <div className="p-5 space-y-6">
                 {/* Customer name and main info */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
@@ -424,21 +447,21 @@ const Leads = () => {
                     <Mail className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <h5 className="text-sm font-semibold text-slate-900">Email Address</h5>
-                      <a 
-                        href={`mailto:${selectedLead.customerDetails.email}`} 
+                      <a
+                        href={`mailto:${selectedLead.customerDetails.email}`}
                         className="text-sm text-blue-600 hover:underline break-all"
                       >
                         {selectedLead.customerDetails.email}
                       </a>
                     </div>
                   </div>
-                  
+
                   {selectedLead.customerDetails.phoneNumber && (
                     <div className="flex items-start gap-3 bg-slate-50 rounded-lg p-4 border border-slate-200">
                       <Phone className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <h5 className="text-sm font-semibold text-slate-900">Phone Number</h5>
-                        <a 
+                        <a
                           href={`tel:${selectedLead.customerDetails.phoneNumber}`}
                           className="text-sm text-blue-600 hover:underline"
                         >
@@ -461,14 +484,14 @@ const Leads = () => {
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap gap-3">
-                  <a 
+                  <a
                     href={`mailto:${selectedLead.customerDetails.email}?subject=Regarding your ${selectedLead.service.name} project`}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Mail className="w-4 h-4" />
                     Email Customer
                   </a>
-                  
+
                   {selectedLead.customerDetails.phoneNumber && (
                     <a
                       href={`tel:${selectedLead.customerDetails.phoneNumber}`}
@@ -478,7 +501,7 @@ const Leads = () => {
                       Call Customer
                     </a>
                   )}
-                  
+
                   <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors ml-auto">
                     <MessageSquare className="w-4 h-4" />
                     Send Message
@@ -546,7 +569,7 @@ const Leads = () => {
           </div>
           <h3 className="text-lg font-bold text-slate-900 mb-2">No pending leads</h3>
           <p className="text-slate-600 text-sm max-w-md mx-auto">
-            You're all caught up! When you receive new leads, they'll appear here. 
+            You're all caught up! When you receive new leads, they'll appear here.
             You can view your accepted leads in the "Accepted" tab.
           </p>
         </div>
@@ -618,34 +641,31 @@ const Leads = () => {
           <div className="max-w-[1600px] mx-auto h-full flex">
             {/* Left Sidebar - Leads List */}
             <div
-              className={`${
-                showMobileDetail ? "hidden md:flex" : "flex"
-              } w-full md:w-[380px] lg:w-[420px] border-r border-slate-200 bg-white flex-col overflow-hidden`}
+              className={`${showMobileDetail ? "hidden md:flex" : "flex"
+                } w-full md:w-[380px] lg:w-[420px] border-r border-slate-200 bg-white flex-col overflow-hidden`}
             >
               {/* Tabs */}
               <div className="flex border-b border-slate-200">
                 <button
                   onClick={() => setActiveTab("pending")}
-                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${
-                    activeTab === "pending"
+                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${activeTab === "pending"
                       ? "border-blue-600 text-blue-700"
                       : "border-transparent text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   Pending ({filteredLeads.length})
                 </button>
                 <button
                   onClick={() => setActiveTab("accepted")}
-                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${
-                    activeTab === "accepted"
+                  className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${activeTab === "accepted"
                       ? "border-blue-600 text-blue-700"
                       : "border-transparent text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   Accepted ({filteredAcceptedLeads.length})
                 </button>
               </div>
-              
+
               {/* List content */}
               <div className="overflow-y-auto flex-1">
                 {loading ? (
@@ -675,73 +695,71 @@ const Leads = () => {
                     {/* Render the appropriate list based on active tab */}
                     {activeTab === "pending"
                       ? filteredLeads.map((lead) => (
-                          <button
-                            key={lead.id}
-                            onClick={() => handleLeadClick(lead)}
-                            className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${
-                              selectedLead?.id === lead.id ? "bg-blue-50 hover:bg-blue-50" : ""
+                        <button
+                          key={lead.id}
+                          onClick={() => handleLeadClick(lead)}
+                          className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-blue-50 hover:bg-blue-50" : ""
                             }`}
-                            style={{ willChange: "transform, opacity" }}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
-                                    {lead.service.name}
-                                  </span>
-                                  <span className="text-blue-600 text-xs font-bold">{lead.creditCost} Credits</span>
+                          style={{ willChange: "transform, opacity" }}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                                  {lead.service.name}
+                                </span>
+                                <span className="text-blue-600 text-xs font-bold">{lead.creditCost} Credits</span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-2 line-clamp-2">{lead.description}</p>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+                                  <Clock className="w-3.5 h-3.5" />
+                                  {formatDate(lead.createdAt)}
                                 </div>
-                                <p className="text-sm text-slate-600 mb-2 line-clamp-2">{lead.description}</p>
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    {formatDate(lead.createdAt)}
-                                  </div>
-                                  <span className="text-[10px] uppercase tracking-wide text-blue-700/80 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
-                                    Pending
-                                  </span>
-                                </div>
+                                <span className="text-[10px] uppercase tracking-wide text-blue-700/80 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                                  Pending
+                                </span>
                               </div>
                             </div>
-                          </button>
-                        ))
+                          </div>
+                        </button>
+                      ))
                       : filteredAcceptedLeads.map((lead) => (
-                          <button
-                            key={`acc-${lead.id}`}
-                            onClick={() => handleLeadClick(lead)}
-                            className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${
-                              selectedLead?.id === lead.id ? "bg-green-50 hover:bg-green-50" : ""
+                        <button
+                          key={`acc-${lead.id}`}
+                          onClick={() => handleLeadClick(lead)}
+                          className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-green-50 hover:bg-green-50" : ""
                             }`}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
-                                    <BadgeCheck className="w-3.5 h-3.5" />
-                                    Accepted
-                                  </span>
-                                </div>
-                                <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
-                                    {lead.service.name}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-slate-600 mb-3 line-clamp-2">{lead.description}</p>
-                                
-                                {lead.customerDetails && (
-                                  <div className="flex items-center gap-2 text-xs bg-white border border-green-200 rounded-md py-1 px-2">
-                                    <User className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
-                                    <span className="font-medium text-slate-900 truncate">
-                                      {lead.customerDetails.name || "Customer"}
-                                    </span>
-                                  </div>
-                                )}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
+                                  <BadgeCheck className="w-3.5 h-3.5" />
+                                  Accepted
+                                </span>
                               </div>
+                              <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                                  {lead.service.name}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600 mb-3 line-clamp-2">{lead.description}</p>
+
+                              {lead.customerDetails && (
+                                <div className="flex items-center gap-2 text-xs bg-white border border-green-200 rounded-md py-1 px-2">
+                                  <User className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
+                                  <span className="font-medium text-slate-900 truncate">
+                                    {lead.customerDetails.name || "Customer"}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                          </button>
-                        ))}
+                          </div>
+                        </button>
+                      ))}
                   </div>
                 )}
               </div>
