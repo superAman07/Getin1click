@@ -29,6 +29,7 @@ import {
   MessageSquare,
   Check,
   Coins,
+  XCircle,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -117,7 +118,7 @@ const Leads = () => {
       lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '');
-    
+
     const statusMatch = respondedStatusFilter === 'ALL' || lead.assignmentStatus === respondedStatusFilter;
 
     return searchMatch && statusMatch;
@@ -301,8 +302,23 @@ const Leads = () => {
             </div>
 
             {!selectedLead.customerDetails ? (
-              /* Accept/Reject buttons */
               (() => {
+                if (selectedLead.assignmentStatus === 'REJECTED') {
+                  return (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center space-y-2">
+                      <div className="flex items-center justify-center gap-2">
+                        <XCircle className="h-5 w-5 text-red-600" />
+                        <p className="font-semibold text-red-800">
+                          You have rejected this lead.
+                        </p>
+                      </div>
+                      <p className="text-sm text-red-700">
+                        Only an administrator can reassign it to you.
+                      </p>
+                    </div>
+                  );
+                }
+
                 const userCredits = user?.credits ?? 0;
                 const hasEnoughCredits = userCredits >= selectedLead.creditCost;
                 const neededCredits = selectedLead.creditCost - userCredits;
@@ -680,8 +696,8 @@ const Leads = () => {
                 <button
                   onClick={() => setActiveTab("accepted")}
                   className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${activeTab === "accepted"
-                      ? "border-blue-600 text-blue-700"
-                      : "border-transparent text-slate-600 hover:text-slate-900"
+                    ? "border-blue-600 text-blue-700"
+                    : "border-transparent text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   Responded ({filteredRespondedLeads.length})
@@ -771,12 +787,11 @@ const Leads = () => {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-<div className="flex items-center justify-between mb-2">
-                                <span className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2 py-0.5 ${
-                                  lead.assignmentStatus === 'ACCEPTED' 
-                                  ? 'text-green-700 bg-green-50 border-green-200' 
-                                  : 'text-red-700 bg-red-50 border-red-200'
-                                }`}>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2 py-0.5 ${lead.assignmentStatus === 'ACCEPTED'
+                                    ? 'text-green-700 bg-green-50 border-green-200'
+                                    : 'text-red-700 bg-red-50 border-red-200'
+                                  }`}>
                                   {lead.assignmentStatus === 'ACCEPTED' ? <BadgeCheck className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                   {lead.assignmentStatus}
                                 </span>
