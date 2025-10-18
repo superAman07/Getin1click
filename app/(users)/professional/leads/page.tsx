@@ -42,6 +42,7 @@ interface LeadTeaser {
   budget: string
   urgency: string
   status: string
+  assignmentStatus?: 'ACCEPTED' | 'REJECTED'
   customerName: string
   responses: number
   assignmentId: string
@@ -78,9 +79,14 @@ const Leads = () => {
   const [loading, setLoading] = useState(true)
   const [processingLeadId, setProcessingLeadId] = useState<string | null>(null)
 
-  const [acceptedLeads, setAcceptedLeads] = useState<FullLead[]>([])
+  // const [acceptedLeads, setAcceptedLeads] = useState<FullLead[]>([])
+  const [respondedLeads, setRespondedLeads] = useState<FullLead[]>([])
+
   const [justAcceptedId, setJustAcceptedId] = useState<string | null>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
+
+  const [rejectingLead, setRejectingLead] = useState<FullLead | null>(null);
+  const [respondedStatusFilter, setRespondedStatusFilter] = useState<'ALL' | 'ACCEPTED' | 'REJECTED'>('ALL');
 
   // UI states
   const [showMobileDetail, setShowMobileDetail] = useState(false)
@@ -92,13 +98,13 @@ const Leads = () => {
     const fetchAllLeads = async () => {
       setLoading(true)
       try {
-        const [pendingResponse, acceptedResponse] = await Promise.all([
+        const [pendingResponse, respondedResponse] = await Promise.all([
           axios.get("/api/professional/leads"),
-          axios.get("/api/professional/leads/accepted")
+          axios.get("/api/professional/leads/responded")
         ]);
 
         setLeads(pendingResponse.data);
-        setAcceptedLeads(acceptedResponse.data);
+        setRespondedLeads(respondedResponse.data);
 
       } catch (error) {
         toast.error("Could not load your leads.");
@@ -120,11 +126,22 @@ const Leads = () => {
       lead.location.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
-  const filteredAcceptedLeads = acceptedLeads.filter((lead) => {
-    return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  // const filteredAcceptedLeads = acceptedLeads.filter((lead) => {
+  //   return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '')
+  // })
+
+  const filteredRespondedLeads = respondedLeads.filter((lead) => {
+    const searchMatch = lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lead.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '')
+      lead.customerDetails?.name?.toLowerCase().includes(searchQuery.toLowerCase() || '');
+    
+    const statusMatch = respondedStatusFilter === 'ALL' || lead.assignmentStatus === respondedStatusFilter;
+
+    return searchMatch && statusMatch;
   })
 
   // Handle selecting a lead
@@ -167,7 +184,7 @@ const Leads = () => {
       toast.success("Lead accepted successfully!", { id: toastId })
 
       const accepted = { ...lead, customerDetails: response.data.customerDetails } as FullLead
-      setAcceptedLeads((prev) => [accepted, ...prev])
+      setRespondedLeads((prev) => [accepted, ...prev])
       setJustAcceptedId(lead.id)
       setTimeout(() => setJustAcceptedId(null), 1200)
 
@@ -194,22 +211,55 @@ const Leads = () => {
   }
 
   // Handle lead rejection
+  // const handleRejectLead = async (lead: FullLead) => {
+  //   setProcessingLeadId(lead.id)
+  //   const toastId = toast.loading("Processing...")
+
+  //   try {
+  //     await axios.put(`/api/professional/leads/${lead.assignmentId}`, {
+  //       action: "REJECT",
+  //     })
+
+  //     toast.success("Lead rejected", { id: toastId })
+
+  //     // Remove lead from the list
+  //     setLeads((prevLeads) => prevLeads.filter((l) => l.id !== lead.id))
+
+  //     // If this was the selected lead, clear selection
+  //     if (selectedLead && selectedLead.id === lead.id) {
+  //       setSelectedLead(null)
+  //     }
+  //   } catch (error: any) {
+  //     const errorMessage = error.response?.data || "Failed to reject lead"
+  //     toast.error(errorMessage, { id: toastId })
+  //   } finally {
+  //     setProcessingLeadId(null)
+  //   }
+  // }
   const handleRejectLead = async (lead: FullLead) => {
-    setProcessingLeadId(lead.id)
+    // Instead of immediate rejection, open the confirmation modal
+    setRejectingLead(lead);
+  }
+
+  // This new function will handle the actual rejection after confirmation
+  const confirmRejectLead = async () => {
+    if (!rejectingLead) return;
+
+    setProcessingLeadId(rejectingLead.id)
     const toastId = toast.loading("Processing...")
 
     try {
-      await axios.put(`/api/professional/leads/${lead.assignmentId}`, {
+      await axios.put(`/api/professional/leads/${rejectingLead.assignmentId}`, {
         action: "REJECT",
       })
 
       toast.success("Lead rejected", { id: toastId })
 
       // Remove lead from the list
-      setLeads((prevLeads) => prevLeads.filter((l) => l.id !== lead.id))
+      setLeads((prevLeads) => prevLeads.filter((l) => l.id !== rejectingLead.id))
 
       // If this was the selected lead, clear selection
-      if (selectedLead && selectedLead.id === lead.id) {
+      if (selectedLead && selectedLead.id === rejectingLead.id) {
         setSelectedLead(null)
       }
     } catch (error: any) {
@@ -217,6 +267,7 @@ const Leads = () => {
       toast.error(errorMessage, { id: toastId })
     } finally {
       setProcessingLeadId(null)
+      setRejectingLead(null); // Close the modal
     }
   }
 
@@ -237,7 +288,7 @@ const Leads = () => {
   }
 
   const hasPending = filteredLeads.length > 0
-  const hasAccepted = filteredAcceptedLeads.length > 0
+  const hasAccepted = filteredRespondedLeads.length > 0
 
   // Choose what to display in the main area
   const getMainContent = () => {
@@ -249,8 +300,8 @@ const Leads = () => {
             <div className="flex items-start justify-between gap-3 mb-4">
               <h2 className="text-xl lg:text-2xl font-bold text-slate-900">{selectedLead.title}</h2>
               <span className={`inline-flex items-center gap-1 text-xs font-semibold ${selectedLead.customerDetails
-                  ? "text-green-700 bg-green-50 border-green-200"
-                  : "text-blue-700 bg-blue-50 border-blue-200"
+                ? "text-green-700 bg-green-50 border-green-200"
+                : "text-blue-700 bg-blue-50 border-blue-200"
                 } border rounded-full px-2 py-0.5`}>
                 {selectedLead.customerDetails ? (
                   <>
@@ -410,8 +461,8 @@ const Leads = () => {
           {selectedLead.customerDetails && (
             <div
               className={`bg-white rounded-xl border mb-6 transition-all duration-300 overflow-hidden ${justAcceptedId === selectedLead.id
-                  ? "border-green-400 shadow-lg shadow-green-100 scale-[1.01]"
-                  : "border-slate-200"
+                ? "border-green-400 shadow-lg shadow-green-100 scale-[1.01]"
+                : "border-slate-200"
                 }`}
               style={{ willChange: "transform, opacity" }}
             >
@@ -605,6 +656,37 @@ const Leads = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 mt-14">
+      {rejectingLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md m-4 p-6 animate-in zoom-in-95">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 mb-4">
+                <AlertCircle className="h-6 w-6 text-amber-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900">Confirm Rejection</h3>
+              <div className="mt-2 text-sm text-slate-600">
+                <p>
+                  After rejecting, this lead will be removed from your "Pending" list. You will not be able to see it unless an admin reassigns it to you.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setRejectingLead(null)}
+                className="px-4 py-2 bg-slate-100 text-slate-800 cursor-pointer text-sm font-medium rounded-md hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRejectLead}
+                className="px-4 py-2 bg-red-600 text-white cursor-pointer text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
+              >
+                Yes, Reject Lead
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="h-[calc(100vh-3.5rem)] flex flex-col">
         {/* Header */}
         <div className="px-4 md:px-6 lg:px-8 py-4 md:py-6 bg-white border-b border-slate-200 sticky top-14 z-10">
@@ -615,7 +697,7 @@ const Leads = () => {
                   Your Lead Opportunities
                 </h1>
                 <p className="text-slate-600 text-sm md:text-base">
-                  {filteredLeads.length} pending and {filteredAcceptedLeads.length} accepted leads
+                  {filteredLeads.length} pending and {filteredRespondedLeads.length} accepted leads
                 </p>
               </div>
             </div>
@@ -649,8 +731,8 @@ const Leads = () => {
                 <button
                   onClick={() => setActiveTab("pending")}
                   className={`flex-1 py-3 text-center font-medium cursor-pointer text-sm transition-colors border-b-2 ${activeTab === "pending"
-                      ? "border-blue-600 text-blue-700"
-                      : "border-transparent text-slate-600 hover:text-slate-900"
+                    ? "border-blue-600 text-blue-700"
+                    : "border-transparent text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   Pending ({filteredLeads.length})
@@ -662,9 +744,24 @@ const Leads = () => {
                       : "border-transparent text-slate-600 hover:text-slate-900"
                     }`}
                 >
-                  Accepted ({filteredAcceptedLeads.length})
+                  Responded ({filteredRespondedLeads.length})
                 </button>
               </div>
+
+              {/* Filter for Responded Tab */}
+              {activeTab === 'accepted' && (
+                <div className="p-3 bg-slate-50 border-b border-slate-200">
+                  <select
+                    value={respondedStatusFilter}
+                    onChange={(e) => setRespondedStatusFilter(e.target.value as any)}
+                    className="w-full text-sm p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="ALL">All Statuses</option>
+                    <option value="ACCEPTED">Accepted</option>
+                    <option value="REJECTED">Rejected</option>
+                  </select>
+                </div>
+              )}
 
               {/* List content */}
               <div className="overflow-y-auto flex-1">
@@ -725,7 +822,7 @@ const Leads = () => {
                           </div>
                         </button>
                       ))
-                      : filteredAcceptedLeads.map((lead) => (
+                      : filteredRespondedLeads.map((lead) => (
                         <button
                           key={`acc-${lead.id}`}
                           onClick={() => handleLeadClick(lead)}
@@ -734,10 +831,14 @@ const Leads = () => {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
-                                  <BadgeCheck className="w-3.5 h-3.5" />
-                                  Accepted
+<div className="flex items-center justify-between mb-2">
+                                <span className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2 py-0.5 ${
+                                  lead.assignmentStatus === 'ACCEPTED' 
+                                  ? 'text-green-700 bg-green-50 border-green-200' 
+                                  : 'text-red-700 bg-red-50 border-red-200'
+                                }`}>
+                                  {lead.assignmentStatus === 'ACCEPTED' ? <BadgeCheck className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                                  {lead.assignmentStatus}
                                 </span>
                               </div>
                               <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>

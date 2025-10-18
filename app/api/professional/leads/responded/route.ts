@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
         const assignments = await prisma.leadAssignment.findMany({
             where: {
                 professionalId: session.user.id,
-                status: 'ACCEPTED'
+                status: {
+                    in: ['ACCEPTED', 'REJECTED']
+                }
             },
             include: {
                 lead: {
@@ -44,17 +46,26 @@ export async function GET(request: NextRequest) {
 
         const acceptedLeads = assignments.map(assignment => {
             const { lead } = assignment;
+            const customerDetails = assignment.status === 'ACCEPTED' ? {
+                name: lead.customer.name || 'Customer',
+                email: lead.customer.email,
+                phoneNumber: lead.customer.phoneNumber || null,
+                address: lead.customer.address || null
+            } : undefined;
             
             return {
                 ...lead,
                 assignmentId: assignment.id,
+                assignmentStatus: assignment.status,
                 creditCost: lead.service.creditCost ?? 1,
-                customerDetails: {
-                    name: lead.customer.name || 'Customer',
-                    email: lead.customer.email,
-                    phoneNumber: lead.customer.phoneNumber || null,
-                    address: lead.customer.address || null
-                }
+                customerDetails
+                // creditCost: lead.service.creditCost ?? 1,
+                // customerDetails: {
+                //     name: lead.customer.name || 'Customer',
+                //     email: lead.customer.email,
+                //     phoneNumber: lead.customer.phoneNumber || null,
+                //     address: lead.customer.address || null
+                // }
             };
         });
 
