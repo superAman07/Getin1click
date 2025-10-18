@@ -313,18 +313,18 @@ export default function MyJobsPage() {
                                                             <span className="font-semibold text-blue-700">{lead._count.purchasedBy}</span>
                                                         </div>
 
-                                                        {lead.status === 'OPEN' && (
+                                                        {lead.status === 'ASSIGNED' && (
                                                             <div className="flex gap-2">
                                                                 <button
                                                                     onClick={() => handleJobStatusUpdate(lead, true)}
-                                                                    className="px-3 py-1.5 bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                                                    className="px-3 py-1.5 bg-green-100 text-green-700 cursor-pointer border border-green-200 hover:bg-green-200 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
                                                                 >
                                                                     <CheckCircle2 size={16} />
                                                                     Mark Complete
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleJobStatusUpdate(lead, false)}
-                                                                    className="px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                                                    className="px-3 py-1.5 bg-red-50 text-red-700 border cursor-pointer border-red-200 hover:bg-red-100 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
                                                                 >
                                                                     <AlertCircle size={16} />
                                                                     Report Issue
@@ -681,7 +681,7 @@ export default function MyJobsPage() {
                                 <button
                                     onClick={handleSubmitFeedback}
                                     disabled={isSubmittingFeedback || (!feedbackModal.isPositive && !feedback.trim())}
-                                    className={`flex-1 py-3 font-medium rounded-lg flex items-center justify-center gap-2 ${feedbackModal.isPositive
+                                    className={`flex-1 py-3 font-medium cursor-pointer rounded-lg flex items-center justify-center gap-2 ${feedbackModal.isPositive
                                             ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-400'
                                             : 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-400'
                                         } disabled:cursor-not-allowed`}
@@ -692,7 +692,7 @@ export default function MyJobsPage() {
                                 <button
                                     onClick={() => setFeedbackModal({ isOpen: false, leadId: null, isPositive: false })}
                                     disabled={isSubmittingFeedback}
-                                    className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg"
+                                    className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 cursor-pointer font-medium rounded-lg"
                                 >
                                     Cancel
                                 </button>
