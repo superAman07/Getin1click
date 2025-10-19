@@ -6,7 +6,9 @@ import toast from 'react-hot-toast';
 import { 
     Loader2, Search, Filter, X, ChevronDown, 
     Users, Briefcase, MapPin, Clock, User,
-    Check, AlertCircle, ChevronRight
+    Check, AlertCircle, ChevronRight,
+    Star,
+    Phone
 } from 'lucide-react';
 
 interface Professional {
@@ -16,6 +18,7 @@ interface Professional {
     professionalProfile: {
         companyName: string | null;
         credits: number;
+        phoneNumber?: string | null;
     } | null;
 }
 
@@ -26,6 +29,9 @@ interface Assignment {
         id: string;
         name: string | null;
         email: string;
+        professionalProfile?: {
+            phoneNumber?: string | null;
+        } | null;
     };
 }
 
@@ -54,7 +60,7 @@ interface Lead {
     createdAt: string;
     serviceId: string;
     service: { name: string };
-    customer: { name: string | null; email: string };
+    customer: { name: string | null; email: string; phoneNumber?: string | null };
     reviews: Review[];
     customerSupport: CustomerSupportTicket[];
     assignments: Assignment[];
@@ -146,11 +152,17 @@ export default function LeadManagementPage() {
 
     // Event handlers
     const handleSelectLead = async (lead: Lead) => {
-        setSelectedLead(lead);
+        const leadWithDefaults = {
+            ...lead,
+            assignments: lead.assignments || [],
+            reviews: lead.reviews || [],
+            customerSupport: lead.customerSupport || [],
+        };
+        setSelectedLead(leadWithDefaults);
         setIsPanelOpen(true);
         setIsLoadingProfessionals(true);
         setProfessionalSearchTerm('');
-        
+
         try {
             const { data } = await axios.get<Professional[]>(`/api/admin/professionals?serviceId=${lead.serviceId}`);
             setProfessionals(data);
@@ -333,6 +345,7 @@ export default function LeadManagementPage() {
                                                 lead.status === 'ASSIGNED' ? 'bg-blue-100 text-blue-700' :
                                                 lead.status === 'ACCEPTED' ? 'bg-purple-100 text-purple-700' :
                                                 lead.status === 'COMPLETED' ? 'bg-teal-100 text-teal-700' :
+                                                lead.status === 'ISSUE_REPORTED' ? 'bg-red-100 text-red-700' :
                                                 'bg-gray-100 text-gray-700'
                                             }`}>
                                                 {lead.status}
@@ -408,6 +421,57 @@ export default function LeadManagementPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium text-slate-700">Customer Details</h3>
+                                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                    <div className="flex items-center mb-2">
+                                        <User size={14} className="text-slate-400 mr-2" />
+                                        <span className="text-sm font-medium text-slate-800">
+                                            {selectedLead.customer.name || selectedLead.customer.email}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Phone size={14} className="text-slate-400 mr-2" />
+                                        <span className="text-sm text-slate-600">
+                                            {selectedLead.customer.phoneNumber || 'No phone number'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Final Status: Completed */}
+                            {selectedLead.status === 'COMPLETED' && selectedLead.reviews.length > 0 && (
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-medium text-green-700">Job Completed: Feedback</h3>
+                                    {selectedLead.reviews.map((review, index) => (
+                                        <div key={index} className="p-3 bg-green-50 rounded-lg border border-green-200">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="font-semibold text-sm text-green-800">
+                                                    {review.professional.name || review.professional.email}
+                                                </span>
+                                                <div className="flex items-center text-yellow-500">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star key={i} size={16} fill={i < review.rating ? 'currentColor' : 'none'} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-green-900 italic">"{review.comment || 'No comment provided.'}"</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Final Status: Issue Reported */}
+                            {selectedLead.status === 'ISSUE_REPORTED' && selectedLead.customerSupport.length > 0 && (
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-medium text-red-700">Issue Reported</h3>
+                                    <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                                        <p className="text-sm text-red-900">{selectedLead.customerSupport[0].issue}</p>
+                                        <span className="text-xs font-bold text-red-700 mt-2 inline-block">Status: {selectedLead.customerSupport[0].status}</span>
+                                    </div>
+                                </div>
+                            )}
                             
                             {selectedLead.assignments.length > 0 && (
                                 <div className="space-y-2">
@@ -415,9 +479,15 @@ export default function LeadManagementPage() {
                                     <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
                                         {selectedLead.assignments.map((assignment) => (
                                             <div key={assignment.id} className="flex items-center justify-between">
-                                                <span className="text-sm text-slate-700">
-                                                    {assignment.professional.name || assignment.professional.email}
-                                                </span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-slate-700">
+                                                        {assignment.professional.name || assignment.professional.email}
+                                                    </span>
+                                                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                                                        <Phone size={12} />
+                                                        {assignment.professional.professionalProfile?.phoneNumber || 'No phone'}
+                                                    </span>
+                                                </div>
                                                 <span className={`text-xs px-2 py-1 rounded-full ${
                                                     assignment.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
                                                     assignment.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : 

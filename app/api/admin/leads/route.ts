@@ -29,16 +29,18 @@ export async function GET(request: NextRequest) {
             },
             include: {
                 service: { select: { name: true } },
-                customer: { select: { name: true, email: true } },
+                customer: { select: { name: true, email: true , phoneNumber: true } },
                 assignments: {
                     include: {
                         professional: { 
                             select: { 
+                                id: true,
                                 name: true, 
                                 email: true,
                                 professionalProfile: {
                                     select: {
                                         credits: true,
+                                        phoneNumber: true,
                                         companyName: true
                                     }
                                 } 
