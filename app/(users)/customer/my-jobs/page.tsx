@@ -348,23 +348,54 @@ export default function MyJobsPage() {
                                                     </div>
                                                 </div>
                                             )}
-                                            {lead._count.purchasedBy > 0 && (
-                                                <div className="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3 animate-pulse">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                            <Users size={18} className="text-blue-600" />
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-medium text-blue-800">
-                                                                Professional{lead._count.purchasedBy !== 1 ? 's' : ''} will contact you soon
+                                            {lead._count.purchasedBy > 0 && (() => {
+                                                switch (lead.status) {
+                                                    case 'COMPLETED':
+                                                        return (
+                                                            <div className="mt-3 bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg p-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                                                        <CheckCircle2 size={18} className="text-green-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-medium text-green-800">Job Completed</div>
+                                                                        <div className="text-xs text-green-600">Thank you for your feedback!</div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div className="text-xs text-blue-600">
-                                                                {lead._count.purchasedBy} professional{lead._count.purchasedBy !== 1 ? 's' : ''} ready to help
+                                                        );
+                                                    case 'ISSUE_REPORTED':
+                                                        return (
+                                                            <div className="mt-3 bg-gradient-to-r from-amber-50 to-red-50 border border-amber-200 rounded-lg p-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                                                        <AlertCircle size={18} className="text-amber-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-medium text-amber-800">Issue Reported</div>
+                                                                        <div className="text-xs text-amber-600">Our support team will review this shortly.</div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                                        );
+                                                    case 'ASSIGNED':
+                                                        return (
+                                                            <div className="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                                        <Users size={18} className="text-blue-600" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="font-medium text-blue-800">Professional will contact you soon</div>
+                                                                        <div className="text-xs text-blue-600">{lead._count.purchasedBy} professional ready to help</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    default:
+                                                        return null;
+                                                }
+                                            })()}
                                         </div>
 
                                         <div className="relative menu-container flex-shrink-0">
