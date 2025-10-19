@@ -68,7 +68,7 @@ export async function POST(
             }
         });
 
-        if (lead.status === 'OPEN') {
+        if (lead.status === 'OPEN' || lead.status === 'COMPLETED' || lead.status === 'ISSUE_REPORTED') {
             await prisma.lead.update({
                 where: { id: leadId },
                 data: { status: 'ASSIGNED' }

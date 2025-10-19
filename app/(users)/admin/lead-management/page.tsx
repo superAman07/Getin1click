@@ -463,13 +463,15 @@ export default function LeadManagementPage() {
                             )}
 
                             {/* Final Status: Issue Reported */}
-                            {selectedLead.status === 'ISSUE_REPORTED' && selectedLead.customerSupport.length > 0 && (
-                                <div className="space-y-2">
-                                    <h3 className="text-sm font-medium text-red-700">Issue Reported</h3>
-                                    <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                                        <p className="text-sm text-red-900">{selectedLead.customerSupport[0].issue}</p>
-                                        <span className="text-xs font-bold text-red-700 mt-2 inline-block">Status: {selectedLead.customerSupport[0].status}</span>
-                                    </div>
+                            {selectedLead.status === 'ISSUE_REPORTED' && (
+                                <div className="p-6 border-t border-slate-100">
+                                    <h3 className="text-base font-semibold text-red-700 mb-3">Issue Reported</h3>
+                                    {selectedLead.customerSupport && selectedLead.customerSupport.length > 0 ? (
+                                        <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                                            <p className="text-sm text-red-900">{selectedLead.customerSupport[0].issue}</p>
+                                            <span className="text-xs font-bold text-red-700 mt-2 inline-block">Status: {selectedLead.customerSupport[0].status}</span>
+                                        </div>
+                                    ) : <p className="text-sm text-slate-500">No issue details were provided.</p>}
                                 </div>
                             )}
                             

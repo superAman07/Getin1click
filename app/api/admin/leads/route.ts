@@ -47,6 +47,19 @@ export async function GET(request: NextRequest) {
                             }
                         }
                     }
+                },
+                reviews: {
+                    include: {
+                        professional: {
+                            select: { name: true, email: true }
+                        }
+                    }
+                },
+                customerSupport: {
+                    select: {
+                        issue: true,
+                        status: true
+                    }
                 }
             },
             orderBy: { createdAt: 'desc' }
