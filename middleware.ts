@@ -30,13 +30,13 @@ export async function middleware(req: NextRequest) {
             }
         } else if (token.role === 'CUSTOMER') {
             if (pathname === '/') {
-                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
+                return NextResponse.redirect(new URL('/customer/home', req.url));
             }
             if (isAuthPage) {
-                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
+                return NextResponse.redirect(new URL('/customer/home', req.url));
             }
             if (isAdminDashboard || isProfessionalRoute) {
-                return NextResponse.redirect(new URL('/customer/dashboard', req.url));
+                return NextResponse.redirect(new URL('/customer/home', req.url));
             }
         }
     }

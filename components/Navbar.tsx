@@ -29,7 +29,7 @@ export default function Navbar() {
   ];
 
   const customerLinks = [
-    { href: "/customer/dashboard", label: "Dashboard" },
+    { href: "/customer/home", label: "Dashboard" },
     { href: "/customer/my-jobs", label: "My Jobs" },
     { href: "/customer/post-a-job", label: "Post a Job" },
   ];
