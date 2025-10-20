@@ -28,17 +28,6 @@ export function NavbarProfessional() {
     setUserOpen(false)
   }, [pathname])
 
-  // useEffect(() => {
-  //   function onDocClick(e: MouseEvent) {
-  //     if (!userOpen) return
-  //     const target = e.target as Node
-  //     if (userMenuRef.current?.contains(target)) return
-  //     if (userBtnRef.current?.contains(target)) return
-  //     setUserOpen(false)
-  //   }
-  //   document.addEventListener("mousedown", onDocClick)
-  //   return () => document.removeEventListener("mousedown", onDocClick)
-  // }, [userOpen])
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (
@@ -55,16 +44,6 @@ export function NavbarProfessional() {
     return () => document.removeEventListener("mousedown", onDocClick)
   }, [userOpen])
 
-  // useEffect(() => {
-  //   function onKey(e: KeyboardEvent) {
-  //     if (e.key === "Escape") {
-  //       setMobileOpen(false)
-  //       setUserOpen(false)
-  //     }
-  //   }
-  //   document.addEventListener("keydown", onKey)
-  //   return () => document.removeEventListener("keydown", onKey)
-  // }, [])
   useEffect(() => {
     if (userOpen) {
       const handleEscape = (e: KeyboardEvent) => {

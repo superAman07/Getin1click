@@ -31,7 +31,9 @@ export default function Navbar() {
   const customerLinks = [
     { href: "/customer/home", label: "Dashboard" },
     { href: "/customer/my-jobs", label: "My Jobs" },
-    { href: "/customer/post-a-job", label: "Post a Job" },
+    { href: "/customer/about", label: "About" },
+    { href: "/customer/career", label: "Career" },
+    { href: "/customer/how-it-works", label: "How It Works" },
   ];
 
   const mainNavLinks = status === 'authenticated' && session.user.role === 'CUSTOMER' ? customerLinks : guestLinks;

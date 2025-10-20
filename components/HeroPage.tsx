@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Service } from "@/types/servicesTypes";
 import { Loader as Loader2, Search, Circle as XCircle, CircleAlert as AlertCircle, Sparkles } from "lucide-react";
+import PincodeModal from "./PincodeModal";
 
 interface CategoryWithServices {
   id: string;
@@ -20,6 +21,9 @@ interface HomePageData {
 export default function HeroPage() {
   const [data, setData] = useState<HomePageData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
 
   const router = useRouter();
   const [serviceQuery, setServiceQuery] = useState("");
@@ -54,6 +58,18 @@ export default function HeroPage() {
 
   const handleSelectService = (serviceId: string) => {
     router.push(`/customer/post-a-job?serviceId=${serviceId}`);
+  };
+
+  const handleServiceClick = (service: Service) => {
+    setSelectedService(service);
+    setIsPincodeModalOpen(true);
+    // We will build the modal in the next step.
+    // For now, let's log to the console.
+    console.log("Selected service:", service);
+  };
+
+  const handleCloseModal = () => {
+    setIsPincodeModalOpen(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -282,6 +298,7 @@ export default function HeroPage() {
             data?.featuredServices.map((service) => (
               <div
                 key={service.id}
+                onClick={() => handleServiceClick(service)}
                 className="relative w-72 sm:w-96 h-48 sm:h-64 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 group cursor-pointer"
               >
                 <Image
@@ -331,9 +348,9 @@ export default function HeroPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {category.services.map((service, index) => (
-                <a
+                <div
                   key={service.id}
-                  href="#"
+                  onClick={() => handleServiceClick(service)}
                   className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-blue-500 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 animate-fade-in-up cursor-pointer"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
@@ -354,7 +371,7 @@ export default function HeroPage() {
                       Trusted professionals available
                     </p>
                   </div>
-                </a>
+                </div>
               ))}
             </div>
           </section>
@@ -492,6 +509,11 @@ export default function HeroPage() {
           animation-delay: 0.2s;
         }
       `}</style>
+      <PincodeModal
+        isOpen={isPincodeModalOpen}
+        onClose={handleCloseModal}
+        service={selectedService}
+      />
     </div>
   );
 }
