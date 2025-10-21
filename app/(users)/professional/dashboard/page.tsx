@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { 
-  Calendar, 
-  Briefcase, 
-  CheckSquare, 
-  DollarSign, 
-  Star, 
-  Bell, 
+import {
+  Calendar,
+  Briefcase,
+  CheckSquare,
+  DollarSign,
+  Star,
+  Bell,
   ChevronRight,
   MessageSquare,
   Clock,
@@ -59,7 +59,7 @@ export default function ProfessionalDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (status !== "authenticated") return;
-      
+
       try {
         setLoading(true);
         const { data } = await axios.get("/api/professional/dashboard");
@@ -107,8 +107,10 @@ export default function ProfessionalDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Professional Dashboard</h1>
-      
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Welcome back, {session?.user?.name || "Professional"}!</h1>
+        <p className="text-gray-500 mt-1">Here's a summary of your activity.</p>
+      </div>
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
@@ -130,7 +132,7 @@ export default function ProfessionalDashboard() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Total Earnings</p>
-              <h3 className="text-2xl font-bold text-gray-900">£{dashboardData?.metrics.totalEarnings.toFixed(2) || "0.00"}</h3>
+              <h3 className="text-2xl font-bold text-gray-900">₹{dashboardData?.metrics.totalEarnings.toFixed(2) || "0.00"}</h3>
             </div>
           </div>
         </div>
@@ -166,7 +168,7 @@ export default function ProfessionalDashboard() {
           <div className="p-6 border-b border-gray-100">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900">Recent Jobs</h2>
-              <Link href="/professional/jobs" className="text-sm text-blue-600 font-medium flex items-center hover:text-blue-800">
+              <Link href="/professional/leads" className="text-sm text-blue-600 font-medium flex items-center hover:text-blue-800">
                 View all <ChevronRight className="h-4 w-4 ml-1" />
               </Link>
             </div>
@@ -175,7 +177,7 @@ export default function ProfessionalDashboard() {
             {dashboardData?.recentJobs && dashboardData.recentJobs.length > 0 ? (
               dashboardData.recentJobs.map((job) => (
                 <div key={job.id} className="p-6">
-                  <Link href={`/professional/jobs/${job.id}`} className="flex justify-between items-center hover:bg-gray-50 -m-6 p-6 transition-colors duration-150">
+                  <Link href={`/professional/leads/${job.id}`} className="flex justify-between items-center hover:bg-gray-50 -m-6 p-6 transition-colors duration-150">
                     <div>
                       <h3 className="font-medium text-gray-900">{job.title}</h3>
                       <div className="flex items-center mt-1">
@@ -186,12 +188,11 @@ export default function ProfessionalDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <p className="text-lg font-semibold text-gray-900">£{job.amount.toFixed(2)}</p>
-                      <span className={`ml-4 px-2.5 py-0.5 text-xs rounded-full ${
-                        job.status === "completed" ? "bg-green-100 text-green-800" :
-                        job.status === "in-progress" ? "bg-blue-100 text-blue-800" :
-                        "bg-gray-100 text-gray-800"
-                      }`}>
+                      <p className="text-lg font-semibold text-gray-900">₹{job.amount.toFixed(2)}</p>
+                      <span className={`ml-4 px-2.5 py-0.5 text-xs rounded-full ${job.status === "completed" ? "bg-green-100 text-green-800" :
+                          job.status === "in-progress" ? "bg-blue-100 text-blue-800" :
+                            "bg-gray-100 text-gray-800"
+                        }`}>
                         {job.status.charAt(0).toUpperCase() + job.status.slice(1).replace(/-/g, " ")}
                       </span>
                     </div>
@@ -223,19 +224,18 @@ export default function ProfessionalDashboard() {
                 dashboardData.notifications.slice(0, 3).map((notification) => (
                   <div key={notification.id} className="p-6">
                     <div className="flex">
-                      <div className={`flex-shrink-0 mr-4 p-2 rounded-full ${
-                        notification.type === "message" ? "bg-blue-50" :
-                        notification.type === "lead" ? "bg-purple-50" :
-                        notification.type === "payment" ? "bg-green-50" :
-                        "bg-gray-50"
-                      }`}>
-                        {notification.type === "message" ? 
+                      <div className={`flex-shrink-0 mr-4 p-2 rounded-full ${notification.type === "message" ? "bg-blue-50" :
+                          notification.type === "lead" ? "bg-purple-50" :
+                            notification.type === "payment" ? "bg-green-50" :
+                              "bg-gray-50"
+                        }`}>
+                        {notification.type === "message" ?
                           <MessageSquare className="h-5 w-5 text-blue-600" /> :
-                         notification.type === "lead" ?
-                          <Briefcase className="h-5 w-5 text-purple-600" /> :
-                         notification.type === "payment" ?
-                          <DollarSign className="h-5 w-5 text-green-600" /> :
-                          <Bell className="h-5 w-5 text-gray-600" />
+                          notification.type === "lead" ?
+                            <Briefcase className="h-5 w-5 text-purple-600" /> :
+                            notification.type === "payment" ?
+                              <DollarSign className="h-5 w-5 text-green-600" /> :
+                              <Bell className="h-5 w-5 text-gray-600" />
                         }
                       </div>
                       <div>
