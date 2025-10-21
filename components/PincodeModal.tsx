@@ -85,7 +85,7 @@ export default function PincodeModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full p-2 transition-all duration-200"
+          className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer rounded-full p-2 transition-all duration-200"
           aria-label="Close modal"
         >
           <X size={20} />
@@ -132,7 +132,7 @@ export default function PincodeModal({
           <button
             onClick={handleCheckAvailability}
             disabled={isLoading}
-            className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
+            className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white cursor-pointer font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
           >
             {isLoading ? (
               <>
