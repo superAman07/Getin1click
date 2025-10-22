@@ -157,6 +157,11 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
                 {showLoginPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            <div className="text-right -mt-2 animation" style={{ "--D": 2, "--S": 23 } as React.CSSProperties}>
+              <a href="/auth/forgot-password" className="text-sm text-gray-400 hover:text-white hover:underline">
+                Forgot Password?
+              </a>
+            </div>
             <button className="btn animation mt-12" type="submit" style={{ "--D": 3, "--S": 24 } as React.CSSProperties}>
               {isLoading ? 'Loading...' : 'Login'}
             </button>
