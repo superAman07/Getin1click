@@ -13,7 +13,8 @@ import {
   ChevronRight,
   MessageSquare,
   Clock,
-  User
+  User,
+  Edit
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { LoaderIcon } from "react-hot-toast";
@@ -253,48 +254,22 @@ export default function ProfessionalDashboard() {
             </div>
           </div>
 
-          {/* Upcoming Appointments */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h2>
-                <Link href="/professional/appointments" className="text-sm text-blue-600 font-medium flex items-center hover:text-blue-800">
-                  View all <ChevronRight className="h-4 w-4 ml-1" />
-                </Link>
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg p-8 text-white transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+            <div className="flex items-center mb-4">
+              <div className="bg-white/20 p-3 rounded-xl mr-4">
+                <Edit className="h-6 w-6 text-white" />
               </div>
+              <h2 className="text-xl font-bold">Keep Your Profile Fresh</h2>
             </div>
-            <div className="divide-y divide-gray-100">
-              {dashboardData?.upcomingAppointments && dashboardData.upcomingAppointments.length > 0 ? (
-                dashboardData.upcomingAppointments.map((appointment) => (
-                  <div key={appointment.id} className="p-6">
-                    <div className="flex items-center">
-                      <div className="bg-blue-50 p-2 rounded-full mr-4">
-                        <Calendar className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{appointment.title}</h3>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1">
-                          <div className="flex items-center">
-                            <Clock className="h-3.5 w-3.5 text-gray-400 mr-1.5" />
-                            <p className="text-sm text-gray-500">
-                              {format(new Date(appointment.dateTime), "dd MMM, HH:mm")}
-                            </p>
-                          </div>
-                          <div className="flex items-center">
-                            <User className="h-3.5 w-3.5 text-gray-400 mr-1.5" />
-                            <p className="text-sm text-gray-500">{appointment.customerName}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="text-gray-500">No upcoming appointments.</p>
-                </div>
-              )}
-            </div>
+            <p className="text-sm text-blue-100 mb-6">
+              A detailed and up-to-date profile with photos and service details helps you win more jobs.
+            </p>
+            <Link 
+              href="/professional/dashboard/update-profile" 
+              className="w-full block text-center bg-white text-blue-600 font-semibold rounded-lg px-6 py-3 shadow-md hover:bg-gray-100 transition-all duration-200"
+            >
+              Update Your Profile
+            </Link>
           </div>
         </div>
       </div>
