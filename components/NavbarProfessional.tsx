@@ -20,7 +20,7 @@ export function NavbarProfessional() {
   const navItems = [
     { href: "/professional/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/professional/leads", label: "Leads", icon: FileText },
-    { href: "/professional/settings", label: "Settings", icon: Settings },
+    { href: "/professional/dashboard/update-profile", label: "Settings", icon: Settings },
   ]
 
   useEffect(() => {
