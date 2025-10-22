@@ -177,7 +177,7 @@ export default function ProfessionalDashboard() {
             {dashboardData?.recentJobs && dashboardData.recentJobs.length > 0 ? (
               dashboardData.recentJobs.map((job) => (
                 <div key={job.id} className="p-6">
-                  <Link href={`/professional/leads/${job.id}`} className="flex justify-between items-center hover:bg-gray-50 -m-6 p-6 transition-colors duration-150">
+                  <Link href={`/professional/leads?leadId=${job.id}`} className="flex justify-between items-center hover:bg-gray-50 -m-6 p-6 transition-colors duration-150">
                     <div>
                       <h3 className="font-medium text-gray-900">{job.title}</h3>
                       <div className="flex items-center mt-1">

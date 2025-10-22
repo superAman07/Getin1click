@@ -32,6 +32,7 @@ import {
   XCircle,
 } from "lucide-react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 interface LeadTeaser {
   id: string
@@ -85,6 +86,11 @@ const Leads = () => {
   const { data: session, update: updateSession } = useSession()
   const user = session?.user as ExtendedUser | undefined
 
+  const searchParams = useSearchParams()
+
+  const [visiblePendingCount, setVisiblePendingCount] = useState(10);
+  const [visibleRespondedCount, setVisibleRespondedCount] = useState(10);
+
   useEffect(() => {
     const fetchAllLeads = async () => {
       setLoading(true)
@@ -95,6 +101,22 @@ const Leads = () => {
         ]);
         setLeads(pendingResponse.data);
         setRespondedLeads(respondedResponse.data);
+
+        const leadIdFromQuery = searchParams.get('leadId');
+        if (leadIdFromQuery) {
+          const allFetchedLeads = [...pendingResponse.data, ...respondedResponse.data];
+          const leadToSelect = allFetchedLeads.find(l => l.id === leadIdFromQuery);
+          if (leadToSelect) {
+            const isResponded = respondedResponse.data.some((l: LeadTeaser) => l.id === leadIdFromQuery);
+            if (isResponded) {
+              setActiveTab("accepted");
+            } else {
+              setActiveTab("pending");
+            }
+            setSelectedLead(leadToSelect);
+            setShowMobileDetail(true);
+          }
+        }
       } catch (error) {
         toast.error("Could not load your leads.");
         console.error(error);
@@ -105,7 +127,7 @@ const Leads = () => {
     if (session?.user) {
       fetchAllLeads();
     }
-  }, [session?.user]);
+  }, [session?.user, searchParams]);
 
   const filteredLeads = leads.filter((lead) => {
     return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -747,75 +769,94 @@ const Leads = () => {
                   <div className="divide-y divide-slate-200">
                     {/* Render the appropriate list based on active tab */}
                     {activeTab === "pending"
-                      ? filteredLeads.map((lead) => (
-                        <button
-                          key={lead.id}
-                          onClick={() => handleLeadClick(lead)}
-                          className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-blue-50 hover:bg-blue-50" : ""
-                            }`}
-                          style={{ willChange: "transform, opacity" }}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
-                                  {lead.service.name}
-                                </span>
-                                <span className="text-blue-600 text-xs font-bold">{lead.creditCost} Credits</span>
-                              </div>
-                              <p className="text-sm text-slate-600 mb-2 line-clamp-2">{lead.description}</p>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                                  <Clock className="w-3.5 h-3.5" />
-                                  {formatDate(lead.createdAt)}
+                      ? <>
+                        {filteredLeads.slice(0, visiblePendingCount).map((lead) => (
+                          <button
+                            key={lead.id}
+                            onClick={() => handleLeadClick(lead)}
+                            className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-blue-50 hover:bg-blue-50" : ""
+                              }`}
+                            style={{ willChange: "transform, opacity" }}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                                    {lead.service.name}
+                                  </span>
+                                  <span className="text-blue-600 text-xs font-bold">{lead.creditCost} Credits</span>
                                 </div>
-                                <span className="text-[10px] uppercase tracking-wide text-blue-700/80 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
-                                  Pending
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      ))
-                      : filteredRespondedLeads.map((lead) => (
-                        <button
-                          key={`acc-${lead.id}`}
-                          onClick={() => handleLeadClick(lead)}
-                          className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-green-50 hover:bg-green-50" : ""
-                            }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2 py-0.5 ${lead.assignmentStatus === 'ACCEPTED'
-                                    ? 'text-green-700 bg-green-50 border-green-200'
-                                    : 'text-red-700 bg-red-50 border-red-200'
-                                  }`}>
-                                  {lead.assignmentStatus === 'ACCEPTED' ? <BadgeCheck className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                                  {lead.assignmentStatus}
-                                </span>
-                              </div>
-                              <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
-                                  {lead.service.name}
-                                </span>
-                              </div>
-                              <p className="text-sm text-slate-600 mb-3 line-clamp-2">{lead.description}</p>
-
-                              {lead.customerDetails && (
-                                <div className="flex items-center gap-2 text-xs bg-white border border-green-200 rounded-md py-1 px-2">
-                                  <User className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
-                                  <span className="font-medium text-slate-900 truncate">
-                                    {lead.customerDetails.name || "Customer"}
+                                <p className="text-sm text-slate-600 mb-2 line-clamp-2">{lead.description}</p>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    {formatDate(lead.createdAt)}
+                                  </div>
+                                  <span className="text-[10px] uppercase tracking-wide text-blue-700/80 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                                    Pending
                                   </span>
                                 </div>
-                              )}
+                              </div>
                             </div>
+                          </button>
+                        ))}
+                        {visiblePendingCount < filteredLeads.length && (
+                          <div className="p-4 text-center">
+                            <button onClick={() => setVisiblePendingCount(c => c + 10)} className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                              Load More
+                            </button>
                           </div>
-                        </button>
-                      ))}
+                        )}
+                      </>
+                      : <>
+                        {filteredRespondedLeads.slice(0, visibleRespondedCount).map((lead) => (
+                          <button
+                            key={`acc-${lead.id}`}
+                            onClick={() => handleLeadClick(lead)}
+                            className={`w-full text-left p-4 transition-all duration-200 hover:bg-slate-50 active:scale-[0.99] cursor-pointer ${selectedLead?.id === lead.id ? "bg-green-50 hover:bg-green-50" : ""
+                              }`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2 py-0.5 ${lead.assignmentStatus === 'ACCEPTED'
+                                    ? 'text-green-700 bg-green-50 border-green-200'
+                                    : 'text-red-700 bg-red-50 border-red-200'
+                                    }`}>
+                                    {lead.assignmentStatus === 'ACCEPTED' ? <BadgeCheck className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                                    {lead.assignmentStatus}
+                                  </span>
+                                </div>
+                                <h3 className="font-bold text-slate-900 mb-1 line-clamp-2">{lead.title}</h3>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 text-xs font-medium">
+                                    {lead.service.name}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-slate-600 mb-3 line-clamp-2">{lead.description}</p>
+
+                                {lead.customerDetails && (
+                                  <div className="flex items-center gap-2 text-xs bg-white border border-green-200 rounded-md py-1 px-2">
+                                    <User className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
+                                    <span className="font-medium text-slate-900 truncate">
+                                      {lead.customerDetails.name || "Customer"}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                        {visibleRespondedCount < filteredRespondedLeads.length && (
+                          <div className="p-4 text-center">
+                            <button onClick={() => setVisibleRespondedCount(c => c + 10)} className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                              Load More
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    }
                   </div>
                 )}
               </div>
