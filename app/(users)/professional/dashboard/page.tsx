@@ -191,8 +191,8 @@ export default function ProfessionalDashboard() {
                     <div className="flex items-center">
                       <p className="text-lg font-semibold text-gray-900">₹{job.amount.toFixed(2)}</p>
                       <span className={`ml-4 px-2.5 py-0.5 text-xs rounded-full ${job.status === "completed" ? "bg-green-100 text-green-800" :
-                          job.status === "in-progress" ? "bg-blue-100 text-blue-800" :
-                            "bg-gray-100 text-gray-800"
+                        job.status === "in-progress" ? "bg-blue-100 text-blue-800" :
+                          "bg-gray-100 text-gray-800"
                         }`}>
                         {job.status.charAt(0).toUpperCase() + job.status.slice(1).replace(/-/g, " ")}
                       </span>
@@ -226,9 +226,9 @@ export default function ProfessionalDashboard() {
                   <div key={notification.id} className="p-6">
                     <div className="flex">
                       <div className={`flex-shrink-0 mr-4 p-2 rounded-full ${notification.type === "message" ? "bg-blue-50" :
-                          notification.type === "lead" ? "bg-purple-50" :
-                            notification.type === "payment" ? "bg-green-50" :
-                              "bg-gray-50"
+                        notification.type === "lead" ? "bg-purple-50" :
+                          notification.type === "payment" ? "bg-green-50" :
+                            "bg-gray-50"
                         }`}>
                         {notification.type === "message" ?
                           <MessageSquare className="h-5 w-5 text-blue-600" /> :
@@ -264,8 +264,8 @@ export default function ProfessionalDashboard() {
             <p className="text-sm text-blue-100 mb-6">
               A detailed and up-to-date profile with photos and service details helps you win more jobs.
             </p>
-            <Link 
-              href="/professional/dashboard/update-profile" 
+            <Link
+              href="/professional/dashboard/update-profile"
               className="w-full block text-center bg-white text-blue-600 font-semibold rounded-lg px-6 py-3 shadow-md hover:bg-gray-100 transition-all duration-200"
             >
               Update Your Profile
