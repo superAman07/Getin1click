@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const TabButton = ({ tabName, label, icon: Icon }: { tabName: string, label: string, icon: React.ElementType }) => (
     <button
       onClick={() => setActiveTab(tabName)}
-      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-150 ${
+      className={`flex items-center gap-2 px-4 py-2.5 cursor-pointer text-sm font-medium rounded-lg transition-colors duration-150 ${
         activeTab === tabName
           ? 'bg-blue-50 text-blue-600'
           : 'text-gray-600 hover:bg-gray-100'
