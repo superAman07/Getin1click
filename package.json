@@ -24,6 +24,7 @@
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
+    "recharts": "^3.3.0",
     "swr": "^2.3.6",
     "uuid": "^13.0.0"
   },
