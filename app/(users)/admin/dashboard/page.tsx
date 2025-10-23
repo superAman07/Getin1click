@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity } from 'lucide-react';
+import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity ,CheckSquare} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -8,8 +8,11 @@ interface DashboardData {
   metrics: {
     totalCustomers: number;
     totalProfessionals: number;
-    pendingApprovals: number;
-    openLeads: number;
+    pendingProfessionalApprovals: number;
+    newLeadsToAssign: number;
+    leadsPendingProfessionalAcceptance: number;
+    activeJobsInProgress: number;
+    completedJobs: number;
   };
   recentUsers: {
     id: string;
@@ -137,15 +140,21 @@ export default function AdminDashboard() {
       gradient: 'from-emerald-500 to-emerald-600'
     },
     {
-      title: 'Pending Approvals',
-      value: data?.metrics.pendingApprovals ?? 0,
-      icon: <UserCheck className="w-7 h-7 text-white" />,
+      title: 'New Leads (To Assign)',
+      value: data?.metrics.newLeadsToAssign ?? 0,
+      icon: <FileText className="w-7 h-7 text-white" />,
       gradient: 'from-amber-500 to-amber-600'
     },
     {
-      title: 'Open Leads',
-      value: data?.metrics.openLeads ?? 0,
-      icon: <FileText className="w-7 h-7 text-white" />,
+      title: 'Completed Jobs',
+      value: data?.metrics.completedJobs ?? 0,
+      icon: <CheckSquare className="w-7 h-7 text-white" />,
+      gradient: 'from-gray-500 to-gray-600'
+    },
+    {
+      title: 'Pending Prof. Approval',
+      value: data?.metrics.pendingProfessionalApprovals ?? 0,
+      icon: <UserCheck className="w-7 h-7 text-white" />,
       gradient: 'from-purple-500 to-purple-600'
     },
   ];

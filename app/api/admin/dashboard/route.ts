@@ -7,8 +7,13 @@ export async function GET() {
     // --- Key Metrics ---
     const totalCustomers = await prisma.user.count({ where: { role: 'CUSTOMER' } });
     const totalProfessionals = await prisma.user.count({ where: { role: 'PROFESSIONAL' } });
-    const pendingApprovals = await prisma.user.count({ where: { status: 'PENDING_VERIFICATION' } });
-    const openLeads = await prisma.lead.count({ where: { status: 'OPEN' } });
+    const pendingProfessionalApprovals = await prisma.user.count({ where: { status: 'PENDING_VERIFICATION' } });
+
+    // --- Lead Funnel Metrics ---
+    const newLeadsToAssign = await prisma.lead.count({ where: { status: 'OPEN' } });
+    const leadsPendingProfessionalAcceptance = await prisma.lead.count({ where: { status: 'ASSIGNED' } });
+    const activeJobsInProgress = await prisma.lead.count({ where: { status: 'ACCEPTED' } });
+    const completedJobs = await prisma.lead.count({ where: { status: 'COMPLETED' } });
 
     // --- Recent Users ---
     const recentUsers = await prisma.user.findMany({
@@ -69,8 +74,11 @@ export async function GET() {
       metrics: {
         totalCustomers,
         totalProfessionals,
-        pendingApprovals,
-        openLeads,
+        pendingProfessionalApprovals,
+        newLeadsToAssign,
+        leadsPendingProfessionalAcceptance,
+        activeJobsInProgress,
+        completedJobs,
       },
       recentUsers,
       signupChartData,
