@@ -342,7 +342,7 @@ export default function PostAJobPage() {
           opacity: showOverlay ? 0.6 : 1,
         }}
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 mt-14">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
             Almost there! Just a few more details.
           </h1>
