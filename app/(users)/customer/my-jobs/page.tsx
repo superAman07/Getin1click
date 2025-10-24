@@ -5,6 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Loader2, Edit, Trash2, Plus, X, MoreVertical, Users, Briefcase, MapPin, DollarSign, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import PostJobModal from '@/components/PostJobModal';
 
 interface Lead {
     id: string;
@@ -43,6 +44,7 @@ export default function MyJobsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+    const [isPostJobModalOpen, setIsPostJobModalOpen] = useState(false);
 
     const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean; leadId: string | null; isPositive: boolean }>({
         isOpen: false,
@@ -113,12 +115,6 @@ export default function MyJobsPage() {
     const fetchLeads = useCallback(async (page: number) => {
         setLoading(true);
         try {
-            // const response = await axios.get('/api/customer/leads');
-            // const normalizedLeads = response.data.map((lead: any) => ({
-            //     ...lead,
-            //     urgency: normalizeUrgency(lead.urgency)
-            // }));
-            // setLeads(normalizedLeads);
             const response = await axios.get(`/api/customer/leads?page=${page}&limit=${jobsPerPage}`);
             const { leads: fetchedLeads, totalLeads } = response.data;
 
@@ -136,9 +132,6 @@ export default function MyJobsPage() {
         }
     }, []);
 
-    // useEffect(() => {
-    //     fetchLeads();
-    // }, [fetchLeads]);
     useEffect(() => {
         fetchLeads(currentPage);
     }, [currentPage, fetchLeads]);
@@ -248,13 +241,13 @@ export default function MyJobsPage() {
                                 Manage your active and past job requests
                             </p>
                         </div>
-                        <Link
-                            href="/customer/post-a-job"
+                        <button
+                            onClick={() => setIsPostJobModalOpen(true)}
                             className="group bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105 cursor-pointer font-semibold"
                         >
                             <Plus size={20} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
                             <span>Post New Job</span>
-                        </Link>
+                        </button>
                     </div>
 
                     {loading ? (
@@ -772,6 +765,11 @@ export default function MyJobsPage() {
                     </div>
                 </div>
             )}
+
+            <PostJobModal 
+                isOpen={isPostJobModalOpen} 
+                onClose={() => setIsPostJobModalOpen(false)} 
+            />
 
             <style jsx>{`
                 @keyframes fadeInUp {
