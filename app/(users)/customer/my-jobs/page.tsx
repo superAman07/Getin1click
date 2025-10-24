@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Loader2, Edit, Trash2, Plus, X, MoreVertical, Users, Briefcase, MapPin, DollarSign, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, Edit, Trash2, Plus, X, MoreVertical, Users, Briefcase, MapPin, DollarSign, Clock, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
 interface Lead {
@@ -52,6 +52,10 @@ export default function MyJobsPage() {
     const [rating, setRating] = useState<number>(5);
     const [feedback, setFeedback] = useState<string>("");
     const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const jobsPerPage = 5;
 
     const handleJobStatusUpdate = (lead: Lead, isCompleted: boolean) => {
         setFeedbackModal({
@@ -106,15 +110,25 @@ export default function MyJobsPage() {
         return lowerCase.charAt(0).toUpperCase() + lowerCase.slice(1);
     };
 
-    const fetchLeads = useCallback(async () => {
+    const fetchLeads = useCallback(async (page: number) => {
         setLoading(true);
         try {
-            const response = await axios.get('/api/customer/leads');
-            const normalizedLeads = response.data.map((lead: any) => ({
+            // const response = await axios.get('/api/customer/leads');
+            // const normalizedLeads = response.data.map((lead: any) => ({
+            //     ...lead,
+            //     urgency: normalizeUrgency(lead.urgency)
+            // }));
+            // setLeads(normalizedLeads);
+            const response = await axios.get(`/api/customer/leads?page=${page}&limit=${jobsPerPage}`);
+            const { leads: fetchedLeads, totalLeads } = response.data;
+
+            const normalizedLeads = fetchedLeads.map((lead: any) => ({
                 ...lead,
                 urgency: normalizeUrgency(lead.urgency)
             }));
+
             setLeads(normalizedLeads);
+            setTotalPages(Math.ceil(totalLeads / jobsPerPage));
         } catch (error) {
             toast.error('Failed to load your jobs.');
         } finally {
@@ -122,9 +136,12 @@ export default function MyJobsPage() {
         }
     }, []);
 
+    // useEffect(() => {
+    //     fetchLeads();
+    // }, [fetchLeads]);
     useEffect(() => {
-        fetchLeads();
-    }, [fetchLeads]);
+        fetchLeads(currentPage);
+    }, [currentPage, fetchLeads]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -149,7 +166,7 @@ export default function MyJobsPage() {
             });
             toast.success('Job updated successfully!');
             setEditingLead(null);
-            fetchLeads();
+            fetchLeads(currentPage);
         } catch (error) {
             toast.error('Failed to update job.');
         } finally {
@@ -164,7 +181,7 @@ export default function MyJobsPage() {
             toast.success('Job deleted successfully', { id: toastId });
             setDeleteConfirm(null);
             setActiveMenu(null);
-            fetchLeads();
+            fetchLeads(currentPage);
         } catch (error) {
             toast.error('Failed to delete job', { id: toastId });
         }
@@ -200,7 +217,7 @@ export default function MyJobsPage() {
             await axios.put(`/api/customer/leads/${editingLead.id}`, editingLead);
             toast.success('Job updated successfully', { id: toastId });
             setEditingLead(null);
-            fetchLeads();
+            fetchLeads(currentPage);
         } catch (error) {
             toast.error('Failed to update job', { id: toastId });
         } finally {
@@ -474,6 +491,29 @@ export default function MyJobsPage() {
                             ))}
                         </div>
                     )}
+                    {totalPages > 0 && (
+                        <div className="mt-10 flex justify-center items-center gap-4">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <ChevronLeft size={16} />
+                                Previous
+                            </button>
+                            <span className="text-sm text-gray-600">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Next
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -713,8 +753,8 @@ export default function MyJobsPage() {
                                     onClick={handleSubmitFeedback}
                                     disabled={isSubmittingFeedback || (!feedbackModal.isPositive && !feedback.trim())}
                                     className={`flex-1 py-3 font-medium cursor-pointer rounded-lg flex items-center justify-center gap-2 ${feedbackModal.isPositive
-                                            ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-400'
-                                            : 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-400'
+                                        ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-400'
+                                        : 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-400'
                                         } disabled:cursor-not-allowed`}
                                 >
                                     {isSubmittingFeedback && <Loader2 size={18} className="animate-spin" />}

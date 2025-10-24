@@ -9,19 +9,53 @@ export async function GET(request: NextRequest) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
 
+    // try {
+    //     const leads = await prisma.lead.findMany({
+    //         where: { customerId: session.user.id },
+    //         orderBy: { createdAt: 'desc' },
+    //         include: {
+    //             service: {
+    //                 select: { name: true }
+    //             },
+    //             _count: {
+    //                 select: { assignments: true }
+    //             }
+    //         }
+    //     });
+
+    //     const formattedLeads = leads.map(lead => ({
+    //         ...lead,
+    //         _count: {
+    //             purchasedBy: lead._count.assignments
+    //         }
+    //     }));
+
+    //     return NextResponse.json(formattedLeads);
+        const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '5', 10);
+    const skip = (page - 1) * limit;
+
     try {
-        const leads = await prisma.lead.findMany({
-            where: { customerId: session.user.id },
-            orderBy: { createdAt: 'desc' },
-            include: {
-                service: {
-                    select: { name: true }
-                },
-                _count: {
-                    select: { assignments: true }
+        const [leads, totalLeads] = await prisma.$transaction([
+            prisma.lead.findMany({
+                where: { customerId: session.user.id },
+                orderBy: { createdAt: 'desc' },
+                skip: skip,
+                take: limit,
+                include: {
+                    service: {
+                        select: { name: true }
+                    },
+                    _count: {
+                        select: { assignments: true }
+                    }
                 }
-            }
-        });
+            }),
+            prisma.lead.count({
+                where: { customerId: session.user.id }
+            })
+        ]);
 
         const formattedLeads = leads.map(lead => ({
             ...lead,
@@ -30,7 +64,7 @@ export async function GET(request: NextRequest) {
             }
         }));
 
-        return NextResponse.json(formattedLeads);
+        return NextResponse.json({ leads: formattedLeads, totalLeads });
     } catch (error) {
         console.error("Error fetching customer leads:", error);
         return new NextResponse('Internal Server Error', { status: 500 });
