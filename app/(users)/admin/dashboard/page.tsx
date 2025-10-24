@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity ,CheckSquare} from 'lucide-react';
+import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity ,CheckSquare, UserPlus} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
@@ -8,7 +8,8 @@ interface DashboardData {
   metrics: {
     totalCustomers: number;
     totalProfessionals: number;
-    pendingProfessionalApprovals: number;
+    newCustomersLast30Days: number;
+    newProfessionalsLast30Days: number;
     newLeadsToAssign: number;
     leadsPendingProfessionalAcceptance: number;
     activeJobsInProgress: number;
@@ -152,10 +153,16 @@ export default function AdminDashboard() {
       gradient: 'from-gray-500 to-gray-600'
     },
     {
-      title: 'Pending Prof. Approval',
-      value: data?.metrics.pendingProfessionalApprovals ?? 0,
-      icon: <UserCheck className="w-7 h-7 text-white" />,
-      gradient: 'from-purple-500 to-purple-600'
+      title: 'New Customers (30d)',
+      value: `+${data?.metrics.newCustomersLast30Days ?? 0}`,
+      icon: <UserPlus className="w-7 h-7 text-white" />,
+      gradient: 'from-sky-500 to-sky-600'
+    },
+    {
+      title: 'New Professionals (30d)',
+      value: `+${data?.metrics.newProfessionalsLast30Days ?? 0}`,
+      icon: <UserPlus className="w-7 h-7 text-white" />,
+      gradient: 'from-violet-500 to-violet-600'
     },
   ];
 

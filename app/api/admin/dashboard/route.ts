@@ -4,10 +4,18 @@ import { subDays } from 'date-fns';
 
 export async function GET() {
   try {
+
+    const thirtyDaysAgo = subDays(new Date(), 30);
     // --- Key Metrics ---
     const totalCustomers = await prisma.user.count({ where: { role: 'CUSTOMER' } });
     const totalProfessionals = await prisma.user.count({ where: { role: 'PROFESSIONAL' } });
-    const pendingProfessionalApprovals = await prisma.user.count({ where: { status: 'PENDING_VERIFICATION' } });
+    const newCustomersLast30Days = await prisma.user.count({
+      where: { role: 'CUSTOMER', createdAt: { gte: thirtyDaysAgo } }
+    });
+    const newProfessionalsLast30Days = await prisma.user.count({
+      where: { role: 'PROFESSIONAL', createdAt: { gte: thirtyDaysAgo } }
+    });
+    // const pendingProfessionalApprovals = await prisma.user.count({ where: { status: 'PENDING_VERIFICATION' } });
 
     // --- Lead Funnel Metrics ---
     const newLeadsToAssign = await prisma.lead.count({ where: { status: 'OPEN' } });
@@ -74,7 +82,8 @@ export async function GET() {
       metrics: {
         totalCustomers,
         totalProfessionals,
-        pendingProfessionalApprovals,
+        newCustomersLast30Days,
+        newProfessionalsLast30Days,
         newLeadsToAssign,
         leadsPendingProfessionalAcceptance,
         activeJobsInProgress,
