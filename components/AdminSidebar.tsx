@@ -21,7 +21,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
     { id: 'professionals', href: '/admin/professionals', label: 'Professionals', icon: UserCheck },
     { id: 'credit-bundles', href: '/admin/credit-bundles', label: 'Credit Bundles', icon: CreditCard },
     { id: 'customers', href: '/admin/customers', label: 'Customers', icon: Users },
-    { id: 'settings', href: '/admin/settings', label: 'Settings', icon: Settings },
+    // { id: 'settings', href: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
