@@ -171,7 +171,7 @@ export default function PostAJobPage() {
           }}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden transform transition-all duration-300 ease-out"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col transform transition-all duration-300 ease-out"
             style={{
               transform: showOverlay ? 'scale(1)' : 'scale(0.95)',
               opacity: showOverlay ? 1 : 0,
@@ -324,7 +324,7 @@ export default function PostAJobPage() {
             <div className="p-6 sm:p-8 border-t border-slate-200 bg-slate-50">
               <button
                 onClick={handleNextStep}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               >
                 Next
                 <ArrowRight size={20} />
