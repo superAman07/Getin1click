@@ -200,10 +200,10 @@ export default function ProfessionalDashboard() {
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans text-slate-800">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 mt-12">
         <div className="mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-            Welcome back, {session?.user?.name || "Professional"}!
+          <h1 className="text-xl md:text-4xl font-bold text-slate-600 tracking-tight">
+            Welcome back, <span className="text-gray-800">{session?.user?.name || "Professional"}</span>!
           </h1>
           <p className="text-slate-500 mt-2 text-base md:text-lg">
             Here's a summary of your activity and performance.
@@ -221,7 +221,7 @@ export default function ProfessionalDashboard() {
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100">
             <div className="p-6 border-b border-slate-100">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-slate-900">Recent Jobs</h2>
+                <h2 className="text-lg font-semibold text-slate-600">Recent Jobs</h2>
                 <Link href="/professional/leads" className="text-sm text-blue-600 font-medium flex items-center hover:text-blue-800 transition-colors">
                   View all <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
@@ -246,7 +246,7 @@ export default function ProfessionalDashboard() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-sm text-slate-900">₹{job.amount.toLocaleString()}</p>
+                        <p className="font-bold text-sm text-slate-600">₹{job.amount.toLocaleString()}</p>
                         <p className="text-xs text-slate-400">{job.date}</p>
                       </div>
                     </div>
@@ -265,7 +265,7 @@ export default function ProfessionalDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
               <div className="p-6 border-b border-slate-100">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold text-slate-900">Notifications</h2>
+                  <h2 className="text-lg font-semibold text-slate-600">Notifications</h2>
                   <Link href="/professional/notifications" className="text-sm text-blue-600 font-medium flex items-center hover:text-blue-800 transition-colors">
                     View all <ChevronRight className="h-4 w-4 ml-1" />
                   </Link>
