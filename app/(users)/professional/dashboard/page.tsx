@@ -245,7 +245,8 @@ export default function ProfessionalDashboard() {
                           <p className="text-xs text-slate-500">with {job.customerName}</p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right ">
+                        {/* <JobStatusBadge status={job.status} /> */}
                         <p className="font-bold text-sm text-slate-600">₹{job.amount.toLocaleString()}</p>
                         <p className="text-xs text-slate-400">{job.date}</p>
                       </div>
