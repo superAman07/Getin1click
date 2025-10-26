@@ -95,7 +95,7 @@ const NotificationIcon = ({ type }: { type: 'message' | 'lead' | 'payment' | 'sy
 
 const DashboardSkeleton = () => (
     <div className="bg-slate-50 min-h-screen">
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-pulse">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-pulse mt-12">
             <div className="mb-8 md:mb-12">
                 <div className="h-9 w-3/5 bg-slate-200 rounded-lg"></div>
                 <div className="h-6 w-2/5 bg-slate-200 rounded mt-3"></div>
