@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
             where: {
                 professionalId: session.user.id,
                 status: {
-                    in: ['ACCEPTED', 'REJECTED']
+                    in: ['ACCEPTED', 'REJECTED', 'MISSED']
                 }
             },
             include: {

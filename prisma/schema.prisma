@@ -38,6 +38,13 @@ enum UserStatus {
   PENDING_VERIFICATION
 }
 
+enum LeadAssignmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  MISSED
+}
+
 model User {
   id                 String     @id @default(cuid())
   email              String     @unique
@@ -310,14 +317,14 @@ model Lead {
 }
 
 model LeadAssignment {
-  id             String   @id @default(cuid())
+  id             String               @id @default(cuid())
   leadId         String
-  lead           Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead           Lead                 @relation(fields: [leadId], references: [id], onDelete: Cascade)
   professionalId String
-  professional   User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
-  status         String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  professional   User                 @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  status         LeadAssignmentStatus @default(PENDING)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 
   @@unique([leadId, professionalId])
   @@index([leadId])
@@ -375,10 +382,10 @@ model Notification {
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
 
   @@unique([email, token])
 }

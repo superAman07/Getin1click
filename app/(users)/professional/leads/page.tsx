@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import axios from "axios"
 import toast from "react-hot-toast"
 import { useSession } from "next-auth/react"
@@ -44,7 +44,7 @@ interface LeadTeaser {
   budget: string
   urgency: string
   status: string
-  assignmentStatus?: 'ACCEPTED' | 'REJECTED'
+  assignmentStatus?: 'ACCEPTED' | 'REJECTED' | 'MISSED'
   customerName: string
   responses: number
   assignmentId: string
@@ -81,7 +81,7 @@ const Leads = () => {
   const [justAcceptedId, setJustAcceptedId] = useState<string | null>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
   const [rejectingLead, setRejectingLead] = useState<FullLead | null>(null);
-  const [respondedStatusFilter, setRespondedStatusFilter] = useState<'ALL' | 'ACCEPTED' | 'REJECTED'>('ALL');
+  const [respondedStatusFilter, setRespondedStatusFilter] = useState<'ALL' | 'ACCEPTED' | 'REJECTED' | 'MISSED'>('ALL');
   const [showMobileDetail, setShowMobileDetail] = useState(false)
   const { data: session, update: updateSession } = useSession()
   const user = session?.user as ExtendedUser | undefined
@@ -91,43 +91,44 @@ const Leads = () => {
   const [visiblePendingCount, setVisiblePendingCount] = useState(10);
   const [visibleRespondedCount, setVisibleRespondedCount] = useState(10);
 
-  useEffect(() => {
-    const fetchAllLeads = async () => {
-      setLoading(true)
-      try {
-        const [pendingResponse, respondedResponse] = await Promise.all([
-          axios.get("/api/professional/leads"),
-          axios.get("/api/professional/leads/responded")
-        ]);
-        setLeads(pendingResponse.data);
-        setRespondedLeads(respondedResponse.data);
+  const fetchAllLeads = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [pendingResponse, respondedResponse] = await Promise.all([
+        axios.get("/api/professional/leads"),
+        axios.get("/api/professional/leads/responded")
+      ]);
+      setLeads(pendingResponse.data);
+      setRespondedLeads(respondedResponse.data);
 
-        const leadIdFromQuery = searchParams.get('leadId');
-        if (leadIdFromQuery) {
-          const allFetchedLeads = [...pendingResponse.data, ...respondedResponse.data];
-          const leadToSelect = allFetchedLeads.find(l => l.id === leadIdFromQuery);
-          if (leadToSelect) {
-            const isResponded = respondedResponse.data.some((l: LeadTeaser) => l.id === leadIdFromQuery);
-            if (isResponded) {
-              setActiveTab("accepted");
-            } else {
-              setActiveTab("pending");
-            }
-            setSelectedLead(leadToSelect);
-            setShowMobileDetail(true);
+      const leadIdFromQuery = searchParams.get('leadId');
+      if (leadIdFromQuery) {
+        const allFetchedLeads = [...pendingResponse.data, ...respondedResponse.data];
+        const leadToSelect = allFetchedLeads.find(l => l.id === leadIdFromQuery);
+        if (leadToSelect) {
+          const isResponded = respondedResponse.data.some((l: LeadTeaser) => l.id === leadIdFromQuery);
+          if (isResponded) {
+            setActiveTab("accepted");
+          } else {
+            setActiveTab("pending");
           }
+          setSelectedLead(leadToSelect);
+          setShowMobileDetail(true);
         }
-      } catch (error) {
-        toast.error("Could not load your leads.");
-        console.error(error);
-      } finally {
-        setLoading(false)
       }
-    };
+    } catch (error) {
+      toast.error("Could not load your leads.");
+      console.error(error);
+    } finally {
+      setLoading(false)
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (session?.user) {
       fetchAllLeads();
     }
-  }, [session?.user, searchParams]);
+  }, [session?.user, fetchAllLeads]);
 
   const filteredLeads = leads.filter((lead) => {
     return lead.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -200,8 +201,16 @@ const Leads = () => {
       })
 
     } catch (error: any) {
-      const errorMessage = error.response?.data || "Failed to accept lead"
-      toast.error(errorMessage, { id: toastId })
+      if (error.response?.status === 409) { // 409 Conflict: Lead already taken
+        toast.error('Sorry, this lead was just taken by another professional.', { id: toastId });
+        // Refetch all leads to update the status to MISSED
+        fetchAllLeads();
+      } else if (error.response?.status === 402) { // 402 Payment Required: Insufficient credits
+        toast.error('Insufficient credits. Please top up your wallet.', { id: toastId });
+      } else {
+        const errorMessage = error.response?.data || "Failed to accept lead"
+        toast.error(errorMessage, { id: toastId })
+      }
     } finally {
       setProcessingLeadId(null)
     }
@@ -401,6 +410,19 @@ const Leads = () => {
             ) : (
               /* Lead status indicator for accepted leads */
               (() => {
+                if (selectedLead.assignmentStatus === 'MISSED') {
+                  return (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center space-y-2">
+                      <div className="w-12 h-12 bg-white border-2 border-orange-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <XCircle className="w-7 h-7 text-orange-500" />
+                      </div>
+                      <h4 className="font-semibold text-orange-800">Better luck next time!</h4>
+                      <p className="text-sm text-orange-700">
+                        Another professional accepted this lead before you.
+                      </p>
+                    </div>
+                  );
+                }
                 switch (selectedLead.status) {
                   case 'COMPLETED':
                     return (
@@ -737,6 +759,7 @@ const Leads = () => {
                     <option value="ALL">All Statuses</option>
                     <option value="ACCEPTED">Accepted</option>
                     <option value="REJECTED">Rejected</option>
+                    <option value="MISSED">Missed</option>
                   </select>
                 </div>
               )}
