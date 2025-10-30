@@ -45,6 +45,20 @@ enum LeadAssignmentStatus {
   MISSED
 }
 
+enum NotificationType {
+  // For Professionals
+  LEAD_ASSIGNED
+  LEAD_ACCEPTED_BY_OTHER
+  WALLET_TOPUP
+  WELCOME_PRO
+
+  // For Admins
+  NEW_LEAD_FOR_ASSIGNMENT
+  LEAD_REJECTED_BY_PRO
+  ISSUE_REPORTED_BY_CUSTOMER
+  NEW_PROFESSIONAL_SIGNUP
+}
+
 model User {
   id                 String     @id @default(cuid())
   email              String     @unique
@@ -371,7 +385,7 @@ model Notification {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String // e.g., NEW_LEAD, LEAD_ACCEPTED, etc.
+  type      NotificationType
   message   String
   read      Boolean  @default(false)
   data      Json? // Additional context data
