@@ -29,7 +29,7 @@ export default function AdminNotifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (!session?.user?.id) return;
-      
+
       setLoading(true);
       try {
         const response = await axios.get('/api/admin/notifications');
@@ -43,7 +43,7 @@ export default function AdminNotifications() {
     };
 
     fetchNotifications();
-    
+
     // Poll for new notifications every 30 seconds
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
@@ -52,7 +52,7 @@ export default function AdminNotifications() {
   const markAsRead = async (id: string) => {
     try {
       await axios.patch(`/api/admin/notifications/${id}/read`);
-      setNotifications(notifications.map(n => 
+      setNotifications(notifications.map(n =>
         n.id === id ? { ...n, read: true } : n
       ));
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -76,6 +76,22 @@ export default function AdminNotifications() {
 
   const formatDate = (date: string) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+
+  const handleNotificationClick = async (notification: Notification) => {
+    if (!notification.read) {
+      try {
+        setNotifications(prev =>
+          prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+
+        await axios.patch(`/api/admin/notifications/${notification.id}/read`);
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+      }
+    }
+    setIsOpen(false);
   };
 
   const getRedirectLink = (notification: Notification) => {
@@ -108,14 +124,14 @@ export default function AdminNotifications() {
         <div className="absolute right-0 mt-2 w-96 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
             <h3 className="font-semibold text-slate-900">Admin Notifications</h3>
-            <button 
+            <button
               onClick={() => setIsOpen(false)}
               className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-500 cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
-          
+
           <div className="max-h-[480px] overflow-y-auto">
             {loading ? (
               <div className="p-8 text-center text-slate-500">
@@ -128,11 +144,15 @@ export default function AdminNotifications() {
                 <p className="text-slate-600">No notifications yet</p>
               </div>
             ) : (
-              notifications.map((notification) => {
+              notifications.slice(0, 10).map((notification) => {
                 const redirectLink = getRedirectLink(notification);
                 const NotificationContent = (
-                  <div className="flex items-start gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div className="mt-1">{getNotificationIcon(notification.type)}</div>
+                  <div className="flex items-start gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${notification.read ? 'bg-slate-100' : 'bg-blue-100'}`}>
+                      {getNotificationIcon(notification.type)}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm ${notification.read ? 'text-slate-600' : 'text-slate-900 font-medium'}`}>
                         {notification.message}
@@ -155,7 +175,7 @@ export default function AdminNotifications() {
                 );
 
                 return redirectLink ? (
-                  <Link key={notification.id} href={redirectLink}>
+                  <Link key={notification.id} href={redirectLink} passHref>
                     {NotificationContent}
                   </Link>
                 ) : (
@@ -163,6 +183,16 @@ export default function AdminNotifications() {
                 );
               })
             )}
+          </div>
+          <div className="p-2 border-t border-slate-200 bg-slate-50 text-center">
+            <Link href="/admin/notifications" passHref>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-full text-sm font-medium text-blue-600 hover:text-blue-800 py-2 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+              >
+                View All Notifications
+              </button>
+            </Link>
           </div>
         </div>
       )}
