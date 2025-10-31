@@ -323,7 +323,7 @@ export default function MyJobsPage() {
                                                             <span className="font-semibold text-blue-700">{lead._count.purchasedBy}</span>
                                                         </div>
 
-                                                        {lead.status === 'ASSIGNED' && (
+                                                        {lead.status === 'ACCEPTED' && (
                                                             <div className="flex gap-2">
                                                                 <button
                                                                     onClick={() => handleJobStatusUpdate(lead, true)}
