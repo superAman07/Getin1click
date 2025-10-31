@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
@@ -11,6 +11,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
+import { useSearchParams } from 'next/navigation';
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -141,7 +142,9 @@ export default function LeadManagementPage() {
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const fetchLeads = async () => {
+  const searchParams = useSearchParams();
+
+  const fetchLeads = useCallback(async () => {
     setIsLoadingLeads(true);
     try {
       let url = '/api/admin/leads';
@@ -155,13 +158,15 @@ export default function LeadManagementPage() {
 
       const { data } = await axios.get<Lead[]>(url);
       setLeads(data);
+      return data;
     } catch (error) {
       toast.error('Failed to load leads.');
       console.error(error);
+      return [];
     } finally {
       setIsLoadingLeads(false);
     }
-  };
+  },[leadSearchTerm, selectedServiceFilter, selectedStatusFilter]);
 
   const fetchServices = async () => {
     setIsLoadingServices(true);
@@ -178,8 +183,16 @@ export default function LeadManagementPage() {
 
   useEffect(() => {
     fetchServices();
-    fetchLeads();
-  }, []);
+    fetchLeads().then(fetchedLeads => {
+      const leadIdFromQuery = searchParams.get('leadId');
+      if (leadIdFromQuery && fetchedLeads.length > 0) {
+        const leadToSelect = fetchedLeads.find(l => l.id === leadIdFromQuery);
+        if (leadToSelect) {
+          handleSelectLead(leadToSelect);
+        }
+      }
+    });
+  }, [fetchLeads]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
