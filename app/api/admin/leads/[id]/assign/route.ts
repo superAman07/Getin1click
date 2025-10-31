@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
-import { UserRole } from '@prisma/client';
+import { UserRole, NotificationType } from '@prisma/client';
 
 export async function POST(
     request: NextRequest,
@@ -39,7 +39,7 @@ export async function POST(
                 },
             },
             update: {
-                status: 'PENDING', 
+                status: 'PENDING',
             },
             create: {
                 leadId,
@@ -59,7 +59,7 @@ export async function POST(
         await prisma.notification.create({
             data: {
                 userId: professionalId,
-                type: 'NEW_LEAD',
+                type: NotificationType.LEAD_ASSIGNED,
                 message: `You have been assigned a new lead: "${lead.title}"`,
                 data: {
                     leadId: leadId,
