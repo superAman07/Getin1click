@@ -766,9 +766,9 @@ export default function MyJobsPage() {
                 </div>
             )}
 
-            <PostJobModal 
-                isOpen={isPostJobModalOpen} 
-                onClose={() => setIsPostJobModalOpen(false)} 
+            <PostJobModal
+                isOpen={isPostJobModalOpen}
+                onClose={() => setIsPostJobModalOpen(false)}
             />
 
             <style jsx>{`
