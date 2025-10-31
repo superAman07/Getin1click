@@ -96,7 +96,7 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-8 relative animate-in zoom-in-95 duration-200" ref={dropdownRef}>
-        <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+        <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 cursor-pointer">
           <X size={20} />
         </button>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Post a New Job</h2>

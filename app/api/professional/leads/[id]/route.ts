@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
-import { LeadAssignmentStatus, UserRole } from '@prisma/client';
+import { LeadAssignmentStatus, UserRole ,NotificationType} from '@prisma/client';
 
 export async function PUT(
     request: NextRequest,
@@ -118,44 +118,35 @@ export async function PUT(
                     }
                 };
             });
-
             return NextResponse.json(updatedData);
-            // const professional = await prisma.professionalProfile.findUnique({
-            //     where: { userId: session.user.id },
-            //     select: { credits: true }
-            // });
-
-            // const creditCost = assignment.lead.service.creditCost ?? 1;
-
-            // if (!professional || (professional.credits || 0) < creditCost) {
-            //     return new NextResponse('Insufficient credits to accept this lead.', { status: 402 });
-            // }
-
-            // const [, updatedAssignment] = await prisma.$transaction([
-            //     prisma.professionalProfile.update({
-            //         where: { userId: session.user.id },
-            //         data: { credits: { decrement: creditCost } },
-            //     }),
-            //     prisma.leadAssignment.update({
-            //         where: { id },
-            //         data: { status: 'ACCEPTED' },
-            //     })
-            // ]);
-
-            // return NextResponse.json({
-            //     message: 'Lead accepted successfully!',
-            //     customerDetails: {
-            //         name: assignment.lead.customer.name,
-            //         email: assignment.lead.customer.email,
-            //         phoneNumber: assignment.lead.customer.professionalProfile?.phoneNumber
-            //     },
-            // });
-
         } else {
-            await prisma.leadAssignment.update({
+            const updatedAssignment = await prisma.leadAssignment.update({
                 where: { id },
                 data: { status: LeadAssignmentStatus.REJECTED },
+                include: {
+                    lead: { select: { id: true, title: true } },
+                    professional: { select: { name: true } }
+                }
             });
+
+            const admins = await prisma.user.findMany({
+                where: { role: UserRole.ADMIN },
+                select: { id: true }
+            });
+
+            if (admins.length > 0) {
+                const notificationMessage = `Professional '${updatedAssignment.professional.name || 'N/A'}' rejected the lead: "${updatedAssignment.lead.title}".`;
+                await prisma.notification.createMany({
+                    data: admins.map(admin => ({
+                        userId: admin.id,
+                        type: NotificationType.LEAD_REJECTED_BY_PRO,
+                        message: notificationMessage,
+                        data: {
+                            leadId: updatedAssignment.lead.id
+                        }
+                    }))
+                });
+            }
 
             return NextResponse.json({ message: 'Lead rejected.' });
         }
