@@ -277,13 +277,13 @@ export default function MyJobsPage() {
                             <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
                                 Ready to find a professional? Post your first job today and get matched with qualified experts.
                             </p>
-                            <Link
-                                href="/customer/post-a-job"
+                            <button
+                                onClick={() => setIsPostJobModalOpen(true)}
                                 className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105 cursor-pointer font-semibold text-lg"
                             >
                                 <Plus size={22} strokeWidth={2.5} />
                                 <span>Post Your First Job</span>
-                            </Link>
+                            </button>
                         </div>
                     ) : (
                         <div className="space-y-5">
