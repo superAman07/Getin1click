@@ -7,6 +7,7 @@ import AddServiceForm from './AddServiceFormPage';
 import AdminSidebar from './AdminSidebar';
 import { ServiceProvider, useServiceContext } from '@/contexts/ServiceContext';
 import { signOut, useSession } from 'next-auth/react';
+import AdminNotifications from './AdminNotifications';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const {
@@ -87,6 +88,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                     <span className="sm:hidden">Add</span>
                   </button>
                 )}
+                <AdminNotifications />
                 <div className="relative" ref={userMenuRef}>
                   <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="w-10 h-10 bg-slate-200 cursor-pointer rounded-full flex items-center justify-center text-slate-600 font-bold">
                     {session?.user?.name?.charAt(0).toUpperCase() || <User size={20} />}
