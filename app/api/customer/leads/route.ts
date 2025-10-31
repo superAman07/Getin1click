@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
+import { NotificationType, UserRole } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
@@ -9,29 +10,7 @@ export async function GET(request: NextRequest) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    // try {
-    //     const leads = await prisma.lead.findMany({
-    //         where: { customerId: session.user.id },
-    //         orderBy: { createdAt: 'desc' },
-    //         include: {
-    //             service: {
-    //                 select: { name: true }
-    //             },
-    //             _count: {
-    //                 select: { assignments: true }
-    //             }
-    //         }
-    //     });
-
-    //     const formattedLeads = leads.map(lead => ({
-    //         ...lead,
-    //         _count: {
-    //             purchasedBy: lead._count.assignments
-    //         }
-    //     }));
-
-    //     return NextResponse.json(formattedLeads);
-        const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '5', 10);
     const skip = (page - 1) * limit;
@@ -99,6 +78,25 @@ export async function POST(request: NextRequest) {
                 status: 'OPEN',
             },
         });
+
+        const admins = await prisma.user.findMany({
+            where: { role: UserRole.ADMIN },
+            select: { id: true }
+        });
+
+        if (admins.length > 0) {
+            const notificationMessage = `New lead posted: "${newLead.title}". Ready for assignment.`;
+            await prisma.notification.createMany({
+                data: admins.map(admin => ({
+                    userId: admin.id,
+                    type: NotificationType.NEW_LEAD_FOR_ASSIGNMENT,
+                    message: notificationMessage,
+                    data: {
+                        leadId: newLead.id
+                    }
+                }))
+            });
+        }
 
         return NextResponse.json(newLead, { status: 201 });
     } catch (error) {
