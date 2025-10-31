@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 
-// Accordion components
 const Accordion = AccordionPrimitive.Root;
 
 const AccordionItem = React.forwardRef<
@@ -121,40 +120,32 @@ interface Service {
   name: string;
 }
 
-// Main component
 export default function LeadManagementPage() {
-  // State for leads data
   const [leads, setLeads] = useState<Lead[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
 
-  // Loading states
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isLoadingProfessionals, setIsLoadingProfessionals] = useState(false);
   const [isAssigning, setIsAssigning] = useState<string | null>(null);
 
-  // UI state
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // Filter state
   const [leadSearchTerm, setLeadSearchTerm] = useState('');
   const [selectedServiceFilter, setSelectedServiceFilter] = useState<string>('ALL');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
   const [professionalSearchTerm, setProfessionalSearchTerm] = useState('');
 
-  // Filter dropdown states
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  // Data fetching functions
   const fetchLeads = async () => {
     setIsLoadingLeads(true);
     try {
       let url = '/api/admin/leads';
 
-      // Add query params if filters are active
       const params = new URLSearchParams();
       if (selectedServiceFilter !== 'ALL') params.append('serviceId', selectedServiceFilter);
       if (selectedStatusFilter !== 'ALL') params.append('status', selectedStatusFilter);
@@ -185,22 +176,19 @@ export default function LeadManagementPage() {
     }
   };
 
-  // Initial data loading
   useEffect(() => {
     fetchServices();
     fetchLeads();
   }, []);
 
-  // Refetch leads when filters change
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchLeads();
-    }, 500); // Debounce to avoid excessive API calls
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [leadSearchTerm, selectedServiceFilter, selectedStatusFilter]);
 
-  // Event handlers
   const handleSelectLead = async (lead: Lead) => {
     const leadWithDefaults = {
       ...lead,
@@ -232,10 +220,8 @@ export default function LeadManagementPage() {
       await axios.post(`/api/admin/leads/${selectedLead.id}/assign`, { professionalId });
       toast.success('Lead assigned successfully!');
 
-      // Refresh leads to show new assignment status
       await fetchLeads();
 
-      // Update the selected lead with the new assignment
       const updatedLead = leads.find(l => l.id === selectedLead.id);
       if (updatedLead) {
         setSelectedLead(updatedLead);
@@ -252,7 +238,6 @@ export default function LeadManagementPage() {
     setIsPanelOpen(false);
   };
 
-  // Filtered professionals based on search term
   const filteredProfessionals = useMemo(() => {
     return professionals.filter(prof =>
       prof.name?.toLowerCase().includes(professionalSearchTerm.toLowerCase()) ||
@@ -271,20 +256,14 @@ export default function LeadManagementPage() {
     });
   };
 
-  // UI rendering - this is a skeleton, a UI generation tool will fill in the detailed styling
   return (
     <div className="h-screen overflow-hidden bg-slate-50">
-      {/* Main Content: Leads List and Filters */}
       <main className='h-full overflow-y-auto pb-24'>
         <div className="p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900">Lead Management</h1>
             <p className="text-slate-600 mt-2">Assign leads to professionals and track their status</p>
           </div>
-          {/* <div className="flex justify-between items-center mb-8">
-                    </div> */}
-
-          {/* Search and Filter Controls */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             {/* Search Bar */}
             <div className="relative flex-1">
@@ -578,8 +557,8 @@ export default function LeadManagementPage() {
                               )}
                             </div>
                             <span className={`text-xs font-bold px-2 py-1 rounded-full ${assignment.status === 'ACCEPTED' ? 'text-green-700 bg-green-100' :
-                                assignment.status === 'REJECTED' ? 'text-red-700 bg-red-100' :
-                                  'text-yellow-700 bg-yellow-100'
+                              assignment.status === 'REJECTED' ? 'text-red-700 bg-red-100' :
+                                'text-yellow-700 bg-yellow-100'
                               }`}>
                               {assignment.status}
                             </span>
@@ -631,8 +610,8 @@ export default function LeadManagementPage() {
                                 onClick={() => handleAssignLead(prof.id)}
                                 disabled={isAssigning === prof.id}
                                 className={`px-3 py-1.5 text-xs font-semibold cursor-pointer rounded-md flex items-center transition-colors ${buttonAction === 'Re-assign'
-                                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                  ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                  : 'bg-blue-600 text-white hover:bg-blue-700'
                                   } disabled:opacity-50`}
                               >
                                 {isAssigning === prof.id ? <Loader2 size={14} className="animate-spin mr-1" /> : (buttonAction === 'Re-assign' ? <RefreshCw size={14} className="mr-1" /> : <Check size={14} className="mr-1" />)}
