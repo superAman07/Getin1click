@@ -32,9 +32,9 @@ export default function AdminNotifications() {
 
       setLoading(true);
       try {
-        const response = await axios.get('/api/admin/notifications');
-        setNotifications(response.data);
-        setUnreadCount(response.data.filter((n: Notification) => !n.read).length);
+        const response = await axios.get('/api/admin/notifications?limit=10');
+        setNotifications(response.data.notifications);
+        setUnreadCount(response.data.notifications.filter((n: Notification) => !n.read).length);
       } catch (error) {
         console.error("Failed to fetch notifications", error);
       } finally {
