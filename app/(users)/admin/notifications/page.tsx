@@ -1,80 +1,40 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Bell, CheckCheck, Loader2, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { BellDot, CheckCheck, FileText, UserCheck, AlertCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
+import toast from 'react-hot-toast';
 
 interface Notification {
   id: string;
   type: string;
   message: string;
-  read: boolean;
-  data?: Record<string, any>;
   createdAt: string;
+  read: boolean;
+  data?: {
+    leadId?: string;
+    professionalId?: string;
+  };
 }
 
-interface ApiResponse {
-  notifications: Notification[];
-  totalPages: number;
-  currentPage: number;
-}
-
-const notificationIcons: Record<string, React.ReactNode> = {
-  lead_assignment: <AlertCircle className="w-5 h-5 text-blue-500" />,
-  lead_status_change: <CheckCheck className="w-5 h-5 text-green-500" />,
-  system_alert: <Bell className="w-5 h-5 text-orange-500" />,
-  user_action: <Bell className="w-5 h-5 text-purple-500" />,
-};
-
-const getNotificationIcon = (type: string) => {
-  return notificationIcons[type] || <Bell className="w-5 h-5 text-gray-500" />;
-};
-
-const formatDate = (date: string): string => {
-  const now = new Date();
-  const createdDate = new Date(date);
-  const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-
-  return createdDate.toLocaleDateString();
-};
-
-const getNotificationLink = (notification: Notification): string => {
-  if (notification.data?.leadId) {
-    return `/leads/${notification.data.leadId}`;
-  }
-  return '#';
-};
-
-export default function NotificationsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
-
+export default function AllNotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchNotifications = useCallback(async (page: number) => {
     setLoading(true);
-    setError(null);
     try {
-      const response = await fetch(`/api/admin/notifications?page=${page}&limit=20`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
-      }
-      const data: ApiResponse = await response.json();
-      setNotifications(data.notifications);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      setError('Failed to load notifications. Please try again.');
-      console.error('Error fetching notifications:', err);
+      const response = await axios.get(`/api/admin/notifications?page=${page}&limit=20`);
+      setNotifications(response.data.notifications);
+      setTotalPages(response.data.totalPages);
+      setCurrentPage(response.data.currentPage);
+    } catch (error) {
+      toast.error("Failed to load notifications.");
+      console.error("Failed to fetch notifications", error);
     } finally {
       setLoading(false);
     }
@@ -85,185 +45,127 @@ export default function NotificationsPage() {
   }, [currentPage, fetchNotifications]);
 
   const handleMarkAsRead = async (notificationId: string) => {
+    setNotifications(prev =>
+      prev.map(n => (n.id === notificationId ? { ...n, read: true } : n))
+    );
     try {
-      const response = await fetch(`/api/admin/notifications/${notificationId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ read: true }),
-      });
-
-      if (response.ok) {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
-        );
-      }
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
+      await axios.patch(`/api/admin/notifications/${notificationId}/read`);
+    } catch (error) {
+      console.error("Failed to mark notification as read", error);
     }
   };
 
   const handleMarkAllAsRead = async () => {
-    setMarkingAllAsRead(true);
+    const toastId = toast.loading("Marking all as read...");
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     try {
-      const response = await fetch('/api/admin/notifications/mark-all-as-read', {
-        method: 'PATCH',
-      });
-
-      if (response.ok) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      }
-    } catch (err) {
-      console.error('Error marking all as read:', err);
-    } finally {
-      setMarkingAllAsRead(false);
+      await axios.patch('/api/admin/notifications/read-all');
+      toast.success("All notifications marked as read.", { id: toastId });
+    } catch (error) {
+      toast.error("Failed to mark all as read.", { id: toastId });
+      console.error("Failed to mark all as read", error);
+      fetchNotifications(currentPage);
     }
   };
 
-  const handleNotificationClick = (notification: Notification) => {
-    if (!notification.read) {
-      handleMarkAsRead(notification.id);
-    }
-
-    const link = getNotificationLink(notification);
-    if (link !== '#') {
-      router.push(link);
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'LEAD_REJECTED_BY_PRO': return <FileText className="h-5 w-5 text-amber-600" />;
+      case 'NEW_PROFESSIONAL_SIGNUP': return <UserCheck className="h-5 w-5 text-emerald-600" />;
+      case 'NEW_LEAD_FOR_ASSIGNMENT': return <AlertCircle className="h-5 w-5 text-blue-600" />;
+      default: return <BellDot className="h-5 w-5 text-slate-600" />;
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const getRedirectLink = (notification: Notification): string => {
+    switch (notification.type) {
+      case 'LEAD_REJECTED_BY_PRO':
+      case 'NEW_LEAD_FOR_ASSIGNMENT':
+        return `/admin/lead-management?leadId=${notification.data?.leadId || ''}`;
+      case 'NEW_PROFESSIONAL_SIGNUP':
+        return `/admin/professionals?professionalId=${notification.data?.professionalId || ''}`;
+      default:
+        return '#'; 
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <Bell className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">All Notifications</h1>
-                <p className="text-gray-600 mt-1">
-                  {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` : 'All notifications read'}
-                </p>
-              </div>
-            </div>
-            {unreadCount > 0 && (
-              <button
-                onClick={handleMarkAllAsRead}
-                disabled={markingAllAsRead}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2"
-              >
-                {markingAllAsRead ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Marking...
-                  </>
-                ) : (
-                  <>
-                    <CheckCheck className="w-4 h-4" />
-                    Mark All as Read
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 font-medium flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              {error}
-            </p>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-            <p className="text-gray-600 font-medium">Loading notifications...</p>
-          </div>
-        ) : notifications.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="p-4 bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <Bell className="w-8 h-8 text-gray-400" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No notifications yet</h2>
-            <p className="text-gray-600">You're all caught up! New notifications will appear here.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {notifications.map((notification) => (
-              <button
-                key={notification.id}
-                onClick={() => handleNotificationClick(notification)}
-                className={`w-full text-left transition-all duration-200 ${
-                  notification.read
-                    ? 'bg-white hover:bg-gray-50'
-                    : 'bg-blue-50 hover:bg-blue-100 border-l-4 border-blue-500'
-                } p-4 rounded-lg border border-gray-200 hover:shadow-md`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 mt-1">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className={`text-sm font-semibold ${notification.read ? 'text-gray-700' : 'text-gray-900'}`}>
-                        {notification.message}
-                      </p>
-                      {!notification.read && (
-                        <span className="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full"></span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500">{formatDate(notification.createdAt)}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            <button
-              onClick={() => router.push(`?page=${currentPage - 1}`)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-            >
-              Previous
-            </button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = currentPage > 3 ? currentPage - 2 + i : i + 1;
-                return pageNum <= totalPages ? (
-                  <button
-                    key={pageNum}
-                    onClick={() => router.push(`?page=${pageNum}`)}
-                    className={`px-3 py-2 rounded-lg transition-colors font-medium ${
-                      pageNum === currentPage
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                ) : null;
-              })}
-            </div>
-
-            <button
-              onClick={() => router.push(`?page=${currentPage + 1}`)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-            >
-              Next
-            </button>
-          </div>
-        )}
+    <div className="max-w-5xl mx-auto p-4 sm:p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">All Notifications</h1>
+        <button
+          onClick={handleMarkAllAsRead}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+        >
+          <CheckCheck size={16} />
+          Mark All as Read
+        </button>
       </div>
+
+      {loading ? (
+        <div className="text-center py-20">
+          <Loader2 className="w-8 h-8 mx-auto animate-spin text-slate-400" />
+          <p className="mt-4 text-slate-500">Loading Notifications...</p>
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="text-center py-20 bg-slate-50 rounded-lg">
+          <BellDot className="w-12 h-12 mx-auto text-slate-400" />
+          <h3 className="mt-4 text-lg font-semibold text-slate-700">No Notifications Yet</h3>
+          <p className="mt-1 text-sm text-slate-500">You're all caught up!</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {notifications.map((notification) => (
+            <Link
+              key={notification.id}
+              href={getRedirectLink(notification)}
+              onClick={() => !notification.read && handleMarkAsRead(notification.id)}
+              className={`block p-4 rounded-lg border transition-all duration-200 cursor-pointer ${
+                notification.read
+                  ? 'bg-white border-slate-200 hover:bg-slate-50'
+                  : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-white mt-1">
+                  {getNotificationIcon(notification.type)}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-slate-800">{notification.message}</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                  </p>
+                </div>
+                {!notification.read && (
+                  <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" title="Unread"></div>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="mt-10 flex justify-center items-center gap-4">
+          <button
+            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+            disabled={currentPage === 1 || loading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft size={16} /> Previous
+          </button>
+          <span className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages || loading}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
