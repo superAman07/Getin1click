@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Loader2, ArrowRight, MapPin, IndianRupee } from 'lucide-react';
+import { Loader2, ArrowRight, MapPin, IndianRupee, CheckCircle, XCircle } from 'lucide-react';
+import axios from 'axios';
 
 interface ServiceQuestion {
   id: string;
@@ -43,6 +44,37 @@ export default function PostAJobPage() {
   const [urgency, setUrgency] = useState('MEDIUM');
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
+  const [isPincodeAvailable, setIsPincodeAvailable] = useState<boolean | null>(null);
+  const [isCheckingPincode, setIsCheckingPincode] = useState(false);
+  const [pincodeError, setPincodeError] = useState<string | null>(null);
+
+  const checkServiceAvailability = useCallback(async (code: string, serviceName: string) => {
+    if (code.length !== 6) {
+      setIsPincodeAvailable(null);
+      setPincodeError(null);
+      return;
+    }
+
+    setIsCheckingPincode(true);
+    setPincodeError(null);
+    setIsPincodeAvailable(null);
+
+    try {
+      const response = await axios.get(`/api/services/search?query=${serviceName}&postcode=${code}`);
+      if (response.data && response.data.length > 0) {
+        setIsPincodeAvailable(true);
+      } else {
+        setIsPincodeAvailable(false);
+        setPincodeError(`Service not available in ${code}.`);
+      }
+    } catch (error) {
+      setIsPincodeAvailable(false);
+      setPincodeError('Failed to check availability.');
+    } finally {
+      setIsCheckingPincode(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!serviceId) {
       router.push('/');
@@ -56,6 +88,11 @@ export default function PostAJobPage() {
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setService(data);
+        if (initialPincode) {
+          setPincode(initialPincode);
+          verifyPincode(initialPincode);
+          checkServiceAvailability(initialPincode, data.name);
+        }
         if (data.questions.length === 0) {
           setStep('details');
           setShowOverlay(false);
@@ -72,7 +109,7 @@ export default function PostAJobPage() {
     if (initialPincode) {
       verifyPincode(initialPincode);
     }
-  }, [serviceId, router, initialPincode]);
+  }, [serviceId, router, initialPincode, checkServiceAvailability]);
 
   const verifyPincode = async (code: string) => {
     if (code.length === 6) {
@@ -93,10 +130,26 @@ export default function PostAJobPage() {
     }
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (pincode && service?.name) {
+        verifyPincode(pincode);
+        checkServiceAvailability(pincode, service.name);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [pincode, service?.name, checkServiceAvailability]);
+
   const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPincode = e.target.value.replace(/\D/g, '').slice(0, 6);
     setPincode(newPincode);
     verifyPincode(newPincode);
+    setIsPincodeAvailable(null);
+    setPincodeError(null);
+    setLocationName('');
   };
 
   const handleAnswerChange = (
@@ -342,9 +395,8 @@ export default function PostAJobPage() {
       )}
 
       <div
-        className={`w-full max-w-4xl mx-auto transition-all duration-300 ease-out ${
-          showOverlay ? 'blur-sm pointer-events-none' : 'blur-0'
-        }`}
+        className={`w-full max-w-4xl mx-auto transition-all duration-300 ease-out ${showOverlay ? 'blur-sm pointer-events-none' : 'blur-0'
+          }`}
         style={{
           opacity: showOverlay ? 0.6 : 1,
         }}
@@ -410,15 +462,19 @@ export default function PostAJobPage() {
                   required
                 />
               </div>
-              {locationName && (
-                <p
-                  className={`text-sm mt-1 transition-colors duration-200 ${
-                    locationName.includes('Invalid')
-                      ? 'text-red-600'
-                      : 'text-green-600'
-                  }`}
-                >
-                  {locationName}
+              {isCheckingPincode && (
+                <p className="text-sm mt-1 text-slate-500 flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" /> Checking availability...
+                </p>
+              )}
+              {pincodeError && !isCheckingPincode && (
+                <p className="text-sm mt-1 text-red-600 flex items-center gap-2">
+                  <XCircle size={16} /> {pincodeError}
+                </p>
+              )}
+              {isPincodeAvailable && !isCheckingPincode && locationName && (
+                <p className="text-sm mt-1 text-green-600 flex items-center gap-2">
+                  <CheckCircle size={16} /> Service available in {locationName}
                 </p>
               )}
             </div>
@@ -464,7 +520,7 @@ export default function PostAJobPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isPincodeAvailable}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:bg-blue-400 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {isSubmitting ? (
