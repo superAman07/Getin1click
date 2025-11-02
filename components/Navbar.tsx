@@ -42,8 +42,8 @@ export default function Navbar() {
     <nav className="w-full fixed top-0 z-50 bg-white shadow-md" style={{ height: "74px" }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
         {/* Logo */}
-        <Link href="/Home" aria-label="Go to Home" className="flex items-center">
-          <img src="/logo.png" alt="Logo" className="h-8" />
+        <Link href="/" aria-label="Go to Home" className="flex items-center">
+          <img src="/logo.png" alt="Logo" className="h-8 w-full" />
         </Link>
 
         {/* Desktop Navigation */}
