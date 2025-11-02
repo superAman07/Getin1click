@@ -74,7 +74,7 @@ export function NavbarProfessional() {
 
             {/* Logo */}
             <Link href="/professional/dashboard" className="font-bold text-xl text-blue-700">
-            GetIn1Click
+              <img src="/logo.png" alt="Logo" className="h-14" />
           </Link>
 
             {/* Desktop Nav */}

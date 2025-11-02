@@ -43,7 +43,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
         {/* Logo */}
         <Link href="/" aria-label="Go to Home" className="flex items-center">
-          <img src="/logo.png" alt="Logo" className="h-8 w-full" />
+          <img src="/logo.png" alt="Logo" className="h-14" />
         </Link>
 
         {/* Desktop Navigation */}
