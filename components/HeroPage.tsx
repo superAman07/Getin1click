@@ -38,6 +38,9 @@ export default function HeroPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const resultsRef = useRef<(HTMLDivElement | null)[]>([]);
+
   const handleSearch = async () => {
     if (!serviceQuery.trim() || !postcode.trim()) {
       alert("Please enter a service and postcode.");
@@ -77,8 +80,29 @@ export default function HeroPage() {
     setIsPincodeModalOpen(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isDropdownOpen && recommendedServices.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIndex(prevIndex =>
+          prevIndex === recommendedServices.length - 1 ? 0 : prevIndex + 1
+        );
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIndex(prevIndex =>
+          prevIndex <= 0 ? recommendedServices.length - 1 : prevIndex - 1
+        );
+      } else if (e.key === 'Enter') {
+        if (activeIndex >= 0) {
+          e.preventDefault();
+          handleRecommendationClick(recommendedServices[activeIndex].name);
+        } else {
+          handleSearch();
+        }
+      } else if (e.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    } else if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -108,13 +132,22 @@ export default function HeroPage() {
         .slice(0, 7); // Limit to 7 recommendations
       setRecommendedServices(filtered);
       setIsDropdownOpen(true);
+      setActiveIndex(-1);
     } else {
       setRecommendedServices([]);
       setIsDropdownOpen(false);
     }
   }, [serviceQuery, allServices]);
 
-  // --- New useEffect to handle clicks outside the search ---
+  useEffect(() => {
+    if (activeIndex >= 0 && resultsRef.current[activeIndex]) {
+      resultsRef.current[activeIndex]?.scrollIntoView({
+        block: 'nearest',
+        behavior: 'smooth',
+      });
+    }
+  }, [activeIndex]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
@@ -157,16 +190,19 @@ export default function HeroPage() {
                   value={serviceQuery}
                   onChange={(e) => setServiceQuery(e.target.value)}
                   onFocus={() => setIsDropdownOpen(true)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
                 />
                 {isDropdownOpen && recommendedServices.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto">
-                    {recommendedServices.map(service => (
+                    {recommendedServices.map((service, index) => (
                       <div
                         key={service.id}
+                        ref={el => { resultsRef.current[index] = el }}
                         onClick={() => handleRecommendationClick(service.name)}
-                        className="p-4 hover:bg-blue-50 cursor-pointer transition-colors flex items-center gap-3"
+                        className={`p-4 cursor-pointer transition-colors flex items-center gap-3 ${
+                          index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50'
+                        }`}
                       >
                         <Search size={16} className="text-gray-400" />
                         <span className="font-medium text-gray-800">{service.name}</span>
@@ -182,7 +218,7 @@ export default function HeroPage() {
                   placeholder="Postcode"
                   value={postcode}
                   onChange={(e) => setPostcode(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
                 />
               </div>
