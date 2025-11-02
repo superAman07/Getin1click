@@ -27,6 +27,7 @@ export default function PostAJobPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('serviceId');
+  const initialPincode = searchParams.get('postcode');
 
   const [step, setStep] = useState<'questions' | 'details'>('questions');
   const [service, setService] = useState<ServiceDetails | null>(null);
@@ -68,15 +69,15 @@ export default function PostAJobPage() {
     };
 
     fetchServiceDetails();
-  }, [serviceId, router]);
+    if (initialPincode) {
+      verifyPincode(initialPincode);
+    }
+  }, [serviceId, router, initialPincode]);
 
-  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPincode = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setPincode(newPincode);
-
-    if (newPincode.length === 6) {
+  const verifyPincode = async (code: string) => {
+    if (code.length === 6) {
       try {
-        const res = await fetch(`https://api.postalpincode.in/pincode/${newPincode}`);
+        const res = await fetch(`https://api.postalpincode.in/pincode/${code}`);
         const data = await res.json();
         if (data && data[0].Status === 'Success') {
           const postOffice = data[0].PostOffice[0];
@@ -90,6 +91,12 @@ export default function PostAJobPage() {
     } else {
       setLocationName('');
     }
+  };
+
+  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPincode = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setPincode(newPincode);
+    verifyPincode(newPincode);
   };
 
   const handleAnswerChange = (

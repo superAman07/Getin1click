@@ -65,7 +65,7 @@ export default function HeroPage() {
   };
 
   const handleSelectService = (serviceId: string) => {
-    router.push(`/customer/post-a-job?serviceId=${serviceId}`);
+    router.push(`/customer/post-a-job?serviceId=${serviceId}&postcode=${postcode}`);
   };
 
   const handleServiceClick = (service: Service) => {

@@ -49,7 +49,7 @@ export default function PincodeModal({
       );
 
       if (isAvailable) {
-        router.push(`/customer/post-a-job?serviceId=${service?.id}`);
+        router.push(`/customer/post-a-job?serviceId=${service?.id}&postcode=${postcode}`);
         onClose();
       } else {
         setError(`Sorry, this service is not available in the postcode '${postcode}'.`);

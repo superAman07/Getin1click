@@ -79,7 +79,7 @@ export default function PostJobModal({ isOpen, onClose }: PostJobModalProps) {
       const isAvailable = response.data.some((s: Service) => s.id === selectedService.id);
 
       if (isAvailable) {
-        router.push(`/customer/post-a-job?serviceId=${selectedService.id}`);
+        router.push(`/customer/post-a-job?serviceId=${selectedService.id}&postcode=${postcode}`);
         onClose();
       } else {
         setError(`Sorry, no professionals for '${selectedService.name}' are available in your area.`);
