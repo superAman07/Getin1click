@@ -24,7 +24,7 @@ export default function CustomerDashboardPage() {
         <>
             {showModal && (
                 <UpdateContactDetailsModal 
-                    onClose={() => {}} // We force the user to complete it
+                    onClose={() => {}}
                     onSuccess={handleSuccess} 
                 />
             )}

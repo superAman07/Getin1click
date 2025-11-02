@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -32,6 +32,11 @@ export default function HeroPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [showResults, setShowResults] = useState(false);
+
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [recommendedServices, setRecommendedServices] = useState<Service[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = async () => {
     if (!serviceQuery.trim() || !postcode.trim()) {
@@ -81,8 +86,12 @@ export default function HeroPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<HomePageData>("/api/home");
-        setData(response.data);
+        const [homeResponse, servicesResponse] = await Promise.all([
+          axios.get<HomePageData>("/api/home"),
+          axios.get<Service[]>("/api/admin/services")
+        ]);
+        setData(homeResponse.data);
+        setAllServices(servicesResponse.data);
       } catch (error) {
         console.error("Failed to fetch home page data", error);
       } finally {
@@ -91,6 +100,35 @@ export default function HeroPage() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (serviceQuery.trim()) {
+      const filtered = allServices
+        .filter(service => service.name.toLowerCase().includes(serviceQuery.toLowerCase()))
+        .slice(0, 7); // Limit to 7 recommendations
+      setRecommendedServices(filtered);
+      setIsDropdownOpen(true);
+    } else {
+      setRecommendedServices([]);
+      setIsDropdownOpen(false);
+    }
+  }, [serviceQuery, allServices]);
+
+  // --- New useEffect to handle clicks outside the search ---
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleRecommendationClick = (serviceName: string) => {
+    setServiceQuery(serviceName);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <div className="relative lg:mt-10">
@@ -110,7 +148,7 @@ export default function HeroPage() {
             Get free quotes within minutes from verified experts
           </p>
 
-          <div className="mt-10 bg-white rounded-2xl shadow-2xl p-4 sm:p-6 border border-gray-100 animate-slide-up animation-delay-200">
+          <div ref={searchContainerRef} className="mt-10 bg-white rounded-2xl shadow-2xl p-4 sm:p-6 border border-gray-100 animate-slide-up animation-delay-200">
             <div className="flex flex-col sm:flex-row items-stretch justify-center w-full gap-3">
               <div className="flex-1 relative group">
                 <input
@@ -118,9 +156,24 @@ export default function HeroPage() {
                   placeholder="What service are you looking for?"
                   value={serviceQuery}
                   onChange={(e) => setServiceQuery(e.target.value)}
+                  onFocus={() => setIsDropdownOpen(true)}
                   onKeyPress={handleKeyPress}
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
                 />
+                {isDropdownOpen && recommendedServices.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto">
+                    {recommendedServices.map(service => (
+                      <div
+                        key={service.id}
+                        onClick={() => handleRecommendationClick(service.name)}
+                        className="p-4 hover:bg-blue-50 cursor-pointer transition-colors flex items-center gap-3"
+                      >
+                        <Search size={16} className="text-gray-400" />
+                        <span className="font-medium text-gray-800">{service.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="w-full sm:w-40 relative group">
