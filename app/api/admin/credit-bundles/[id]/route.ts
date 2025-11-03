@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
+import { BundleTag } from '@prisma/client';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
@@ -32,8 +33,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
         const body = await request.json();
-        const { name, description, price, credits, isActive } = body;
+        const { name, description, price, credits, isActive, tag } = body;
         const id = (await params).id
+
+        if (tag && !Object.values(BundleTag).includes(tag)) {
+            return new NextResponse('Invalid tag value', { status: 400 });
+        }
 
         const updatedBundle = await prisma.creditBundle.update({
             where: { id: id },

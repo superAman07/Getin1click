@@ -59,6 +59,13 @@ enum NotificationType {
   NEW_PROFESSIONAL_SIGNUP
 }
 
+enum BundleTag {
+  BASIC
+  STANDARD
+  PREMIUM
+  PLATINUM
+}
+
 model User {
   id                 String     @id @default(cuid())
   email              String     @unique
@@ -296,6 +303,7 @@ model CreditBundle {
   credits      Int
   currency     String        @default("INR")
   isActive     Boolean       @default(true)
+  tag          BundleTag? 
   transactions Transaction[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

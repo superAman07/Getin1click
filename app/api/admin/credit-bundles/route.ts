@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/db';
+import { BundleTag } from '@prisma/client';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (session?.user?.role !== 'ADMIN') {
         return new NextResponse('Unauthorized', { status: 401 });
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (session?.user?.role !== 'ADMIN') {
         return new NextResponse('Unauthorized', { status: 401 });
@@ -28,10 +29,14 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { name, description, price, credits, isActive } = body;
+        const { name, description, price, credits, isActive, tag } = body;
 
         if (!name || !price || !credits) {
             return new NextResponse('Missing required fields', { status: 400 });
+        }
+
+        if (tag && !Object.values(BundleTag).includes(tag)) {
+            return new NextResponse('Invalid tag value', { status: 400 });
         }
 
         const newBundle = await prisma.creditBundle.create({
@@ -41,6 +46,7 @@ export async function POST(request: Request) {
                 price: parseFloat(price),
                 credits: parseInt(credits, 10),
                 isActive,
+                tag,
             },
         });
 
