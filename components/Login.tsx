@@ -322,33 +322,33 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
                   <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#d23d88] to-[#f8a15e] rounded-full flex items-center justify-center mb-6 shadow-lg">
                     <span className="text-4xl">⭐</span>
                   </div>
-                  <h2 className="text-3xl font-bold text-[#d23d88] mb-3">For Professionals</h2>
-                  <p className="text-gray-700 text-lg font-medium">Grow Your Business & Reputation</p>
                 </div>
 
-                <div className="space-y-4 mt-8">
-                  <div className="flex items-start gap-4">
-                    <div className="text-2xl">✓</div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-gray-900 mb-1">Showcase Your Skills</h3>
-                      <p className="text-gray-600 text-sm">Build your professional portfolio</p>
+                <h2 className="text-4xl font-bold text-chambray mb-2">The Perfect Connection</h2>
+                <p className="text-jumbo mb-10">Where Expertise Meets Opportunity</p>
+                <ul className="space-y-6 text-left max-w-sm mx-auto">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Customers</h3>
+                      <p className="text-jumbo text-sm">Find and hire trusted professionals for any project.</p>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="text-2xl">✓</div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-gray-900 mb-1">Get Quality Leads</h3>
-                      <p className="text-gray-600 text-sm">Connect with serious clients</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Professionals</h3>
+                      <p className="text-jumbo text-sm">Get quality leads and grow your business.</p>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="text-2xl">✓</div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-gray-900 mb-1">Grow Your Income</h3>
-                      <p className="text-gray-600 text-sm">Increase earning opportunities</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Everyone</h3>
+                      <p className="text-jumbo text-sm">Enjoy secure payments and seamless communication.</p>
                     </div>
-                  </div>
-                </div>
+                  </li>
+                </ul>
               </div>
 
               <div className="absolute top-10 left-10 w-32 h-32 bg-[#d23d88]/20 rounded-full blur-xl"></div>
