@@ -7,6 +7,27 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-cerise: 210, 61, 136;      /* #d23d88 */
+    --color-affair: 139, 76, 156;      /* #8b4c9c */
+    --color-tan-hide: 248, 161, 94;    /* #f8a15e */
+    --color-french-rose: 238, 63, 127; /* #ee3f7f */
+    --color-bon-jour: 232, 229, 230;   /* #e8e5e6 */
+    --color-chambray: 58, 80, 159;     /* #3a509f */
+    --color-jumbo: 115, 114, 122;      /* #73727a */
+    --color-froly: 240, 109, 109;      /* #f06d6d */
+    --color-apricot: 252, 214, 187;    /* #fcd6bb */
+    --page-bg: 232,229,230;
+
+    /* Semantic Colors */
+    --color-primary: var(--color-chambray);
+    --color-secondary: var(--color-cerise);
+    --color-accent: var(--color-tan-hide);
+    --color-background: var(--color-bon-jour);
+    --color-text: var(--color-jumbo);
+    --color-error: var(--color-froly);
+    --color-success: var(--color-affair);
+    --color-warning: var(--color-apricot);
 }
 
 @media (prefers-color-scheme: light) {

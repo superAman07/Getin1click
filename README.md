@@ -1,3 +1,39 @@
+
+
+/* CSS HEX */
+--cerise: #d23d88;
+--affair: #8b4c9c;
+--tan-hide: #f8a15e;
+--french-rose: #ee3f7f;
+--bon-jour: #e8e5e6;
+--chambray: #3a509f;
+--jumbo: #73727a;
+--froly: #f06d6d;
+--apricot-peach: #fcd6bb;
+
+/* SCSS HEX */
+$cerise: #d23d88;
+$affair: #8b4c9c;
+$tan-hide: #f8a15e;
+$french-rose: #ee3f7f;
+$bon-jour: #e8e5e6;
+$chambray: #3a509f;
+$jumbo: #73727a;
+$froly: #f06d6d;
+$apricot-peach: #fcd6bb;
+
+/* SCSS RGB */
+$cerise: rgba(210,61,136,1);
+$affair: rgba(139,76,156,1);
+$tan-hide: rgba(248,161,94,1);
+$french-rose: rgba(238,63,127,1);
+$bon-jour: rgba(232,229,230,1);
+$chambray: rgba(58,80,159,1);
+$jumbo: rgba(115,114,122,1);
+$froly: rgba(240,109,109,1);
+$apricot-peach: rgba(252,214,187,1);
+
+
 this readme is not readable...
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
