@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus, Loader as Loader2, Package, X, CreditCard as Edit2, Trash2, MoveVertical as MoreVertical, Coins, ArrowRight, Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { BundleTag } from '@prisma/client';
 
 interface CreditBundle {
     id: string;
@@ -11,6 +12,7 @@ interface CreditBundle {
     price: number;
     credits: number;
     isActive: boolean;
+    tag?: BundleTag | null;
 }
 
 interface ConversionRate {
@@ -33,6 +35,7 @@ export default function CreditBundlesClient() {
         price: '',
         credits: '',
         isActive: true,
+        tag: '' as BundleTag | '',
     });
 
     const [conversionRate, setConversionRate] = useState<number>(1);
@@ -116,9 +119,10 @@ export default function CreditBundlesClient() {
                 price: String(bundle.price),
                 credits: String(bundle.credits),
                 isActive: bundle.isActive,
+                tag: bundle.tag || '',
             });
         } else {
-            setFormData({ name: '', description: '', price: '', credits: '', isActive: true });
+            setFormData({ name: '', description: '', price: '', credits: '', isActive: true , tag: ''});
         }
         setIsModalOpen(true);
         setActiveDropdown(null);
@@ -186,6 +190,40 @@ export default function CreditBundlesClient() {
             } finally {
                 setIsDeleting(false);
             }
+        }
+    };
+
+    const getTagStyles = (tag: BundleTag | null | undefined) => {
+        switch (tag) {
+            case 'PREMIUM':
+                return {
+                    borderColor: 'border-amber-400',
+                    bgColor: 'bg-amber-50',
+                    textColor: 'text-amber-600',
+                    label: 'Premium'
+                };
+            case 'PLATINUM':
+                return {
+                    borderColor: 'border-slate-500',
+                    bgColor: 'bg-slate-100',
+                    textColor: 'text-slate-600',
+                    label: 'Platinum'
+                };
+            case 'STANDARD':
+                return {
+                    borderColor: 'border-blue-400',
+                    bgColor: 'bg-blue-50',
+                    textColor: 'text-blue-600',
+                    label: 'Standard'
+                };
+            case 'BASIC':
+            default:
+                return {
+                    borderColor: 'border-gray-200',
+                    bgColor: 'bg-white',
+                    textColor: 'text-gray-500',
+                    label: 'Basic'
+                };
         }
     };
 
@@ -412,15 +450,22 @@ export default function CreditBundlesClient() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {bundles.map((bundle) => (
+                        {bundles.map((bundle) =>{
+                            const tagStyle = getTagStyles(bundle.tag); 
+                        return (
                             <div
                                 key={bundle.id}
-                                className="bg-white rounded-xl border border-gray-200 hover:border-blue-300 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-blue-100 group"
+                                className={`rounded-xl border border-gray-200  p-6 transition-all duration-300 hover:shadow-xl group ${tagStyle.borderColor} ${tagStyle.bgColor}`}
                             >
                                 <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                        {bundle.name}
-                                    </h3>
+                                    <div>
+                                                <h2 className="text-2xl font-bold text-gray-900">{bundle.name}</h2>
+                                                {bundle.tag && (
+                                                    <span className={`inline-block mt-2 text-xs font-bold uppercase px-2 py-1 rounded-full ${tagStyle.textColor} ${tagStyle.bgColor === 'bg-white' ? 'bg-gray-100' : tagStyle.bgColor.replace('bg-', 'bg-opacity-50 from-')}`}>
+                                                        {tagStyle.label}
+                                                    </span>
+                                                )}
+                                            </div>
                                     <div className="flex items-center gap-2">
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -485,7 +530,7 @@ export default function CreditBundlesClient() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                 )}
 
@@ -569,6 +614,23 @@ export default function CreditBundlesClient() {
                                         />
                                     </div>
                                 </div>
+                                <div>
+                                <label htmlFor="tag" className="block text-sm font-bold text-gray-700 mb-2">
+                                    Bundle Tag
+                                </label>
+                                <select
+                                    id="tag"
+                                    name="tag"
+                                    value={formData.tag}
+                                    onChange={e => setFormData({ ...formData, tag: e.target.value as BundleTag })}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-200 ease-out"
+                                >
+                                    <option value="">None</option>
+                                    {Object.values(BundleTag).map(tagValue => (
+                                        <option key={tagValue} value={tagValue}>{tagValue.charAt(0) + tagValue.slice(1).toLowerCase()}</option>
+                                    ))}
+                                </select>
+                            </div>
 
                                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                                     <div>
