@@ -6,6 +6,7 @@ import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import toast from "react-hot-toast"
+import { CheckCircle, Users } from "lucide-react"
 
 type AuthFormsProps = {
   initialMode: "login" | "signup"
@@ -186,476 +187,475 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
         {/* Left Side - Login Form + Customer Hero */}
         {!isActive && (
           <div className="w-full flex">
-          <div
-            className="w-1/2 flex items-center justify-center p-12"
-            style={{ animation: "slide-in-left 0.8s ease-out" }}
-          >
-            <div className="w-full max-w-md">
-              <div className="mb-8">
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3a509f] to-[#d23d88] bg-clip-text text-transparent mb-2">
-                  Welcome Back
-                </h1>
-                <p className="text-gray-600 text-lg">Continue your professional journey</p>
-              </div>
-
-              <form onSubmit={handleLoginSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
-                  <input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    required
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
-                  <div className="relative">
-                    <input
-                      type={showLoginPassword ? "text" : "password"}
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      required
-                      placeholder="••••••••"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text pr-11"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#8b4c9c] cursor-pointer transition-colors duration-200"
-                    >
-                      {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <a
-                    href="/auth/forgot-password"
-                    className="text-sm font-semibold text-[#8b4c9c] hover:text-[#d23d88] transition-colors duration-200 cursor-pointer"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#3a509f] to-[#8b4c9c] hover:shadow-lg hover:shadow-[#8b4c9c]/30 hover:scale-105 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
-                >
-                  {isLoading ? "Signing in..." : "Sign In"}
-                </button>
-
-                <div className="mt-7 text-center">
-                  <p className="text-gray-600 text-sm">
-                    Don't have an account?{" "}
-                    <button
-                      onClick={handleRegisterClick}
-                      className="font-bold text-[#d23d88] hover:text-[#8b4c9c] transition-colors duration-200 cursor-pointer"
-                    >
-                      Create one
-                    </button>
-                  </p>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          {/* Right Hero - Customer Welcome */}
-          <div
-            className="w-1/2 bg-gradient-to-br from-[#3a509f]/10 to-[#d23d88]/10 flex flex-col items-center justify-center p-12 relative overflow-hidden"
-            style={{ animation: "fade-in-up 0.8s ease-out 0.2s forwards" }}
-          >
-            <div className="relative z-10 text-center">
-              <div className="mb-8">
-                <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#f8a15e] to-[#d23d88] rounded-full flex items-center justify-center mb-6 shadow-lg">
-                  <span className="text-4xl">👤</span>
-                </div>
-                <h2 className="text-3xl font-bold text-[#3a509f] mb-3">For Customers</h2>
-                <p className="text-gray-700 text-lg font-medium">Find & Connect with Professionals</p>
-              </div>
-
-              <div className="space-y-4 mt-8">
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Browse Top Professionals</h3>
-                    <p className="text-gray-600 text-sm">Access vetted experts in your field</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Post Your Projects</h3>
-                    <p className="text-gray-600 text-sm">Share your requirements instantly</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Secure Transactions</h3>
-                    <p className="text-gray-600 text-sm">Safe & protected payments</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute top-10 right-10 w-32 h-32 bg-[#f8a15e]/20 rounded-full blur-xl"></div>
-            <div className="absolute bottom-20 left-10 w-40 h-40 bg-[#d23d88]/20 rounded-full blur-xl"></div>
-          </div>
-        </div>
-      )}
-
-      {/* Right Side - Signup Form + Professional Hero */}
-      {isActive && (
-        <div className="w-full flex">
-          {/* Left Hero - Professional Welcome */}
-          <div
-            className="w-1/2 bg-gradient-to-br from-[#d23d88]/10 to-[#f8a15e]/10 flex flex-col items-center justify-center p-12 relative overflow-hidden"
-            style={{ animation: "fade-in-up 0.8s ease-out 0.2s forwards" }}
-          >
-            <div className="relative z-10 text-center">
-              <div className="mb-8">
-                <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#d23d88] to-[#f8a15e] rounded-full flex items-center justify-center mb-6 shadow-lg">
-                  <span className="text-4xl">⭐</span>
-                </div>
-                <h2 className="text-3xl font-bold text-[#d23d88] mb-3">For Professionals</h2>
-                <p className="text-gray-700 text-lg font-medium">Grow Your Business & Reputation</p>
-              </div>
-
-              <div className="space-y-4 mt-8">
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Showcase Your Skills</h3>
-                    <p className="text-gray-600 text-sm">Build your professional portfolio</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Get Quality Leads</h3>
-                    <p className="text-gray-600 text-sm">Connect with serious clients</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-left">
-                    <h3 className="font-bold text-gray-900 mb-1">Grow Your Income</h3>
-                    <p className="text-gray-600 text-sm">Increase earning opportunities</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute top-10 left-10 w-32 h-32 bg-[#d23d88]/20 rounded-full blur-xl"></div>
-            <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#f8a15e]/20 rounded-full blur-xl"></div>
-          </div>
-
-          <div
-            className="w-1/2 flex items-center justify-center p-12"
-            style={{ animation: "slide-in-right 0.8s ease-out" }}
-          >
-            <div className="w-full max-w-md">
-              <div className="mb-8">
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-[#d23d88] to-[#f8a15e] bg-clip-text text-transparent mb-2">
-                  Join Today
-                </h1>
-                <p className="text-gray-600 text-lg">Create your professional account</p>
-              </div>
-
-              <form onSubmit={handleRegisterSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2.5">Full Name</label>
-                  <input
-                    type="text"
-                    value={registerUsername}
-                    onChange={(e) => setRegisterUsername(e.target.value)}
-                    required
-                    placeholder="Enter your full name"
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
-                  <input
-                    type="email"
-                    value={registerEmail}
-                    onChange={(e) => setRegisterEmail(e.target.value)}
-                    required
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
-                  <div className="relative">
-                    <input
-                      type={showLoginPassword ? "text" : "password"}
-                      value={registerPassword}
-                      onChange={(e) => {
-                        setRegisterPassword(e.target.value)
-                        setPasswordStrength(calculatePasswordStrength(e.target.value))
-                      }}
-                      required
-                      placeholder="••••••••"
-                      autoComplete="new-password"
-                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text pr-11"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#f8a15e] cursor-pointer transition-colors duration-200"
-                    >
-                      {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                    </button>
-                  </div>
-
-                  {registerPassword && (
-                    <div className="mt-3 space-y-2">
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < passwordStrength ? getStrengthColor(passwordStrength) : "bg-gray-200"
-                              }`}
-                          ></div>
-                        ))}
-                      </div>
-                      <p
-                        className={`text-xs font-semibold ${passwordStrength <= 2
-                          ? "text-red-500"
-                          : passwordStrength <= 3
-                            ? "text-yellow-500"
-                            : passwordStrength <= 4
-                              ? "text-blue-500"
-                              : "text-green-500"
-                          }`}
-                      >
-                        Password Strength: {getStrengthLabel(passwordStrength)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#d23d88] to-[#f8a15e] hover:shadow-lg hover:shadow-[#f8a15e]/30 hover:scale-105 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
-                >
-                  {isLoading ? "Creating account..." : "Create Account"}
-                </button>
-
-                <div className="mt-7 text-center">
-                  <p className="text-gray-600 text-sm">
-                    Already have an account?{" "}
-                    <button
-                      onClick={handleLoginClick}
-                      className="font-bold text-[#d23d88] hover:text-[#f8a15e] transition-colors duration-200 cursor-pointer"
-                    >
-                      Sign in
-                    </button>
-                  </p>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-
-      {/* Mobile Layout - Single Form View */ }
-  <div className="lg:hidden w-full flex items-center justify-center p-4 sm:p-6">
-    {/* Mobile Login */}
-    {!isActive && (
-      <div className="w-full max-w-md" style={{ animation: "slide-in-left 0.8s ease-out" }}>
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#3a509f] to-[#d23d88] bg-clip-text text-transparent mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg">Continue your professional journey</p>
-        </div>
-
-        <form onSubmit={handleLoginSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
-            <input
-              type="email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
-            <div className="relative">
-              <input
-                type={showLoginPassword ? "text" : "password"}
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowLoginPassword(!showLoginPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#8b4c9c] cursor-pointer transition-colors duration-200"
-              >
-                {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-              </button>
-            </div>
-          </div>
-
-          <div className="text-right">
-            <a
-              href="/auth/forgot-password"
-              className="text-sm font-semibold text-[#8b4c9c] hover:text-[#d23d88] transition-colors duration-200 cursor-pointer"
+            <div
+              className="w-1/2 flex items-center justify-center p-12"
+              style={{ animation: "slide-in-left 0.8s ease-out" }}
             >
-              Forgot password?
-            </a>
-          </div>
+              <div className="w-full max-w-md">
+                <div className="mb-8">
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-[#3a509f] to-[#d23d88] bg-clip-text text-transparent mb-2">
+                    Welcome <span className="text-cerise"> Back</span>
+                  </h1>
+                  <p className="text-gray-600 text-lg">Sign in to access your account.</p>
+                </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#3a509f] to-[#8b4c9c] hover:shadow-lg hover:shadow-[#8b4c9c]/30 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Signing in..." : "Sign In"}
-          </button>
+                <form onSubmit={handleLoginSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
+                    <input
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                      placeholder="Enter your email"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text"
+                    />
+                  </div>
 
-          <div className="mt-7 text-center">
-            <p className="text-gray-600 text-sm">
-              Don't have an account?{" "}
-              <button
-                onClick={handleRegisterClick}
-                className="font-bold text-[#d23d88] hover:text-[#8b4c9c] transition-colors duration-200 cursor-pointer"
-              >
-                Create one
-              </button>
-            </p>
-          </div>
-        </form>
-      </div>
-    )}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showLoginPassword ? "text" : "password"}
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                        placeholder="••••••••"
+                        className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#8b4c9c] cursor-pointer transition-colors duration-200"
+                      >
+                        {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </button>
+                    </div>
+                  </div>
 
-    {/* Mobile Signup */}
-    {isActive && (
-      <div className="w-full max-w-md" style={{ animation: "slide-in-right 0.8s ease-out" }}>
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#d23d88] to-[#f8a15e] bg-clip-text text-transparent mb-2">
-            Join Today
-          </h1>
-          <p className="text-gray-600 text-base sm:text-lg">Create your professional account</p>
-        </div>
+                  <div className="text-right">
+                    <a
+                      href="/auth/forgot-password"
+                      className="text-sm font-semibold text-[#8b4c9c] hover:text-[#d23d88] transition-colors duration-200 cursor-pointer"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
 
-        <form onSubmit={handleRegisterSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2.5">Full Name</label>
-            <input
-              type="text"
-              value={registerUsername}
-              onChange={(e) => setRegisterUsername(e.target.value)}
-              required
-              placeholder="Enter your full name"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
-            />
-          </div>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#3a509f] to-[#8b4c9c] hover:shadow-lg hover:shadow-[#8b4c9c]/30 hover:scale-105 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
+                  >
+                    {isLoading ? "Signing in..." : "Sign In"}
+                  </button>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
-            <input
-              type="email"
-              value={registerEmail}
-              onChange={(e) => setRegisterEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
-            <div className="relative">
-              <input
-                type={showLoginPassword ? "text" : "password"}
-                value={registerPassword}
-                onChange={(e) => {
-                  setRegisterPassword(e.target.value)
-                  setPasswordStrength(calculatePasswordStrength(e.target.value))
-                }}
-                required
-                placeholder="••••••••"
-                autoComplete="new-password"
-                className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text pr-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowLoginPassword(!showLoginPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#f8a15e] cursor-pointer transition-colors duration-200"
-              >
-                {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-              </button>
+                  <div className="mt-7 text-center">
+                    <p className="text-gray-600 text-sm">
+                      Don't have an account?{" "}
+                      <button
+                        onClick={handleRegisterClick}
+                        className="font-bold text-[#d23d88] hover:text-[#8b4c9c] transition-colors duration-200 cursor-pointer"
+                      >
+                        Create one
+                      </button>
+                    </p>
+                  </div>
+                </form>
+              </div>
             </div>
 
-            {registerPassword && (
-              <div className="mt-3 space-y-2">
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < passwordStrength ? getStrengthColor(passwordStrength) : "bg-gray-200"
-                        }`}
-                    ></div>
-                  ))}
+            {/* Right Hero - Customer Welcome */}
+            <div
+              className="w-1/2 bg-gradient-to-br from-[#3a509f]/10 to-[#d23d88]/10 flex flex-col items-center justify-center p-12 relative overflow-hidden"
+              style={{ animation: "fade-in-up 0.8s ease-out 0.2s forwards" }}
+            >
+              <div className="relative z-10 text-center">
+                <div className="mb-8">
+                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#f8a15e] to-[#d23d88] rounded-full flex items-center justify-center mb-6 shadow-lg">
+                    <span className="text-4xl">👤</span>
+                  </div>
                 </div>
-                <p
-                  className={`text-xs font-semibold ${passwordStrength <= 2
-                    ? "text-red-500"
-                    : passwordStrength <= 3
-                      ? "text-yellow-500"
-                      : passwordStrength <= 4
-                        ? "text-blue-500"
-                        : "text-green-500"
-                    }`}
+                <h2 className="text-4xl font-bold text-chambray mb-2">The Perfect Connection</h2>
+                <p className="text-jumbo mb-10">Where Expertise Meets Opportunity</p>
+                <ul className="space-y-6 text-left max-w-sm mx-auto">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Customers</h3>
+                      <p className="text-jumbo text-sm">Find and hire trusted professionals for any project.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Professionals</h3>
+                      <p className="text-jumbo text-sm">Get quality leads and grow your business.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-affair mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-chambray">For Everyone</h3>
+                      <p className="text-jumbo text-sm">Enjoy secure payments and seamless communication.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="absolute top-10 right-10 w-32 h-32 bg-[#f8a15e]/20 rounded-full blur-xl"></div>
+              <div className="absolute bottom-20 left-10 w-40 h-40 bg-[#d23d88]/20 rounded-full blur-xl"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Right Side - Signup Form + Professional Hero */}
+        {isActive && (
+          <div className="w-full flex">
+            {/* Left Hero - Professional Welcome */}
+            <div
+              className="w-1/2 bg-gradient-to-br from-[#d23d88]/10 to-[#f8a15e]/10 flex flex-col items-center justify-center p-12 relative overflow-hidden"
+              style={{ animation: "fade-in-up 0.8s ease-out 0.2s forwards" }}
+            >
+              <div className="relative z-10 text-center">
+                <div className="mb-8">
+                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-[#d23d88] to-[#f8a15e] rounded-full flex items-center justify-center mb-6 shadow-lg">
+                    <span className="text-4xl">⭐</span>
+                  </div>
+                  <h2 className="text-3xl font-bold text-[#d23d88] mb-3">For Professionals</h2>
+                  <p className="text-gray-700 text-lg font-medium">Grow Your Business & Reputation</p>
+                </div>
+
+                <div className="space-y-4 mt-8">
+                  <div className="flex items-start gap-4">
+                    <div className="text-2xl">✓</div>
+                    <div className="text-left">
+                      <h3 className="font-bold text-gray-900 mb-1">Showcase Your Skills</h3>
+                      <p className="text-gray-600 text-sm">Build your professional portfolio</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="text-2xl">✓</div>
+                    <div className="text-left">
+                      <h3 className="font-bold text-gray-900 mb-1">Get Quality Leads</h3>
+                      <p className="text-gray-600 text-sm">Connect with serious clients</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="text-2xl">✓</div>
+                    <div className="text-left">
+                      <h3 className="font-bold text-gray-900 mb-1">Grow Your Income</h3>
+                      <p className="text-gray-600 text-sm">Increase earning opportunities</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute top-10 left-10 w-32 h-32 bg-[#d23d88]/20 rounded-full blur-xl"></div>
+              <div className="absolute bottom-20 right-10 w-40 h-40 bg-[#f8a15e]/20 rounded-full blur-xl"></div>
+            </div>
+
+            <div
+              className="w-1/2 flex items-center justify-center p-12"
+              style={{ animation: "slide-in-right 0.8s ease-out" }}
+            >
+              <div className="w-full max-w-md">
+                <div className="mb-8">
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-[#d23d88] to-[#f8a15e] bg-clip-text text-transparent mb-2">
+                    Join Today
+                  </h1>
+                  <p className="text-gray-600 text-lg">Create your account</p>
+                </div>
+
+                <form onSubmit={handleRegisterSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5">Full Name</label>
+                    <input
+                      type="text"
+                      value={registerUsername}
+                      onChange={(e) => setRegisterUsername(e.target.value)}
+                      required
+                      placeholder="Enter your full name"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
+                    <input
+                      type="email"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      required
+                      placeholder="Enter your email"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showLoginPassword ? "text" : "password"}
+                        value={registerPassword}
+                        onChange={(e) => {
+                          setRegisterPassword(e.target.value)
+                          setPasswordStrength(calculatePasswordStrength(e.target.value))
+                        }}
+                        required
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                        className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#f8a15e] cursor-pointer transition-colors duration-200"
+                      >
+                        {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                      </button>
+                    </div>
+
+                    {registerPassword && (
+                      <div className="mt-3 space-y-2">
+                        <div className="flex gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < passwordStrength ? getStrengthColor(passwordStrength) : "bg-gray-200"
+                                }`}
+                            ></div>
+                          ))}
+                        </div>
+                        <p
+                          className={`text-xs font-semibold ${passwordStrength <= 2
+                            ? "text-red-500"
+                            : passwordStrength <= 3
+                              ? "text-yellow-500"
+                              : passwordStrength <= 4
+                                ? "text-blue-500"
+                                : "text-green-500"
+                            }`}
+                        >
+                          Password Strength: {getStrengthLabel(passwordStrength)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#d23d88] to-[#f8a15e] hover:shadow-lg hover:shadow-[#f8a15e]/30 hover:scale-105 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
+                  >
+                    {isLoading ? "Creating account..." : "Create Account"}
+                  </button>
+
+                  <div className="mt-7 text-center">
+                    <p className="text-gray-600 text-sm">
+                      Already have an account?{" "}
+                      <button
+                        onClick={handleLoginClick}
+                        className="font-bold text-[#d23d88] hover:text-[#f8a15e] transition-colors duration-200 cursor-pointer"
+                      >
+                        Sign in
+                      </button>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Layout - Single Form View */}
+      <div className="lg:hidden w-full flex items-center justify-center p-4 sm:p-6">
+        {/* Mobile Login */}
+        {!isActive && (
+          <div className="w-full max-w-md" style={{ animation: "slide-in-left 0.8s ease-out" }}>
+            <div className="mb-8">
+              <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#3a509f] to-[#d23d88] bg-clip-text text-transparent mb-2">
+                Welcome Back
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg">Continue your professional journey</p>
+            </div>
+
+            <form onSubmit={handleLoginSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#8b4c9c] focus:shadow-lg focus:shadow-[#8b4c9c]/20 cursor-text pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#8b4c9c] cursor-pointer transition-colors duration-200"
+                  >
+                    {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <a
+                  href="/auth/forgot-password"
+                  className="text-sm font-semibold text-[#8b4c9c] hover:text-[#d23d88] transition-colors duration-200 cursor-pointer"
                 >
-                  Password Strength: {getStrengthLabel(passwordStrength)}
+                  Forgot password?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#3a509f] to-[#8b4c9c] hover:shadow-lg hover:shadow-[#8b4c9c]/30 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </button>
+
+              <div className="mt-7 text-center">
+                <p className="text-gray-600 text-sm">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={handleRegisterClick}
+                    className="font-bold text-[#d23d88] hover:text-[#8b4c9c] transition-colors duration-200 cursor-pointer"
+                  >
+                    Create one
+                  </button>
                 </p>
               </div>
-            )}
+            </form>
           </div>
+        )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#d23d88] to-[#f8a15e] hover:shadow-lg hover:shadow-[#f8a15e]/30 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Creating account..." : "Create Account"}
-          </button>
+        {/* Mobile Signup */}
+        {isActive && (
+          <div className="w-full max-w-md" style={{ animation: "slide-in-right 0.8s ease-out" }}>
+            <div className="mb-8">
+              <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#d23d88] to-[#f8a15e] bg-clip-text text-transparent mb-2">
+                Join Today
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg">Create your account</p>
+            </div>
 
-          <div className="mt-7 text-center">
-            <p className="text-gray-600 text-sm">
-              Already have an account?{" "}
+            <form onSubmit={handleRegisterSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2.5">Full Name</label>
+                <input
+                  type="text"
+                  value={registerUsername}
+                  onChange={(e) => setRegisterUsername(e.target.value)}
+                  required
+                  placeholder="Enter your full name"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2.5">Email Address</label>
+                <input
+                  type="email"
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
+                  required
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2.5">Password</label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={registerPassword}
+                    onChange={(e) => {
+                      setRegisterPassword(e.target.value)
+                      setPasswordStrength(calculatePasswordStrength(e.target.value))
+                    }}
+                    required
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all duration-300 hover:border-[#d23d88] focus:border-[#f8a15e] focus:shadow-lg focus:shadow-[#f8a15e]/20 cursor-text pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#f8a15e] cursor-pointer transition-colors duration-200"
+                  >
+                    {showLoginPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                  </button>
+                </div>
+
+                {registerPassword && (
+                  <div className="mt-3 space-y-2">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < passwordStrength ? getStrengthColor(passwordStrength) : "bg-gray-200"
+                            }`}
+                        ></div>
+                      ))}
+                    </div>
+                    <p
+                      className={`text-xs font-semibold ${passwordStrength <= 2
+                        ? "text-red-500"
+                        : passwordStrength <= 3
+                          ? "text-yellow-500"
+                          : passwordStrength <= 4
+                            ? "text-blue-500"
+                            : "text-green-500"
+                        }`}
+                    >
+                      Password Strength: {getStrengthLabel(passwordStrength)}
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <button
-                onClick={handleLoginClick}
-                className="font-bold text-[#d23d88] hover:text-[#f8a15e] transition-colors duration-200 cursor-pointer"
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-7 py-3.5 bg-gradient-to-r from-[#d23d88] to-[#f8a15e] hover:shadow-lg hover:shadow-[#f8a15e]/30 text-white font-bold rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Sign in
+                {isLoading ? "Creating account..." : "Create Account"}
               </button>
-            </p>
+
+              <div className="mt-7 text-center">
+                <p className="text-gray-600 text-sm">
+                  Already have an account?{" "}
+                  <button
+                    onClick={handleLoginClick}
+                    className="font-bold text-[#d23d88] hover:text-[#f8a15e] transition-colors duration-200 cursor-pointer"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              </div>
+            </form>
           </div>
-        </form>
+        )}
       </div>
-    )}
-  </div>
     </div >
   )
 }
