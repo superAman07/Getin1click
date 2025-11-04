@@ -92,6 +92,7 @@ model User {
   Lead                Lead[]
   notifications       Notification[]
   customerSupport     CustomerSupport[]    @relation("CustomerSupportTickets")
+  platformReview      PlatformReview?
 
   @@map("users")
 }
@@ -303,7 +304,7 @@ model CreditBundle {
   credits      Int
   currency     String        @default("INR")
   isActive     Boolean       @default(true)
-  tag          BundleTag? 
+  tag          BundleTag?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -390,15 +391,15 @@ model Configuration {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
   message   String
-  read      Boolean  @default(false)
+  read      Boolean          @default(false)
   data      Json? // Additional context data
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   @@index([userId])
 }
@@ -410,4 +411,19 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model PlatformReview {
+  id         String   @id @default(cuid())
+  rating     Int
+  comment    String?  @db.Text
+  isFeatured Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@index([isFeatured])
 }
