@@ -75,7 +75,7 @@ export function NavbarProfessional() {
             {/* Logo */}
             <Link href="/professional/dashboard" className="font-bold text-xl text-blue-700">
               <img src="/logo.png" alt="Logo" className="h-14" />
-          </Link>
+            </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
@@ -115,7 +115,7 @@ export function NavbarProfessional() {
             </Link>
             {/* Notifications */}
             <ProfessionalNotifications />
-            
+
             {/* User */}
             <div className="relative flex items-center">
               <button

@@ -37,7 +37,7 @@ export default function Navbar() {
   ];
 
   const mainNavLinks = status === 'authenticated' && session.user.role === 'CUSTOMER' ? customerLinks : guestLinks;
-  
+
   return (
     <nav className="w-full fixed top-0 z-50 bg-white shadow-md" style={{ height: "74px" }}>
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-full">
@@ -102,49 +102,6 @@ export default function Navbar() {
               </Link>
             </div>
           )}
-
-          {/* {status === "authenticated" && (
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="w-11 h-11 rounded-full flex items-center cursor-pointer justify-center text-black hover:bg-blue-50 transition shadow-sm border border-gray-200"
-                aria-haspopup="menu"
-                aria-expanded={profileOpen}
-                aria-label="Open profile menu"
-              >
-                <UserIcon className="w-6 h-6" />
-              </button>
-
-              {profileOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-lg py-3 z-50 animate-slide-down"
-                  role="menu"
-                  aria-label="Profile menu"
-                >
-                  <div className="px-4 pb-2 border-b">
-                    <div className="text-gray-700 font-semibold">Signed in</div>
-                    <div className="text-sm text-gray-500 truncate">{session?.user?.email}</div>
-                  </div>
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 transition"
-                    role="menuitem"
-                  >
-                    <UserIcon className="w-5 h-5" />
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-left text-red-600 hover:bg-red-50 transition"
-                    role="menuitem"
-                  >
-                    <HiArrowRightOnRectangle className="w-5 h-5" />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )} */}
           {status === "authenticated" && session.user.role === 'CUSTOMER' && (
             <div className="relative" ref={profileRef}>
               <button
