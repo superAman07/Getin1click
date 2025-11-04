@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Briefcase, Users, Settings, LayoutGrid, UserCheck, X, CreditCard } from 'lucide-react';
+import { Home, Briefcase, Users, FileText, Settings, LayoutGrid, UserCheck, X, CreditCard } from 'lucide-react';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -15,30 +15,27 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
 
   const menuItems = [
     { id: 'dashboard', href: '/admin/dashboard', label: 'Dashboard', icon: Home },
-    { id: 'leads', href: '/admin/lead-management', label: 'Lead Management', icon: Home },
+    { id: 'leads', href: '/admin/lead-management', label: 'Lead Management', icon: FileText },
     { id: 'services', href: '/admin/services', label: 'Services', icon: Briefcase },
     { id: 'categories', href: '/admin/categories', label: 'Categories', icon: LayoutGrid },
     { id: 'professionals', href: '/admin/professionals', label: 'Professionals', icon: UserCheck },
     { id: 'credit-bundles', href: '/admin/credit-bundles', label: 'Credit Bundles', icon: CreditCard },
     { id: 'customers', href: '/admin/customers', label: 'Customers', icon: Users },
-    // { id: 'settings', href: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
-    <div className={`fixed lg:static inset-y-0 left-0 z-30 bg-slate-900 transition-all duration-300 ${
+    <aside className={`fixed top-16 left-0 z-30 h-[calc(100vh-4rem)] bg-slate-900 transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     } ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-      
-      <div className="flex items-center justify-between p-4 border-b border-slate-800">
+      <div className="lg:hidden absolute top-2 right-2">
         <button
           onClick={() => setMobileMenuOpen(false)}
-          className="lg:hidden text-slate-400 hover:text-white transition-colors"
+          className="text-slate-400 hover:text-white transition-colors p-2"
         >
           <X className="w-6 h-6" />
         </button>
       </div>
-
-      <nav className="mt-0 px-2">
+      <nav className="relative h-full overflow-y-auto px-2 py-8">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname.startsWith(item.href);
@@ -53,6 +50,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
                   ? 'bg-cyan-500 text-white shadow-lg' 
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               } ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? item.label : ''}
             >
               <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'group-hover:text-white'}`} />
               {!isCollapsed && (
@@ -62,6 +60,6 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
           );
         })}
       </nav>
-    </div>
+    </aside>
   );
 }
