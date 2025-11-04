@@ -371,7 +371,7 @@ model Transaction {
   user   User   @relation(fields: [userId], references: [id])
 
   bundleId String?
-  bundle   CreditBundle? @relation(fields: [bundleId], references: [id])
+  bundle   CreditBundle? @relation(fields: [bundleId], references: [id], onDelete: Restrict)
 
   amount  Float
   credits Int
