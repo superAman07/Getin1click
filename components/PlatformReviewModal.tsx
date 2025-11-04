@@ -70,7 +70,7 @@ export default function PlatformReviewModal({ isOpen, onClose }: PlatformReviewM
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
             <X size={24} />
           </button>
           <div className="text-center">
@@ -80,7 +80,7 @@ export default function PlatformReviewModal({ isOpen, onClose }: PlatformReviewM
 
           {isLoading ? (
             <div className="flex justify-center items-center h-48">
-              <Loader2 className="animate-spin text-blue-600" size={32} />
+              <Loader2 className="animate-spin text-purple-600" size={32} />
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -111,14 +111,14 @@ export default function PlatformReviewModal({ isOpen, onClose }: PlatformReviewM
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Tell us more about your experience..."
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all duration-200 ease-out"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none transition-all duration-200 ease-out"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-wait flex items-center justify-center gap-2 shadow-sm hover:shadow-lg"
+                className="w-full bg-purple-600 text-white py-3.5 rounded-xl font-semibold hover:bg-purple-700 transition-colors disabled:bg-purple-400 disabled:cursor-wait flex items-center justify-center gap-2 shadow-sm hover:shadow-lg cursor-pointer"
               >
                 {isSubmitting ? <Loader2 className="animate-spin" /> : <Send size={18} />}
                 {hasSubmittedBefore ? 'Update Feedback' : 'Submit Feedback'}
