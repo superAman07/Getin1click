@@ -459,13 +459,13 @@ export default function CreditBundlesClient() {
                             >
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                                <h2 className="text-2xl font-bold text-gray-900">{bundle.name}</h2>
-                                                {bundle.tag && (
-                                                    <span className={`inline-block mt-2 text-xs font-bold uppercase px-2 py-1 rounded-full ${tagStyle.textColor} ${tagStyle.bgColor === 'bg-white' ? 'bg-gray-100' : tagStyle.bgColor.replace('bg-', 'bg-opacity-50 from-')}`}>
-                                                        {tagStyle.label}
-                                                    </span>
-                                                )}
-                                            </div>
+                                        <h2 className="text-2xl font-bold text-gray-900">{bundle.name}</h2>
+                                        {bundle.tag && (
+                                            <span className={`inline-block mt-2 text-xs font-bold uppercase px-2 py-1 rounded-full ${tagStyle.textColor} ${tagStyle.bgColor === 'bg-white' ? 'bg-gray-100' : tagStyle.bgColor.replace('bg-', 'bg-opacity-50 from-')}`}>
+                                                {tagStyle.label}
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="flex items-center gap-2">
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-semibold ${
