@@ -113,7 +113,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               setMobileMenuOpen={setMobileMenuOpen}
             />
             
-            <main className={`flex-1 p-4 lg:p-6 overflow-y-auto transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+            <main className={`flex-1 p-4 lg:p-0 overflow-y-auto transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
               {children}
             </main>
           </div>
