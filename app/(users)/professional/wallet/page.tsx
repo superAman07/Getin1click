@@ -8,7 +8,6 @@ import { Loader2, Package, Coins, Wallet, History, CheckCircle, ShoppingCart } f
 import { BundleTag } from '@prisma/client';
 import { format } from 'date-fns';
 
-// Interfaces
 interface CreditBundle {
     id: string;
     name: string;
