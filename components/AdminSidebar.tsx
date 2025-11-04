@@ -29,16 +29,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
       isCollapsed ? 'w-16' : 'w-64'
     } ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       
-      <div className="flex items-center justify-between p-4 border-b border-slate-800 h-[69px]">
-        <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Briefcase className="w-5 h-5 text-white" />
-          </div>
-          {!isCollapsed && (
-            <span className="text-white font-semibold text-lg">GetIn1Click</span>
-          )}
-        </div>
-        
+      <div className="flex items-center justify-between p-4 border-b border-slate-800">
         <button
           onClick={() => setMobileMenuOpen(false)}
           className="lg:hidden text-slate-400 hover:text-white transition-colors"
@@ -47,7 +38,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
         </button>
       </div>
 
-      <nav className="mt-8 px-2">
+      <nav className="mt-0 px-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname.startsWith(item.href);

@@ -8,6 +8,7 @@ import AdminSidebar from './AdminSidebar';
 import { ServiceProvider, useServiceContext } from '@/contexts/ServiceContext';
 import { signOut, useSession } from 'next-auth/react';
 import AdminNotifications from './AdminNotifications';
+import Link from 'next/link';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const {
@@ -18,16 +19,12 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   } = useServiceContext();
 
   const { data: session } = useSession();
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  const getPageTitle = () => {
-    const path = pathname.split('/').pop() || 'dashboard';
-    return path.replace(/-/g, ' ');
-  };
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -41,22 +38,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="min-h-screen bg-slate-50 flex">
+        {/* Overlay */}
         {mobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
         )}
 
-        <AdminSidebar
-          isCollapsed={sidebarCollapsed}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-        />
-
+        {/* Main Layout */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="bg-white border-b border-slate-200 px-4 lg:px-6 py-4">
-            <div className="flex items-center justify-between">
+          {/* Top Navbar */}
+          <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white shadow-sm">
+            <div className="flex h-18 items-center justify-between px-4 lg:px-8">
+              {/* Left section */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setMobileMenuOpen(true)}
@@ -65,18 +57,19 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   <Menu className="w-6 h-6" />
                 </button>
 
+                <Link href="/admin/dashboard" className="flex items-center gap-2">
+                  <img src="/logo.png" alt="Logo" className="h-12" />
+                </Link>
+
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="hidden lg:block cursor-pointer text-slate-600 hover:text-slate-900 transition-colors"
+                  className="hidden lg:block text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                 >
                   <Menu className="w-6 h-6" />
                 </button>
-
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 capitalize">{getPageTitle()}</h1>
-                  <p className="text-slate-600 text-sm">Manage your {getPageTitle()} efficiently</p>
-                </div>
               </div>
+
+              {/* Right section */}
               <div className="flex items-center gap-4">
                 {pathname.includes('/services') && (
                   <button
@@ -112,11 +105,22 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
-            {children}
-          </main>
+          {/* Content Area */}
+          <div className="flex-1 flex">
+            <AdminSidebar
+              isCollapsed={sidebarCollapsed}
+              mobileMenuOpen={mobileMenuOpen}
+              setMobileMenuOpen={setMobileMenuOpen}
+            />
+            
+            <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
+              {children}
+            </main>
+          </div>
         </div>
       </div>
+
+      {/* Service Form Modal */}
       {isFormOpen && (
         <AddServiceForm
           onClose={closeForm}
@@ -129,6 +133,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     </>
   );
 }
+
 export default function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   return (
     <ServiceProvider>
