@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Star, Trash2, Loader2, Search, Filter, User, ShieldCheck, MessageSquare} from 'lucide-react';
+import { Star, Trash2, Loader2, Search, Filter, User, ShieldCheck, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { UserRole } from '@prisma/client';
 import { format } from 'date-fns';
+import { useDebounce } from 'use-debounce';
 
 interface Review {
     id: string;
@@ -38,21 +39,41 @@ export default function ManagePlatformReviewsPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState('ALL');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+
+    const fetchReviews = useCallback(async (page: number) => {
+        setLoading(true);
+        try {
+            const { data } = await axios.get('/api/admin/platform-reviews', {
+                params: {
+                    page,
+                    limit: 10,
+                    search: debouncedSearchTerm,
+                    filter,
+                },
+            });
+            setReviews(data.reviews);
+            setTotalPages(data.totalPages);
+            setCurrentPage(data.currentPage);
+        } catch (error) {
+            toast.error('Failed to load reviews.');
+        } finally {
+            setLoading(false);
+        }
+    }, [debouncedSearchTerm, filter]);
 
     useEffect(() => {
-        const fetchReviews = async () => {
-            setLoading(true);
-            try {
-                const { data } = await axios.get('/api/admin/platform-reviews');
-                setReviews(data);
-            } catch (error) {
-                toast.error('Failed to load reviews.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchReviews();
-    }, []);
+        fetchReviews(1);
+    }, [debouncedSearchTerm, filter, fetchReviews]);
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            fetchReviews(newPage);
+        }
+    };
 
     const handleToggleFeatured = async (review: Review) => {
         const originalReviews = [...reviews];
@@ -142,9 +163,10 @@ export default function ManagePlatformReviewsPage() {
                     </div>
 
                     <div className="overflow-x-auto">
-                        {loading ? (
+                        {loading && reviews.length === 0 ? (
                             <div className="text-center p-12"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></div>
                         ) : (
+                            <div className="min-h-[600px]">
                             <table className="w-full text-sm">
                                 <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                                     <tr>
@@ -155,7 +177,7 @@ export default function ManagePlatformReviewsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
-                                    {filteredReviews.map(review => (
+                                    {reviews.map(review => (
                                         <tr key={review.id}>
                                             <td className="px-6 py-4 align-top">
                                                 <div className="font-semibold text-slate-800">{review.user.name || 'Anonymous'}</div>
@@ -194,6 +216,7 @@ export default function ManagePlatformReviewsPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         )}
                          { !loading && filteredReviews.length === 0 && (
                             <div className="text-center p-12">
@@ -203,6 +226,29 @@ export default function ManagePlatformReviewsPage() {
                             </div>
                         )}
                     </div>
+                    {totalPages > 1 && (
+                        <div className="p-4 border-t border-slate-200 flex items-center justify-between">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1 || loading}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            >
+                                <ChevronLeft size={16} />
+                                Previous
+                            </button>
+                            <span className="text-sm text-slate-600">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages || loading}
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            >
+                                Next
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
