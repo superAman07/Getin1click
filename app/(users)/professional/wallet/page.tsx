@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
@@ -28,13 +28,40 @@ interface Transaction {
     } | null;
 }
 
-// Helper function for styling tags
 const getTagStyles = (tag?: BundleTag | null) => {
     switch (tag) {
-        case 'PREMIUM': return { badge: 'bg-amber-100 text-amber-800', border: 'border-amber-400', bg: 'bg-amber-50/50', popular: true, label: 'Most Popular' };
-        case 'PLATINUM': return { badge: 'bg-slate-200 text-slate-800', border: 'border-slate-500', bg: 'bg-slate-100/50', popular: false, label: 'Best Value' };
-        case 'STANDARD': return { badge: 'bg-blue-100 text-blue-800', border: 'border-blue-300', bg: 'bg-blue-50/50', popular: false, label: 'Standard' };
-        default: return { badge: 'bg-gray-100 text-gray-800', border: 'border-gray-200', bg: 'bg-white', popular: false, label: 'Basic' };
+        case 'PREMIUM':
+            return {
+                badge: 'bg-amber-100 text-amber-800',
+                border: 'border-amber-400',
+                bg: 'bg-gradient-to-br from-amber-50 to-amber-100/50',
+                popular: true,
+                label: 'Most Popular'
+            };
+        case 'PLATINUM':
+            return {
+                badge: 'bg-slate-200 text-slate-800',
+                border: 'border-slate-400',
+                bg: 'bg-gradient-to-br from-slate-50 to-slate-100/50',
+                popular: false,
+                label: 'Best Value'
+            };
+        case 'STANDARD':
+            return {
+                badge: 'bg-blue-100 text-blue-800',
+                border: 'border-blue-400',
+                bg: 'bg-gradient-to-br from-blue-50 to-blue-100/50',
+                popular: false,
+                label: 'Standard'
+            };
+        default:
+            return {
+                badge: 'bg-gray-100 text-gray-800',
+                border: 'border-gray-200',
+                bg: 'bg-white',
+                popular: false,
+                label: 'Basic'
+            };
     }
 };
 
@@ -44,6 +71,29 @@ export default function WalletPage() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
     const [purchasingId, setPurchasingId] = useState<string | null>(null);
+    const [dateRange, setDateRange] = useState({
+        start: '',
+        end: ''
+    });
+
+     const filteredTransactions = useMemo(() => {
+        if (!dateRange.start && !dateRange.end) return transactions;
+
+        return transactions.filter(tx => {
+            const txDate = new Date(tx.createdAt);
+            const startDate = dateRange.start ? new Date(dateRange.start) : null;
+            const endDate = dateRange.end ? new Date(dateRange.end) : null;
+
+            if (startDate && endDate) {
+                return txDate >= startDate && txDate <= endDate;
+            } else if (startDate) {
+                return txDate >= startDate;
+            } else if (endDate) {
+                return txDate <= endDate;
+            }
+            return true;
+        });
+    }, [transactions, dateRange]);
 
     const fetchData = useCallback(async () => {
         try {
@@ -79,11 +129,12 @@ export default function WalletPage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
+            <div className="flex justify-center items-center min-h-[calc(100vh-200px)] mt-20">
                 <Loader2 className="animate-spin text-blue-600" size={48} />
             </div>
         );
     }
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
@@ -136,7 +187,7 @@ export default function WalletPage() {
                                         <button
                                             onClick={() => handlePurchase(bundle.id)}
                                             disabled={purchasingId === bundle.id}
-                                            className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-wait flex items-center justify-center gap-2 shadow-sm hover:shadow-lg"
+                                            className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-wait flex items-center justify-center gap-2 shadow-sm hover:shadow-lg cursor-pointer"
                                         >
                                             {purchasingId === bundle.id ? <Loader2 className="animate-spin" size={20} /> : `Buy for ₹${bundle.price.toLocaleString()}`}
                                         </button>
@@ -154,12 +205,42 @@ export default function WalletPage() {
                         Transaction History
                     </h2>
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="p-4 border-b border-slate-200 bg-slate-50 flex flex-wrap gap-4 items-center">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <label className="text-sm font-medium text-slate-600">From:</label>
+                                    <input
+                                        type="date"
+                                        value={dateRange.start}
+                                        onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                                        className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <label className="text-sm font-medium text-slate-600">To:</label>
+                                    <input
+                                        type="date"
+                                        value={dateRange.end}
+                                        onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                                        className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                            {(dateRange.start || dateRange.end) && (
+                                <button
+                                    onClick={() => setDateRange({ start: '', end: '' })}
+                                    className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                                >
+                                    Clear Filter
+                                </button>
+                            )}
+                        </div>
                         {transactions.length === 0 ? (
                             <div className="text-center p-12">
                                 <p className="text-slate-500">You have no past transactions.</p>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
+                            <div className="max-h-[480px] overflow-x-auto">
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-slate-50 text-xs text-slate-500 uppercase">
                                         <tr>
@@ -170,7 +251,7 @@ export default function WalletPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                        {transactions.map((tx) => (
+                                        {filteredTransactions.map((tx) => (
                                             <tr key={tx.id} className="hover:bg-slate-50">
                                                 <td className="px-6 py-4 font-medium text-slate-800 whitespace-nowrap">
                                                     {format(new Date(tx.createdAt), 'dd MMM, yyyy')}
