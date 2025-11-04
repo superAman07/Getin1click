@@ -168,7 +168,7 @@ export default function WalletPage() {
                             return (
                                 <div key={bundle.id} className={`rounded-2xl shadow-lg flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-2 relative overflow-hidden border-2 ${styles.border} ${styles.bg}`}>
                                     {styles.popular && (
-                                        <div className="absolute top-0 right-0 text-xs bg-amber-500 text-white font-bold px-6 py-1.5 transform rotate-45 translate-x-8 translate-y-4">
+                                        <div className="absolute -top-2 right-0 text-xs bg-amber-500 text-white font-bold px-6 py-1.5 transform rotate-45 translate-x-6 translate-y-4">
                                             Popular
                                         </div>
                                     )}
