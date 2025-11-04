@@ -40,7 +40,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-slate-50 flex">
         {/* Overlay */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
         )}
 
         {/* Main Layout */}

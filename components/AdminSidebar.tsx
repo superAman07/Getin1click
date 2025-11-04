@@ -24,7 +24,7 @@ export default function AdminSidebar({ isCollapsed, mobileMenuOpen, setMobileMen
   ];
 
   return (
-    <aside className={`fixed top-16 left-0 z-30 h-[calc(100vh-4rem)] bg-slate-900 transition-all duration-300 ${
+    <aside className={`fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] bg-slate-900 transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
     } ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       <div className="lg:hidden absolute top-2 right-2">
