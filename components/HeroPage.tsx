@@ -4,7 +4,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Service } from "@/types/servicesTypes";
-import { Loader as Loader2, Search, Circle as XCircle, CircleAlert as AlertCircle, Sparkles } from "lucide-react";
+import { Loader as Loader2, Search, Star, Circle as XCircle, CircleAlert as AlertCircle, Sparkles, User, Shield } from "lucide-react";
 import PincodeModal from "./PincodeModal";
 
 interface CategoryWithServices {
@@ -18,9 +18,24 @@ interface HomePageData {
   categoriesWithServices: CategoryWithServices[];
 }
 
+type UserRole = "CUSTOMER" | "PROFESSIONAL";
+
+interface FeaturedReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  user: {
+    name: string | null;
+    role: UserRole;
+    image: string | null;
+  };
+}
+ 
 export default function HeroPage() {
   const [data, setData] = useState<HomePageData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [featuredReviews, setFeaturedReviews] = useState<FeaturedReview[]>([]);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
@@ -110,12 +125,14 @@ export default function HeroPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [homeResponse, servicesResponse] = await Promise.all([
+        const [homeResponse, servicesResponse, reviewsResponse] = await Promise.all([
           axios.get<HomePageData>("/api/home"),
-          axios.get<Service[]>("/api/admin/services")
+          axios.get<Service[]>("/api/admin/services"),
+          axios.get<FeaturedReview[]>("/api/reviews/featured")
         ]);
         setData(homeResponse.data);
         setAllServices(servicesResponse.data);
+        setFeaturedReviews(reviewsResponse.data);
       } catch (error) {
         console.error("Failed to fetch home page data", error);
       } finally {
@@ -158,6 +175,15 @@ export default function HeroPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (featuredReviews.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % featuredReviews.length);
+      }, 5000); // Change review every 5 seconds
+      return () => clearInterval(timer);
+    }
+  }, [featuredReviews.length]);
+
   const handleRecommendationClick = (serviceName: string) => {
     setServiceQuery(serviceName);
     setIsDropdownOpen(false);
@@ -165,16 +191,16 @@ export default function HeroPage() {
 
   return (
     <div className="relative mt-8 lg:mt-10">
-      <div className="w-full bg-gradient-to-b from-blue-50 via-white to-white py-16 px-4 sm:py-20">
+      <div className="w-full bg-gradient-to-b from-purple-50 via-white to-white py-16 px-4 sm:py-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
             <Sparkles size={16} className="animate-pulse" />
             <span>Find trusted professionals in your area</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-4 animate-slide-up">
             Find the perfect <br className="hidden sm:block" />
-            <span className="text-blue-600">professional</span> for you
+            <span className="text-purple-600">professional</span> for you
           </h1>
 
           <p className="mt-4 text-lg sm:text-xl text-gray-600 mb-10 animate-slide-up animation-delay-100">
@@ -191,7 +217,7 @@ export default function HeroPage() {
                   onChange={(e) => setServiceQuery(e.target.value)}
                   onFocus={() => setIsDropdownOpen(true)}
                   onKeyDown={handleKeyDown}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 group-hover:border-gray-300"
                 />
                 {isDropdownOpen && recommendedServices.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto">
@@ -201,7 +227,7 @@ export default function HeroPage() {
                         ref={el => { resultsRef.current[index] = el }}
                         onClick={() => handleRecommendationClick(service.name)}
                         className={`p-4 cursor-pointer transition-colors flex items-center gap-3 ${
-                          index === activeIndex ? 'bg-blue-100' : 'hover:bg-blue-50'
+                          index === activeIndex ? 'bg-purple-100' : 'hover:bg-purple-50'
                         }`}
                       >
                         <Search size={16} className="text-gray-400" />
@@ -219,14 +245,14 @@ export default function HeroPage() {
                   value={postcode}
                   onChange={(e) => setPostcode(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 group-hover:border-gray-300"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 group-hover:border-gray-300"
                 />
               </div>
 
               <button
                 onClick={handleSearch}
                 disabled={isLoading}
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:bg-purple-400 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="animate-spin" size={22} />
@@ -246,7 +272,7 @@ export default function HeroPage() {
                       onClick={() => {
                         setServiceQuery(service.name);
                       }}
-                      className="text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer font-medium"
+                      className="text-purple-600 hover:text-purple-700 hover:underline transition-colors cursor-pointer font-medium"
                     >
                       {service.name}
                     </button>
@@ -268,7 +294,7 @@ export default function HeroPage() {
               {isLoading ? (
                 <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                   <div className="flex flex-col items-center justify-center gap-4">
-                    <Loader2 className="animate-spin text-blue-600" size={48} />
+                    <Loader2 className="animate-spin text-purple-600" size={48} />
                     <p className="text-lg font-medium text-gray-700">
                       Searching for professionals...
                     </p>
@@ -288,7 +314,7 @@ export default function HeroPage() {
               ) : searchResults.length > 0 ? (
                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="h-10 w-1 bg-blue-600 rounded-full"></div>
+                    <div className="h-10 w-1 bg-purple-600 rounded-full"></div>
                     <h3 className="text-2xl font-bold text-gray-900">
                       Available Services in Your Area
                     </h3>
@@ -302,19 +328,19 @@ export default function HeroPage() {
                       <div
                         key={service.id}
                         onClick={() => handleSelectService(service.id)}
-                        className="group border-2 border-gray-200 p-6 rounded-xl cursor-pointer hover:border-blue-500 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50 animate-fade-in-up"
+                        className="group border-2 border-gray-200 p-6 rounded-xl cursor-pointer hover:border-purple-500 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50 animate-fade-in-up"
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
+                          <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-600 transition-colors duration-300">
                             <Search
                               size={24}
-                              className="text-blue-600 group-hover:text-white transition-colors duration-300"
+                              className="text-purple-600 group-hover:text-white transition-colors duration-300"
                             />
                           </div>
                           <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
                         </div>
-                        <h4 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        <h4 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                           {service.name}
                         </h4>
                         <p className="text-sm text-gray-600 flex items-center gap-1">
@@ -322,8 +348,8 @@ export default function HeroPage() {
                             {service.category.name}
                           </span>
                         </p>
-                        <div className="mt-4 pt-4 border-t border-gray-200 group-hover:border-blue-200 transition-colors">
-                          <span className="text-xs font-semibold text-blue-600 group-hover:text-blue-700">
+                        <div className="mt-4 pt-4 border-t border-gray-200 group-hover:border-purple-200 transition-colors">
+                          <span className="text-xs font-semibold text-purple-600 group-hover:text-purple-700">
                             Click to post a job →
                           </span>
                         </div>
@@ -413,7 +439,7 @@ export default function HeroPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-blue-600" size={48} />
+          <Loader2 className="animate-spin text-purple-600" size={48} />
         </div>
       ) : (
         data?.categoriesWithServices.map((category) => (
@@ -426,9 +452,9 @@ export default function HeroPage() {
                 <h2 className="text-3xl font-bold text-gray-900">
                   {category.name}
                 </h2>
-                <div className="h-1 w-20 bg-blue-600 rounded-full mt-2"></div>
+                <div className="h-1 w-20 bg-purple-600 rounded-full mt-2"></div>
               </div>
-              <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer flex items-center gap-1 group">
+              <button className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer flex items-center gap-1 group">
                 <span>View All</span>
                 <span className="group-hover:translate-x-1 transition-transform">
                   →
@@ -440,7 +466,7 @@ export default function HeroPage() {
                 <div
                   key={service.id}
                   onClick={() => handleServiceClick(service)}
-                  className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-blue-500 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 animate-fade-in-up cursor-pointer"
+                  className="group bg-white border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-purple-500 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 animate-fade-in-up cursor-pointer"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="relative w-full h-56 overflow-hidden">
@@ -453,7 +479,7 @@ export default function HeroPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
                       {service.name}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -467,66 +493,107 @@ export default function HeroPage() {
         ))
       )}
 
-      <section className="w-full bg-gradient-to-br from-blue-50 via-white to-blue-50 py-20 flex flex-col items-center px-4">
-        <div className="relative w-full max-w-6xl flex justify-center flex-wrap gap-4 sm:gap-6 mb-12">
-          {[
-            { src: "/1.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/2.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/3.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/1.png", size: "w-24 h-24 sm:w-28 sm:h-28" },
-            { src: "/2.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/1.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/3.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-            { src: "/1.png", size: "w-16 h-16 sm:w-20 sm:h-20" },
-          ].map((avatar, i) => (
-            <div
-              key={i}
-              className={`${avatar.size} rounded-full overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-110 transition-all duration-300 ring-4 ring-white animate-fade-in cursor-pointer`}
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              <img
-                src={avatar.src}
-                alt="user"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center max-w-3xl px-6">
-          <div className="inline-block mb-6">
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg
-                  key={star}
-                  className="w-6 h-6 text-yellow-400 fill-current"
-                  viewBox="0 0 20 20"
+      {featuredReviews.length > 0 && (
+        <section className="w-full bg-gradient-to-br from-purple-50 via-white to-purple-50 py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            {/* Avatar Grid */}
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
+              {featuredReviews.slice(0, 6).map((review, i) => (
+                <button
+                  key={review.id}
+                  onClick={() => setCurrentReviewIndex(i)}
+                  className={`relative group w-16 h-16 rounded-full transition-all duration-300 ${
+                    currentReviewIndex === i 
+                      ? 'ring-4 ring-purple-500 scale-110' 
+                      : 'ring-2 ring-white hover:scale-105'
+                  }`}
                 >
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
+                  {review.user.image ? (
+                    <Image
+                      src={review.user.image}
+                      alt="User"
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <div className={`w-full h-full flex items-center justify-center text-white font-bold text-xl rounded-full ${
+                      review.user.role === 'PROFESSIONAL' ? 'bg-emerald-500' : 'bg-purple-500'
+                    }`}>
+                      {review.user.name?.charAt(0).toUpperCase() || <User className="w-6 h-6" />}
+                    </div>
+                  )}
+                </button>
               ))}
             </div>
+            
+            {/* Testimonial Content */}
+            <div className="max-w-3xl mx-auto">
+              <div className="relative h-[300px]">
+                {featuredReviews.map((review, index) => (
+                  <div
+                    key={review.id}
+                    className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-out ${
+                      index === currentReviewIndex 
+                        ? 'opacity-100 translate-y-0' 
+                        : 'opacity-0 translate-y-8 pointer-events-none'
+                    }`}
+                  >
+                    {/* Rating Stars */}
+                    <div className="flex gap-1 mb-6">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-6 h-6 ${i < review.rating ? 'text-yellow-400' : 'text-gray-200'}`}
+                          fill="currentColor"
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Review Text */}
+                    <div className="w-full px-4">
+                      <blockquote className="text-center">
+                        <p className="text-xl md:text-2xl font-medium text-gray-900 line-clamp-4 mb-6">
+                          "{review.comment || 'A fantastic experience!'}"
+                        </p>
+                        <footer className="mt-4">
+                          <div className="font-semibold text-gray-900">
+                            {review.user.name || 'Verified User'}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center justify-center gap-2 mt-1">
+                            {review.user.role === 'PROFESSIONAL' ? (
+                              <Shield className="w-4 h-4 text-emerald-500" />
+                            ) : (
+                              <User className="w-4 h-4 text-purple-500" />
+                            )}
+                            {review.user.role === 'CUSTOMER' ? 'Verified Customer' : 'Professional'}
+                          </div>
+                        </footer>
+                      </blockquote>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Navigation Dots */}
+              <div className="flex justify-center gap-2 mt-8">
+                {featuredReviews.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentReviewIndex(i)}
+                    className={`h-2 transition-all duration-300 rounded-full ${
+                      i === currentReviewIndex 
+                        ? 'w-8 bg-purple-600' 
+                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-relaxed mb-6">
-            "I have used 1 Click International twice now for two completely different services
-            and I've had a fantastic experience both times!"
-          </p>
-          <p className="text-lg font-bold text-gray-800 mb-2">Jayne</p>
-          <p className="text-sm text-gray-500">Verified Customer</p>
-        </div>
-
-        <div className="flex mt-8 space-x-2">
-          {[1, 2, 3, 4, 5].map((dot, i) => (
-            <button
-              key={dot}
-              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === 0
-                  ? "bg-blue-600 w-8"
-                  : "bg-gray-300 hover:bg-gray-400"
-                }`}
-            ></button>
-          ))}
-        </div>
-      </section>
+        </section>
+      )}
 
       <style jsx>{`
         @keyframes marquee {
