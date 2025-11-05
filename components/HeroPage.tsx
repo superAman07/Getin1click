@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Service } from "@/types/servicesTypes";
 import { Loader as Loader2, Search, Star, Circle as XCircle, CircleAlert as AlertCircle, Sparkles, User, Shield } from "lucide-react";
 import PincodeModal from "./PincodeModal";
+import { useSession } from "next-auth/react";
 
 interface CategoryWithServices {
   id: string;
@@ -32,6 +33,7 @@ interface FeaturedReview {
 }
  
 export default function HeroPage() {
+  const { data: session, status } = useSession();
   const [data, setData] = useState<HomePageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [featuredReviews, setFeaturedReviews] = useState<FeaturedReview[]>([]);
@@ -55,6 +57,10 @@ export default function HeroPage() {
 
   const [activeIndex, setActiveIndex] = useState(-1);
   const resultsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const servicesPath = status === 'authenticated' && session?.user?.role === 'CUSTOMER'
+    ? '/customer/services'
+    : '/services';
 
   const handleSearch = async () => {
     if (!serviceQuery.trim() || !postcode.trim()) {
@@ -455,7 +461,7 @@ export default function HeroPage() {
                 <div className="h-1 w-20 bg-purple-600 rounded-full mt-2"></div>
               </div>
               <button 
-                onClick={() => router.push('/services')} 
+                onClick={() => router.push(servicesPath)}
                 className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer flex items-center gap-1 group"
               >
                 <span>View All</span>
