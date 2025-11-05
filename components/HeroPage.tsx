@@ -454,11 +454,12 @@ export default function HeroPage() {
                 </h2>
                 <div className="h-1 w-20 bg-purple-600 rounded-full mt-2"></div>
               </div>
-              <button className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer flex items-center gap-1 group">
+              <button 
+                onClick={() => router.push('/services')} 
+                className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer flex items-center gap-1 group"
+              >
                 <span>View All</span>
-                <span className="group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
