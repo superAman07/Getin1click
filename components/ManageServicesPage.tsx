@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import ToggleSwitch from './ToggleSwitch';
 import { Edit, MoreVertical, Trash2, Search, Filter, Home, ChevronRight, Package, Grid3x3, Calendar, Plus, Briefcase, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Service } from '@/types/servicesTypes';
 import { useServiceContext } from '@/contexts/ServiceContext';
 import Link from 'next/link';
+import { startOfMonth } from 'date-fns';
 
 interface ServiceCardProps {
   service: Service;
@@ -137,6 +138,35 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
     fetchServices();
   }, []);
 
+    const { filteredServices, activeServices, inactiveServices, addedThisMonth } = useMemo(() => {
+    const startOfThisMonth = startOfMonth(new Date());
+
+    const filtered = services.filter((service: Service) => {
+      const matchesSearch =
+        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.category.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesFilter = 
+        statusFilter === 'ALL' ||
+        (statusFilter === 'ACTIVE' && service.isActive) ||
+        (statusFilter === 'INACTIVE' && !service.isActive);
+
+      return matchesSearch && matchesFilter;
+    });
+
+    const active = services.filter(s => s.isActive).length;
+    const inactive = services.length - active;
+    const thisMonth = services.filter(s => new Date(s.createdAt) >= startOfThisMonth).length;
+
+    return {
+      filteredServices: filtered,
+      activeServices: active,
+      inactiveServices: inactive,
+      addedThisMonth: thisMonth,
+    };
+  }, [services, searchTerm, statusFilter]);
+
   const toggleService = async (id: string, currentState: boolean) => {
     const originalServices = [...services];
     setServices(services.map(s => s.id === id ? { ...s, isActive: !currentState } : s));
@@ -177,7 +207,7 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12 px-8">
         {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
       </div>
     );
@@ -191,23 +221,6 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
       </div>
     );
   }
-
-  const filteredServices = services.filter(service => {
-    const matchesSearch = 
-      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.category.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesFilter = 
-      statusFilter === 'ALL' ||
-      (statusFilter === 'ACTIVE' && service.isActive) ||
-      (statusFilter === 'INACTIVE' && !service.isActive);
-
-    return matchesSearch && matchesFilter;
-  });
-
-  const activeServices = services.filter(s => s.isActive).length;
-  const inactiveServices = services.filter(s => !s.isActive).length;
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 lg:p-6">
@@ -275,7 +288,7 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-600 text-sm font-medium">Added This Month</p>
-                <p className="text-2xl font-bold text-slate-900">+{Math.floor(services.length * 0.2)}</p>
+                <p className="text-2xl font-bold text-slate-900">+{addedThisMonth}</p>
               </div>
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-orange-600" />

@@ -5,6 +5,7 @@ export interface Service {
   creditCost: number;
   imageUrl: string | null;
   isActive: boolean;
+  createdAt?: string;
   categoryId: string;
   questions: {
     id: string;
