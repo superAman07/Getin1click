@@ -71,16 +71,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
               {/* Right section */}
               <div className="flex items-center gap-4">
-                {pathname.includes('/services') && (
-                  <button
-                    onClick={openFormForCreate}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-white cursor-pointer px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg active:scale-95 flex items-center gap-2"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span className="hidden sm:inline">Add New Service</span>
-                    <span className="sm:hidden">Add</span>
-                  </button>
-                )}
                 <AdminNotifications />
                 <div className="relative" ref={userMenuRef}>
                   <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="w-10 h-10 bg-slate-200 cursor-pointer rounded-full flex items-center justify-center text-slate-600 font-bold">
