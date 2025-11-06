@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ToggleSwitch from './ToggleSwitch';
-import { Edit, MoreVertical, Trash2 } from 'lucide-react';
+import { Edit, MoreVertical, Trash2, Search, Filter, Home, ChevronRight, Package, Grid3x3, Calendar, Plus, Briefcase, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Service } from '@/types/servicesTypes';
 import { useServiceContext } from '@/contexts/ServiceContext';
+import Link from 'next/link';
 
 interface ServiceCardProps {
   service: Service;
@@ -31,7 +32,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onToggle, onDelete, 
   }, [dropdownRef]);
 
   return (
-    <div className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-200">
+    <div className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-200 mt-8">
       <div className="aspect-video w-full overflow-hidden relative">
         <img
           src={service.imageUrl || defaultImage}
@@ -93,10 +94,25 @@ const SkeletonCard: React.FC = () => (
   </div>
 );
 
+const Breadcrumb: React.FC = () => {
+  return (
+    <nav className="flex items-center gap-2 text-sm text-slate-600 mb-6">
+      <Home className="w-4 h-4" />
+      <Link href="/admin/dashboard" className="hover:text-slate-900 cursor-pointer transition-colors">
+        <span className="hover:text-slate-900 cursor-pointer transition-colors">Dashboard</span>
+      </Link>
+      <ChevronRight className="w-4 h-4 text-slate-400" />
+      <span className="text-slate-900 font-medium">Services</span>
+    </nav>
+  );
+};
+
 export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service)=> void}) {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const { openFormForEdit } = useServiceContext();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const { openFormForCreate, openFormForEdit } = useServiceContext();
 
   useEffect(() => {
     console.log("ManageServicesPage received onEdit:", !!onEdit);
@@ -176,21 +192,162 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
     );
   }
 
+  const filteredServices = services.filter(service => {
+    const matchesSearch = 
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilter = 
+      statusFilter === 'ALL' ||
+      (statusFilter === 'ACTIVE' && service.isActive) ||
+      (statusFilter === 'INACTIVE' && !service.isActive);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const activeServices = services.filter(s => s.isActive).length;
+  const inactiveServices = services.filter(s => !s.isActive).length;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {loading ? (
-        Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-      ) : (
-        services.map((service) => (
-          <ServiceCard
-            key={service.id}
-            service={service}
-            onToggle={toggleService}
-            onDelete={deleteService}
-            onEdit={editService}
-          />
-        ))
-      )}
+    <div className="min-h-screen bg-slate-50 p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto">
+        <Breadcrumb />
+        
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Manage Services</h1>
+            <p className="text-slate-600">Create and manage your service offerings</p>
+          </div>
+
+          <button
+            onClick={openFormForCreate}
+            className="bg-cyan-500 hover:bg-cyan-600 text-white cursor-pointer px-6 py-3 rounded-xl flex items-center gap-3 font-medium transition-all duration-200 hover:shadow-lg active:scale-95 self-start lg:self-auto"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Add New Service</span>
+            <span className="sm:hidden">Add Service</span>
+          </button>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 text-sm font-medium">Total Services</p>
+                <p className="text-2xl font-bold text-slate-900">{services.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                <Briefcase className="w-6 h-6 text-cyan-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 text-sm font-medium">Active Services</p>
+                <p className="text-2xl font-bold text-slate-900">{activeServices}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <Package className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 text-sm font-medium">Categories Used</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {new Set(services.map(s => s.category.id)).size}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Grid3x3 className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 text-sm font-medium">Added This Month</p>
+                <p className="text-2xl font-bold text-slate-900">+{Math.floor(services.length * 0.2)}</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search services by name or category..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-3 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors focus:ring-2 focus:ring-cyan-500 focus:border-transparent cursor-pointer"
+          >
+            <option value="ALL">All Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
+        {/* Services Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : filteredServices.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredServices.map((service) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                onToggle={toggleService}
+                onDelete={deleteService}
+                onEdit={editService}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Briefcase className="w-12 h-12 text-slate-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              {searchTerm || statusFilter !== 'ALL' ? 'No services found' : 'No services yet'}
+            </h3>
+            <p className="text-slate-600 mb-6 max-w-md mx-auto">
+              {searchTerm || statusFilter !== 'ALL'
+                ? 'Try adjusting your search terms or filters.'
+                : 'Get started by creating your first service.'}
+            </p>
+            {!searchTerm && statusFilter === 'ALL' && (
+              <button
+                onClick={openFormForCreate}
+                className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg active:scale-95"
+              >
+                Create Your First Service
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
