@@ -3,14 +3,27 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ArrowUp } from "lucide-react";
+import axios from "axios";
+
+interface TrustScoreData {
+  isVisible: boolean;
+  trustScore?: string;
+  reviewCount?: number;
+}
 
 export default function Footer() {
   const { data: session, status } = useSession();
   const [showScroll, setShowScroll] = useState(false);
+  const [trustScoreData, setTrustScoreData] = useState<TrustScoreData | null>(null);
 
   const isCustomer = status === 'authenticated' && session?.user?.role === 'CUSTOMER';
 
   useEffect(() => {
+
+    axios.get<TrustScoreData>('/api/trust-score')
+      .then(response => setTrustScoreData(response.data))
+      .catch(err => console.error("Failed to fetch trust score", err));
+
     const handleScroll = () => {
       setShowScroll(window.scrollY > 200);
     };
@@ -96,9 +109,11 @@ export default function Footer() {
                 <Link href="/privacypolicy" className="hover:text-white mx-1">Privacy</Link>
               </div>
             </div>
-            <div className="font-medium text-gray-300">
-              ⭐ TrustScore 4.1 • 104,920 reviews
-            </div>
+            {trustScoreData?.isVisible && (
+              <div className="font-medium text-gray-300">
+                ⭐ TrustScore {trustScoreData.trustScore} • {trustScoreData.reviewCount?.toLocaleString()} reviews
+              </div>
+            )}
           </div>
         </div>
       </div>
