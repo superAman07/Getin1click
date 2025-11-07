@@ -414,6 +414,7 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+  @@index([email])
 }
 
 model PlatformReview {
