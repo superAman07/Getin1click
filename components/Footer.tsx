@@ -65,7 +65,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center space-x-3 mb-4">
-              <img src="/logo-white.png" alt="GetIn1Click Logo" className="h-12" />
+              <img src="/logo.png" alt="GetIn1Click Logo" className="h-12" />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed pr-6">
               Connecting customers with trusted professionals to get the job done right.
