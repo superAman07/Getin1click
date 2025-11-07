@@ -94,6 +94,8 @@ model User {
   customerSupport     CustomerSupport[]    @relation("CustomerSupportTickets")
   platformReview      PlatformReview?
 
+  @@index([email])
+  @@index([role])
   @@map("users")
 }
 
@@ -336,6 +338,7 @@ model Lead {
   userId String?
 
   @@index([customerId])
+  @@index([status])
   @@index([serviceId])
 }
 
