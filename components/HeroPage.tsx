@@ -4,7 +4,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Service } from "@/types/servicesTypes";
-import { Loader as Loader2, Search, Star, Circle as XCircle, CircleAlert as AlertCircle, Sparkles, User, Shield } from "lucide-react";
+import { Loader as Loader2, Search, Star, Circle as XCircle, CircleAlert as AlertCircle, Sparkles, User, Shield, ArrowRight } from "lucide-react";
 import PincodeModal from "./PincodeModal";
 import { useSession } from "next-auth/react";
 
@@ -128,6 +128,39 @@ export default function HeroPage() {
     }
   };
 
+  const DEFAULT_TESTIMONIALS: FeaturedReview[] = [
+  {
+    id: 'default-1',
+    rating: 5,
+    comment: "Found an amazing gardener through GetIn1Click. The whole process was so simple and professional. Highly recommended!",
+    user: {
+      name: "Sarah Mitchell",
+      role: "CUSTOMER",
+      image: null
+    }
+  },
+  {
+    id: 'default-2',
+    rating: 5,
+    comment: "As a professional electrician, this platform has helped me grow my business significantly. The lead quality is excellent!",
+    user: {
+      name: "James Wilson",
+      role: "PROFESSIONAL",
+      image: null
+    }
+  },
+  {
+    id: 'default-3',
+    rating: 5,
+    comment: "Quick, efficient, and reliable. Found a great plumber for my emergency repair within hours. Excellent service!",
+    user: {
+      name: "Michael Brown",
+      role: "CUSTOMER",
+      image: null
+    }
+  }
+];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -138,9 +171,11 @@ export default function HeroPage() {
         ]);
         setData(homeResponse.data);
         setAllServices(servicesResponse.data);
-        setFeaturedReviews(reviewsResponse.data);
+        const fetchedReviews = reviewsResponse.data;
+      setFeaturedReviews(fetchedReviews.length > 0 ? fetchedReviews : DEFAULT_TESTIMONIALS);
       } catch (error) {
         console.error("Failed to fetch home page data", error);
+        setFeaturedReviews(DEFAULT_TESTIMONIALS);
       } finally {
         setLoading(false);
       }
@@ -448,7 +483,8 @@ export default function HeroPage() {
           <Loader2 className="animate-spin text-purple-600" size={48} />
         </div>
       ) : (
-        data?.categoriesWithServices.map((category) => (
+        <>
+          {data?.categoriesWithServices?.map((category) => (
           <section
             key={category.id}
             className="px-4 sm:px-8 lg:px-28 py-12 sm:py-16"
@@ -461,7 +497,7 @@ export default function HeroPage() {
                 <div className="h-1 w-20 bg-purple-600 rounded-full mt-2"></div>
               </div>
               <button 
-                onClick={() => router.push(servicesPath)}
+                onClick={() => router.push(`${servicesPath}?category=${category.id}`)}
                 className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer flex items-center gap-1 group"
               >
                 <span>View All</span>
@@ -497,7 +533,19 @@ export default function HeroPage() {
               ))}
             </div>
           </section>
-        ))
+        ))}
+        {data && data.categoriesWithServices && data.categoriesWithServices.length > 0 && (
+            <div className="w-full py-16 flex justify-center">
+              <button
+                onClick={() => router.push(servicesPath)}
+                className="group bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-3 cursor-pointer"
+              >
+                <span>Explore More Services</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {featuredReviews.length > 0 && (

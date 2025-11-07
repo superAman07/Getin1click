@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Image from 'next/image';
 import { Search, Grid, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
@@ -32,6 +32,7 @@ export default function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, number>>({});
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -40,10 +41,22 @@ export default function ServicesPage() {
         setCategories(data);
         // Initialize expanded state for each category
         const initialExpanded = data.reduce((acc: Record<string, number>, cat: Category) => {
-          acc[cat.id] = 1; // Show first page for each category
+          // If this is the specified category, show all its services
+          if (cat.id === searchParams.get('category')) {
+            const servicePages = Math.ceil(cat.services.length / SERVICES_PER_PAGE);
+            acc[cat.id] = servicePages;
+          } else {
+            acc[cat.id] = 1;
+          }
           return acc;
         }, {});
         setExpandedCategories(initialExpanded);
+        if (searchParams.get('category')) {
+          setTimeout(() => {
+            const element = document.getElementById(`category-${searchParams.get('category')}`);
+            element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
       } catch (error) {
         console.error('Failed to fetch services:', error);
       } finally {
@@ -51,7 +64,7 @@ export default function ServicesPage() {
       }
     };
     fetchServices();
-  }, []);
+  }, [searchParams]);
 
   const handleServiceClick = (serviceId: string) => {
     router.push(`/customer/post-a-job?serviceId=${serviceId}`);
@@ -103,7 +116,7 @@ export default function ServicesPage() {
         ) : (
           <div className="space-y-16">
             {filteredCategories.map((category) => (
-              <div key={category.id} className="space-y-6">
+              <div key={category.id} id={`category-${category.id}`} className="space-y-6">
                 <div className="flex items-center gap-3">
                   <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
                   <div className="h-1 flex-1 bg-gradient-to-r from-purple-500 to-transparent rounded-full" />
