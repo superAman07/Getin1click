@@ -2,7 +2,7 @@
 
 import ToggleSwitch from '@/components/ToggleSwitch';
 import axios from 'axios';
-import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity ,CheckSquare, UserPlus, RotateCcw} from 'lucide-react';
+import { Users, Briefcase, UserCheck, FileText, Loader2, TrendingUp, Calendar, Activity, CheckSquare, UserPlus, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
@@ -83,111 +83,111 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 function TrustScoreManager() {
-    const [settings, setSettings] = useState({ isVisible: false, baseRating: 4.0, baseCount: 100 });
-    const [initialSettings, setInitialSettings] = useState({ isVisible: false, baseRating: 4.0, baseCount: 100 });
-    const [isLoading, setIsLoading] = useState(true);
+  const [settings, setSettings] = useState({ isVisible: false, baseRating: 4.0, baseCount: 100 });
+  const [initialSettings, setInitialSettings] = useState({ isVisible: false, baseRating: 4.0, baseCount: 100 });
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        axios.get('/api/admin/configuration/trust-score').then(response => {
-            setSettings(response.data);
-            setInitialSettings(response.data);
-            setIsLoading(false);
-        });
-    }, []);
+  useEffect(() => {
+    axios.get('/api/admin/configuration/trust-score').then(response => {
+      setSettings(response.data);
+      setInitialSettings(response.data);
+      setIsLoading(false);
+    });
+  }, []);
 
-    const handleSave = async () => {
-        const toastId = toast.loading('Saving settings...');
-        try {
-            await axios.post('/api/admin/configuration/trust-score', settings);
-            setInitialSettings(settings);
-            toast.success('Settings saved!', { id: toastId });
-        } catch (error) {
-            toast.error('Failed to save settings.', { id: toastId });
-        }
-    };
-
-    // This function now fetches real data and populates the form
-    const handleResetToOrganic = async () => {
-        const toastId = toast.loading('Fetching live review data...');
-        try {
-            const { data } = await axios.get('/api/admin/configuration/trust-score/organic');
-            setSettings(s => ({
-                ...s,
-                baseRating: data.organicRating,
-                baseCount: data.organicCount,
-            }));
-            toast.success('Form updated with live data. Click Save to apply.', { id: toastId });
-        } catch (error) {
-            toast.error('Could not fetch live data.', { id: toastId });
-        }
-    };
-
-    const hasUnsavedChanges = JSON.stringify(settings) !== JSON.stringify(initialSettings);
-
-    if (isLoading) {
-        return <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse h-64"></div>;
+  const handleSave = async () => {
+    const toastId = toast.loading('Saving settings...');
+    try {
+      await axios.post('/api/admin/configuration/trust-score', settings);
+      setInitialSettings(settings);
+      toast.success('Settings saved!', { id: toastId });
+    } catch (error) {
+      toast.error('Failed to save settings.', { id: toastId });
     }
+  };
 
-    return (
-        <div className="bg-white md:min-w-2xl  rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 p-6">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h2 className="text-xl font-bold text-slate-900">TrustScore Settings</h2>
-                    <p className="text-sm text-slate-500 mt-1">Control the public-facing review score.</p>
-                </div>
-                <ToggleSwitch
-                    isOn={settings.isVisible}
-                    onToggle={() => setSettings(s => ({ ...s, isVisible: !s.isVisible }))}
-                />
-            </div>
-            {hasUnsavedChanges && (
-                <div className="text-center bg-amber-50 text-amber-700 text-xs font-semibold p-2 rounded-md mb-4 border border-amber-200">
-                    You have unsaved changes. Please save your new settings.
-                </div>
-            )}
-            <div className="space-y-4">
-                <div>
-                    <label className="text-sm font-medium text-slate-700">Base Rating</label>
-                    <input
-                        type="number"
-                        step="0.1"
-                        min="1"
-                        max="5"
-                        value={settings.baseRating}
-                        onChange={(e) => setSettings(s => ({ ...s, baseRating: parseFloat(e.target.value) || 0 }))}
-                        className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg"
-                    />
-                </div>
-                <div>
-                    <label className="text-sm font-medium text-slate-700">Base Review Count</label>
-                    <input
-                        type="number"
-                        step="1"
-                        min="0"
-                        value={settings.baseCount}
-                        onChange={(e) => setSettings(s => ({ ...s, baseCount: parseInt(e.target.value, 10) || 0 }))}
-                        className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg"
-                    />
-                </div>
-                <div className="flex items-center gap-3 pt-2">
-                    <button 
-                        onClick={handleResetToOrganic} 
-                        className="flex-1 bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                        <RotateCcw className="w-4 h-4" />
-                        Reset to Live Data
-                    </button>
-                    <button 
-                        onClick={handleSave} 
-                        disabled={!hasUnsavedChanges}
-                        className="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                        Save Settings
-                    </button>
-                </div>
-            </div>
+  // This function now fetches real data and populates the form
+  const handleResetToOrganic = async () => {
+    const toastId = toast.loading('Fetching live review data...');
+    try {
+      const { data } = await axios.get('/api/admin/configuration/trust-score/organic');
+      setSettings(s => ({
+        ...s,
+        baseRating: data.organicRating,
+        baseCount: data.organicCount,
+      }));
+      toast.success('Form updated with live data. Click Save to apply.', { id: toastId });
+    } catch (error) {
+      toast.error('Could not fetch live data.', { id: toastId });
+    }
+  };
+
+  const hasUnsavedChanges = JSON.stringify(settings) !== JSON.stringify(initialSettings);
+
+  if (isLoading) {
+    return <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse h-64"></div>;
+  }
+
+  return (
+    <div className="bg-white md:min-w-2xl  rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 p-6">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">TrustScore Settings</h2>
+          <p className="text-sm text-slate-500 mt-1">Control the public-facing review score.</p>
         </div>
-    );
+        <ToggleSwitch
+          isOn={settings.isVisible}
+          onToggle={() => setSettings(s => ({ ...s, isVisible: !s.isVisible }))}
+        />
+      </div>
+      {hasUnsavedChanges && (
+        <div className="text-center bg-amber-50 text-amber-700 text-xs font-semibold p-2 rounded-md mb-4 border border-amber-200">
+          You have unsaved changes. Please save your new settings.
+        </div>
+      )}
+      <div className="space-y-4">
+        <div>
+          <label className="text-sm font-medium text-slate-700">Base Rating</label>
+          <input
+            type="number"
+            step="0.1"
+            min="1"
+            max="5"
+            value={settings.baseRating}
+            onChange={(e) => setSettings(s => ({ ...s, baseRating: parseFloat(e.target.value) || 0 }))}
+            className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-slate-700">Base Review Count</label>
+          <input
+            type="number"
+            step="1"
+            min="0"
+            value={settings.baseCount}
+            onChange={(e) => setSettings(s => ({ ...s, baseCount: parseInt(e.target.value, 10) || 0 }))}
+            className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg"
+          />
+        </div>
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            onClick={handleResetToOrganic}
+            className="flex-1 bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reset to Live Data
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!hasUnsavedChanges}
+            className="flex-1 bg-blue-600 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function AdminDashboard() {
@@ -375,26 +375,23 @@ export default function AdminDashboard() {
                     className="group flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors duration-200 cursor-pointer"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md ${
-                      user.role === 'CUSTOMER'
+                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md ${user.role === 'CUSTOMER'
                         ? 'bg-gradient-to-br from-blue-500 to-blue-600'
                         : 'bg-gradient-to-br from-emerald-500 to-emerald-600'
-                    }`}>
+                      }`}>
                       {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                      <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                        user.role === 'CUSTOMER' ? 'bg-blue-500' : 'bg-emerald-500'
-                      }`} />
+                      <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${user.role === 'CUSTOMER' ? 'bg-blue-500' : 'bg-emerald-500'
+                        }`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
                         {user.name || user.email}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
-                          user.role === 'CUSTOMER'
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${user.role === 'CUSTOMER'
                             ? 'bg-blue-100 text-blue-700'
                             : 'bg-emerald-100 text-emerald-700'
-                        }`}>
+                          }`}>
                           {user.role.toLowerCase()}
                         </span>
                         <span className="text-xs text-slate-500">
