@@ -157,7 +157,7 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
 
     const active = services.filter(s => s.isActive).length;
     const inactive = services.length - active;
-    const thisMonth = services.filter(s => new Date(s.createdAt) >= startOfThisMonth).length;
+    const thisMonth = services.filter(s => s.createdAt && new Date(s.createdAt) >= startOfThisMonth).length;
 
     return {
       filteredServices: filtered,
@@ -213,14 +213,14 @@ export default function ManageServicesPage({onEdit}: {onEdit?: (service: Service
     );
   }
 
-  if (services.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <h3 className="text-xl font-semibold text-slate-900">No services found</h3>
-        <p className="text-slate-600 mt-2">Get started by adding your first service.</p>
-      </div>
-    );
-  }
+  // if (services.length === 0) {
+  //   return (
+  //     <div className="text-center py-16">
+  //       <h3 className="text-xl font-semibold text-slate-900">No services found</h3>
+  //       <p className="text-slate-600 mt-2">Get started by adding your first service.</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 lg:p-6">
