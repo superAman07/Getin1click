@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Service } from "@/types/servicesTypes";
 import { Star } from "lucide-react";
+import Link from "next/link";
 
 interface TrustScoreData {
   isVisible: boolean;
@@ -12,7 +13,33 @@ interface TrustScoreData {
   reviewCount?: number;
 }
 
-// A helper component to render stars dynamically
+const features = [
+    {
+      icon: "⚡",
+      title: "Get Quality Leads",
+      items: ["View leads locally or nationwide", "Review leads for free", "Get leads sent to you in real time"],
+      cta: "How it works",
+      gradient: "from-blue-500 to-cyan-500",
+      href: "/how-it-works"
+    },
+    {
+      icon: "💼",
+      title: "Win New Clients",
+      items: ["Pick the best leads for your business", "Unlock verified contact details", "Call or email them to win the job"],
+      cta: "See an example lead",
+      gradient: "from-purple-500 to-pink-500",
+      href: "/how-it-works#example-lead"
+    },
+    {
+      icon: "📈",
+      title: "Grow Your Business",
+      items: ["Keep 100% of what you earn", "No commission or hidden fees", "Get Hired Guarantee on first leads"],
+      cta: "See pricing details",
+      gradient: "from-indigo-500 to-purple-500",
+      href: "/pricing"
+    }
+  ];
+
 const DynamicStarRating = ({ rating }: { rating: number }) => {
   const totalStars = 5;
   const fullStars = Math.floor(rating);
@@ -235,29 +262,7 @@ export default function Joinasprofessional() {
       <section className="py-12 sm:py-16 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
-            {[
-              {
-                icon: "⚡",
-                title: "Get Quality Leads",
-                items: ["View leads locally or nationwide", "Review leads for free", "Get leads sent to you in real time"],
-                cta: "How it works",
-                gradient: "from-blue-500 to-cyan-500"
-              },
-              {
-                icon: "💼",
-                title: "Win New Clients",
-                items: ["Pick the best leads for your business", "Unlock verified contact details", "Call or email them to win the job"],
-                cta: "See an example lead",
-                gradient: "from-purple-500 to-pink-500"
-              },
-              {
-                icon: "📈",
-                title: "Grow Your Business",
-                items: ["Keep 100% of what you earn", "No commission or hidden fees", "Get Hired Guarantee on first leads"],
-                cta: "See pricing details",
-                gradient: "from-indigo-500 to-purple-500"
-              }
-            ].map((feature, index) => (
+            {features.map((feature, index) => (
               <div
                 key={index}
                 className={`bg-white/80 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-500 border border-white/20 group animate-in fade-in slide-in-from-bottom-4`}
@@ -278,9 +283,11 @@ export default function Joinasprofessional() {
                   ))}
                 </ul>
 
-                <button className={`w-full bg-gradient-to-r ${feature.gradient} text-white py-3 px-6 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer text-sm sm:text-base`}>
-                  {feature.cta}
-                </button>
+                <Link href={feature.href} passHref>
+                  <div className={`w-full text-center bg-gradient-to-r ${feature.gradient} text-white py-3 px-6 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer text-sm sm:text-base`}>
+                    {feature.cta}
+                  </div>
+                </Link>
               </div>
             ))}
           </div>
