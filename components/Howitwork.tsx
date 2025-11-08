@@ -1,4 +1,66 @@
+'use client';
+
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import axios from "axios";
+import { Service } from "@/types/servicesTypes";
+import ServiceSearchInput from "./ServiceSearchInput";
+
 export default function Howitwork() {
+  const router = useRouter();
+  const [services, setServices] = useState<Service[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Fetch services for the search input
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get('/api/admin/services');
+        setServices(response.data);
+      } catch (error) {
+        console.error("Failed to fetch services", error);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleGetStarted = () => {
+    const path = selectedService
+      ? `/professional/onboarding?service=${encodeURIComponent(selectedService)}`
+      : '/professional/onboarding';
+    router.push(path);
+  };
+
+  const handleServiceSelect = (serviceName: string) => {
+    setSearchTerm(serviceName);
+    setSelectedService(serviceName);
+    setIsDropdownOpen(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setSelectedService(e.target.value);
+    setIsDropdownOpen(true);
+  };
+
+  const filteredServices = searchTerm
+    ? services.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : services;
   return (
     <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800">
       <main className="mt-20">
@@ -6,14 +68,13 @@ export default function Howitwork() {
           <h3 className=" font-bold " style={{ fontSize: "30px", marginTop: "-60px" }}>How It Work</h3>
           <h1 className=" font-bold " style={{ fontSize: "50px", }}>GetIn1Click for Pros</h1>
           <p className="text-lg max-w-2xl" style={{ fontSize: "18px" }}>
-        GetIn1Click is the Amazon of services. Millions of people use us  <br /> worldwide to find what they need every day.</p>
+            GetIn1Click is the Amazon of services. Millions of people use us  <br /> worldwide to find what they need every day.
+          </p>
 
           {/* Button */}
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-purple-700 transition mt-10">
-        Join as a Professional
-          </button>
-
-
+          <Link href="/joinasprofessional" className="bg-purple-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-purple-700 transition mt-10 cursor-pointer">
+            Join as a Professional
+          </Link>
         </section>
 
         <section className="w-full bg-white py-16 px-6 md:px-16 flex flex-col md:flex-row items-center md:items-start gap-12">
@@ -24,8 +85,6 @@ export default function Howitwork() {
               alt="hiw-pro"
               className="rounded-2xl shadow-lg object-cover w-full md:w-[450px] h-[490px]"
             />
-
-
           </div>
 
           {/* Right Side Text */}
@@ -48,9 +107,6 @@ export default function Howitwork() {
         </section>
 
         <section className="w-full bg-white py-16 px-6 md:px-16 flex flex-col md:flex-row items-center md:items-start gap-12">
-          {/* Left Side Image */}
-
-
           {/* Right Side Text */}
           <div className="w-full md:w-1/2 justify-center mt-20">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -83,8 +139,6 @@ export default function Howitwork() {
               alt="hiw-pro"
               className="rounded-2xl shadow-lg object-cover w-full md:w-[450px] h-[490px]"
             />
-
-
           </div>
 
           {/* Right Side Text */}
@@ -100,9 +154,6 @@ export default function Howitwork() {
         </section>
 
         <section className="w-full bg-white py-16 px-6 md:px-16 flex flex-col md:flex-row items-center md:items-start gap-12">
-          {/* Left Side Image */}
-
-
           {/* Right Side Text */}
           <div className="w-full md:w-1/2 justify-center mt-20">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -120,26 +171,31 @@ export default function Howitwork() {
               alt="hiw-pro"
               className="rounded-2xl shadow-lg object-cover w-full md:w-[450px] h-[490px]"
             />
-
-
           </div>
         </section>
-
-
         <section className="w-full bg-gray-50 py-20 flex flex-col items-center px-6">
           {/* Heading */}
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
             Register now
           </h2>
-
           {/* Input + Button */}
-          <div className="flex w-full max-w-xl">
-            <input
-              type="text"
-              placeholder="What service do you provide?"
-              className="flex-1 px-4 py-3 rounded-l-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-            />
-            <button className="bg-purple-600 text-white px-6 py-3 rounded-r-md shadow hover:bg-purple-700 transition">
+          <div className="flex w-full max-w-xl items-start gap-2">
+            <div className="flex-1">
+              <ServiceSearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                onServiceSelect={(service) => {
+                  setSearchTerm(service.name);
+                  setSelectedService(service.name);
+                }}
+                services={services}
+                placeholder="What service do you provide?"
+              />
+            </div>
+            <button
+              onClick={handleGetStarted}
+              className="bg-purple-600 text-white px-6 py-3 rounded-xl shadow hover:bg-purple-700 transition h-[54px]"
+            >
               Get started
             </button>
           </div>
@@ -177,6 +233,5 @@ export default function Howitwork() {
         <br />
       </main>
     </div>
-
   );
 }
