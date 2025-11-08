@@ -6,7 +6,8 @@ import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import toast from "react-hot-toast"
-import { CheckCircle, Users } from "lucide-react"
+import { CheckCircle, Info, Users } from "lucide-react"
+import Link from "next/link"
 
 type AuthFormsProps = {
   initialMode: "login" | "signup"
@@ -250,6 +251,19 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
                     {isLoading ? "Signing in..." : "Sign In"}
                   </button>
 
+                  <div className="mt-4 text-center">
+                    <Link href="/joinasprofessional" className=" inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                      <span>Want to be a Professional?</span>
+                      <div className="relative group">
+                        <Info className="w-4 h-4" />
+                        <div className="absolute bottom-full mb-2 w-64 -translate-x-1/2 left-1/2 bg-gray-800 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          Join as a professional to offer your services, get quality leads, and grow your business.
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-800"></div>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+
                   <div className="mt-7 text-center">
                     <p className="text-gray-600 text-sm">
                       Don't have an account?{" "}
@@ -451,6 +465,19 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
                     {isLoading ? "Creating account..." : "Create Account"}
                   </button>
 
+                  <div className="mt-4 text-center">
+                    <Link href="/joinasprofessional" className=" inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                      <span>Want to be a Professional?</span>
+                      <div className="relative group">
+                        <Info className="w-4 h-4" />
+                        <div className="absolute bottom-full mb-2 w-64 -translate-x-1/2 left-1/2 bg-gray-800 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          Join as a professional to offer your services, get quality leads, and grow your business.
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-800"></div>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+
                   <div className="mt-7 text-center">
                     <p className="text-gray-600 text-sm">
                       Already have an account?{" "}
@@ -531,6 +558,19 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </button>
+
+              <div className="mt-4 text-center">
+                <Link href="/joinasprofessional" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                  <span>Want to be a Professional?</span>
+                </Link>
+                <div className="relative group">
+                  <Info className="w-4 h-4" />
+                  <div className="absolute bottom-full mb-2 w-64 -translate-x-1/2 left-1/2 bg-gray-800 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Join as a professional to offer your services, get quality leads, and grow your business.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-800"></div>
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-7 text-center">
                 <p className="text-gray-600 text-sm">
@@ -640,6 +680,19 @@ export default function AuthPage({ initialMode }: AuthFormsProps) {
               >
                 {isLoading ? "Creating account..." : "Create Account"}
               </button>
+
+              <div className="mt-4 text-center">
+                <Link href="/joinasprofessional" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                  <span>Want to be a Professional?</span>
+                </Link>
+                <div className="relative group">
+                  <Info className="w-4 h-4" />
+                  <div className="absolute bottom-full mb-2 w-64 -translate-x-1/2 left-1/2 bg-gray-800 text-white text-xs rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Join as a professional to offer your services, get quality leads, and grow your business.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-800"></div>
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-7 text-center">
                 <p className="text-gray-600 text-sm">
