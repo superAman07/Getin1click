@@ -44,7 +44,7 @@ export default function Footer() {
   ];
 
   const customerLinks = [
-    { href: "/services", label: "Browse Services" },
+    { href: "/customer/services", label: "Browse Services" },
     ...(isCustomer
       ? [{ href: "/customer/my-jobs", label: "My Jobs" }]
       : [{ href: "/auth/login", label: "Customer Login" }]),
