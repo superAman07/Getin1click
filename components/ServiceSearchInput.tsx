@@ -25,10 +25,15 @@ export default function ServiceSearchInput({
 }: ServiceSearchInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [filteredServices]);
 
   // Filter services based on input
   useEffect(() => {
@@ -39,7 +44,6 @@ export default function ServiceSearchInput({
         .slice(0, 7); // Limit to 7 suggestions
       setFilteredServices(filtered);
       setIsOpen(true);
-      setActiveIndex(-1);
     } else {
       setFilteredServices([]);
       setIsOpen(false);
@@ -59,20 +63,20 @@ export default function ServiceSearchInput({
     }
   }, [activeIndex]);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [wrapperRef]);
+  const handleServiceSelection = (service: Service) => {
+    // Store the selected service temporarily
+    setSelectedService(service);
+    // Call the parent's onServiceSelect in the next tick
+    setTimeout(() => {
+      onServiceSelect(service);
+      setIsOpen(false);
+      setActiveIndex(-1);
+      setSelectedService(null);
+    }, 0);
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (!filteredServices.length) return;
+    if (!isOpen || filteredServices.length === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
@@ -84,44 +88,57 @@ export default function ServiceSearchInput({
 
       case 'ArrowUp':
         e.preventDefault();
-        setActiveIndex(prev => prev > -1 ? prev - 1 : -1);
+        setActiveIndex(prev => prev > 0 ? prev - 1 : 0);
         break;
 
       case 'Enter':
         e.preventDefault();
-        if (activeIndex >= 0) {
-          onServiceSelect(filteredServices[activeIndex]);
-          setIsOpen(false);
+        if (activeIndex >= 0 && activeIndex < filteredServices.length) {
+          const service = filteredServices[activeIndex];
+          if (service) {
+            handleServiceSelection(service);
+          }
         }
         break;
 
       case 'Escape':
+        e.preventDefault();
         setIsOpen(false);
-        inputRef.current?.blur();
+        setActiveIndex(-1);
         break;
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setActiveIndex(-1);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="relative" ref={wrapperRef}>
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         <input
-          ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setIsOpen(true)}
+          onFocus={() => value.trim() && setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className={`w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl 
+          className={`w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl 
             focus:border-purple-500 focus:ring-4 focus:ring-purple-100 
             transition-all duration-200 ${className}`}
           role="combobox"
           aria-expanded={isOpen}
           aria-controls="service-list"
-          aria-activedescendant={activeIndex >= 0 ? `service-${filteredServices[activeIndex].id}` : ''}
+          aria-activedescendant={activeIndex >= 0 ? `service-${filteredServices[activeIndex]?.id}` : undefined}
         />
       </div>
 
@@ -140,10 +157,7 @@ export default function ServiceSearchInput({
               id={`service-${service.id}`}
               role="option"
               aria-selected={index === activeIndex}
-              onClick={() => {
-                onServiceSelect(service);
-                setIsOpen(false);
-              }}
+              onClick={() => handleServiceSelection(service)}
               onMouseEnter={() => setActiveIndex(index)}
               className={`p-4 cursor-pointer transition-colors duration-150
                 flex items-center gap-3 border-b last:border-0 border-gray-100
