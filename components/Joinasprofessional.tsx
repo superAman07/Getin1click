@@ -66,7 +66,7 @@ export default function Joinasprofessional() {
   const router = useRouter();
   const [services, setServices] = useState<Service[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [trustScoreData, setTrustScoreData] = useState<TrustScoreData | null>(null);
@@ -107,35 +107,17 @@ export default function Joinasprofessional() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleGetStarted = () => {
-    if (selectedService) {
-      router.push(`/professional/onboarding?service=${encodeURIComponent(selectedService)}`);
-    } else {
-      router.push('/professional/onboarding');
-    }
+  const handleGetStarted = () => { 
+    const path = selectedServiceId
+      ? `/professional/onboarding?serviceId=${selectedServiceId}`
+      : '/professional/onboarding';
+    router.push(path);
   };
-
-  const handleServiceSelect = (serviceName: string) => {
-    setSearchTerm(serviceName);
-    setSelectedService(serviceName);
-    setIsDropdownOpen(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setSelectedService(e.target.value);
-    setIsDropdownOpen(true);
-  };
-
-  const handleInputFocus = () => {
-    setIsDropdownOpen(true);
-  };
-
   const filteredServices = searchTerm
     ? services.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()))
     : services;
 
-  const popularServices = services.slice(0, 8); // Show first 8 as popular
+  const popularServices = services.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -167,7 +149,7 @@ export default function Joinasprofessional() {
                         onChange={setSearchTerm}
                         onServiceSelect={(service) => {
                           setSearchTerm(service.name);
-                          setSelectedService(service.name);
+                          setSelectedServiceId(service.id);
                         }}
                         services={services}
                         placeholder="What service do you provide?"
@@ -188,7 +170,10 @@ export default function Joinasprofessional() {
                       {popularServices.map((service, index) => (
                         <button
                           key={service.id}
-                          onClick={() => handleServiceSelect(service.name)}
+                          onClick={() => {
+                            setSearchTerm(service.name);
+                            setSelectedServiceId(service.id); // Set the ID
+                          }}
                           className={`px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 cursor-pointer transform hover:scale-105 animate-in fade-in slide-in-from-bottom-2`}
                           style={{ animationDelay: `${index * 100}ms` }}
                         >

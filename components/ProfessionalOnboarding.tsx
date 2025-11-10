@@ -7,7 +7,8 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Service } from '@/types/servicesTypes';
-import { X, CheckCircle2, Search, Building2, Phone, MapPin, ArrowRight, ArrowLeft, Eye, EyeClosed } from 'lucide-react';
+import { X, CheckCircle2, Search, Building2, Phone, MapPin, ArrowRight, ArrowLeft, Eye, EyeClosed, Info } from 'lucide-react';
+import ServiceSearchInput from './ServiceSearchInput';
 
 interface Question {
     id: string;
@@ -30,7 +31,7 @@ export default function ProfessionalOnboarding() {
     const router = useRouter();
     const { data: session, status: sessionStatus, update: updateSession } = useSession();
     const searchParams = useSearchParams();
-    const initialService = searchParams.get('service');
+    const initialServiceId = searchParams.get('serviceId');
 
     const [step, setStep] = useState<number | null>(null);
     const [name, setName] = useState('');
@@ -49,8 +50,7 @@ export default function ProfessionalOnboarding() {
     const [locationName, setLocationName] = useState('');
     const [isPincodeLoading, setIsPincodeLoading] = useState(false);
 
-    const [serviceSearchTerm, setServiceSearchTerm] = useState('');
-    const [isServiceDropdownOpen, setIsServiceDropdownOpen] = useState(false);
+    const [serviceSearchTerm, setServiceSearchTerm] = useState(''); 
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -59,7 +59,6 @@ export default function ProfessionalOnboarding() {
             try {
                 const response = await axios.get('/api/professional/services');
                 setAllServices(response.data);
-                const initialServiceId: string | undefined = response.data.find((s: Service) => s.name === initialService)?.id;
                 if (initialServiceId) {
                     setSelectedServiceIds([initialServiceId]);
                 }
@@ -68,7 +67,7 @@ export default function ProfessionalOnboarding() {
             }
         };
         fetchAllServices();
-    }, [initialService]);
+    }, [initialServiceId]);
 
     const handleProceedToProfile = async () => {
         if (selectedServiceIds.length === 0) {
@@ -114,7 +113,6 @@ export default function ProfessionalOnboarding() {
         if (sessionStatus === 'loading') {
             return;
         }
-
         if (sessionStatus === 'authenticated') {
             setStep(STEPS.SERVICES);
         } else {
@@ -225,7 +223,7 @@ export default function ProfessionalOnboarding() {
             setSelectedServiceIds([...selectedServiceIds, service.id]);
         }
         setServiceSearchTerm('');
-        setIsServiceDropdownOpen(false);
+        // setIsServiceDropdownOpen(false);
     };
 
     const handleRemoveService = (serviceId: string) => {
@@ -334,7 +332,7 @@ export default function ProfessionalOnboarding() {
                             <p className="text-gray-600">Select all services you offer. You can update this anytime.</p>
                         </div>
 
-                        <div className="relative mb-6">
+                        {/* <div className="relative mb-6">
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Search Services</label>
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -361,6 +359,17 @@ export default function ProfessionalOnboarding() {
                                     ))}
                                 </div>
                             )}
+                        </div> */}
+                        <div className="relative mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Search Services</label>
+                            {/* Use the new ServiceSearchInput component */}
+                            <ServiceSearchInput
+                                value={serviceSearchTerm}
+                                onChange={setServiceSearchTerm}
+                                onServiceSelect={handleAddService}
+                                services={allServices.filter(s => !selectedServiceIds.includes(s.id))}
+                                placeholder="Type to search services..."
+                            />
                         </div>
 
                         {selectedServiceIds.length > 0 && (
@@ -411,7 +420,7 @@ export default function ProfessionalOnboarding() {
                         </div>
 
                         <div className="space-y-5">
-                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                            {/* <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Your Name</label>
                                 <input
                                     type="text"
@@ -429,6 +438,15 @@ export default function ProfessionalOnboarding() {
                                     disabled
                                     className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium cursor-not-allowed"
                                 />
+                            </div> */}
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Your Name</label>
+                                <p className="text-gray-800 font-semibold">{session?.user?.name || ''}</p>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Email Address</label>
+                                <p className="text-gray-800 font-semibold">{session?.user?.email || ''}</p>
                             </div>
 
                             <div className="group">
@@ -438,7 +456,7 @@ export default function ProfessionalOnboarding() {
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="e.g., Aman's Cleaning Co."
+                                    placeholder="e.g., Aman's Cleaning Co. or Defaults to your name if left blank"
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
                                     className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all duration-200 group-hover:border-gray-300 cursor-pointer"
@@ -463,6 +481,13 @@ export default function ProfessionalOnboarding() {
                                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                     <MapPin className="w-4 h-4" />
                                     Primary Work Pincode
+                                    <div className="relative group/tooltip">
+                                        <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                                        <div className="absolute bottom-full mb-2 w-60 -translate-x-1/2 left-1/2 bg-gray-800 text-white text-xs rounded-lg p-2 opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
+                                            This helps us match you with local job leads in your primary service area.
+                                            <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-gray-800"></div>
+                                        </div>
+                                    </div>
                                 </label>
                                 <input
                                     type="text"

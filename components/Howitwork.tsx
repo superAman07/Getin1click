@@ -11,7 +11,7 @@ export default function Howitwork() {
   const router = useRouter();
   const [services, setServices] = useState<Service[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null); // Changed state to hold ID
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -40,22 +40,10 @@ export default function Howitwork() {
   }, []);
 
   const handleGetStarted = () => {
-    const path = selectedService
-      ? `/professional/onboarding?service=${encodeURIComponent(selectedService)}`
+    const path = selectedServiceId
+      ? `/professional/onboarding?serviceId=${selectedServiceId}`
       : '/professional/onboarding';
     router.push(path);
-  };
-
-  const handleServiceSelect = (serviceName: string) => {
-    setSearchTerm(serviceName);
-    setSelectedService(serviceName);
-    setIsDropdownOpen(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setSelectedService(e.target.value);
-    setIsDropdownOpen(true);
   };
 
   const filteredServices = searchTerm
@@ -186,7 +174,7 @@ export default function Howitwork() {
                 onChange={setSearchTerm}
                 onServiceSelect={(service) => {
                   setSearchTerm(service.name);
-                  setSelectedService(service.name);
+                  setSelectedServiceId(service.id);
                 }}
                 services={services}
                 placeholder="What service do you provide?"
