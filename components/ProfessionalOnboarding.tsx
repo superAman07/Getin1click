@@ -637,10 +637,10 @@ export default function ProfessionalOnboarding() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-white p-8 md:p-10 rounded-2xl shadow-2xl border border-gray-100">
+            <div className="w-full max-w-xl bg-white p-8 md:p-10 rounded-2xl mt-15 shadow-2xl border border-gray-100">
                 {/* Progress Bar */}
-                <div className="mb-10">
-                    <div className="flex justify-between items-center mb-3">
+                <div className="mb-5">
+                    <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-semibold text-gray-600">
                             Step {step} of {Object.keys(STEPS).length}
                         </span>
