@@ -6,6 +6,7 @@ import axios from "axios";
 import { Service } from "@/types/servicesTypes";
 import { Star } from "lucide-react";
 import Link from "next/link";
+import ServiceSearchInput from "./ServiceSearchInput";
 
 interface TrustScoreData {
   isVisible: boolean;
@@ -159,49 +160,25 @@ export default function Joinasprofessional() {
                   </div>
 
                   {/* Search Section */}
-                  <div className="relative w-full max-w-2xl" ref={dropdownRef}>
-                    <div className="flex bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="What service do you provide?"
+                  <div className="flex w-full max-w-2xl items-start gap-2">
+                    <div className="flex-1">
+                      <ServiceSearchInput
                         value={searchTerm}
-                        onChange={handleInputChange}
-                        onFocus={handleInputFocus}
-                        className="flex-1 px-4 sm:px-6 py-3 sm:py-4 text-gray-900 placeholder-gray-500 focus:outline-none text-sm sm:text-base"
+                        onChange={setSearchTerm}
+                        onServiceSelect={(service) => {
+                          setSearchTerm(service.name);
+                          setSelectedService(service.name);
+                        }}
+                        services={services}
+                        placeholder="What service do you provide?"
                       />
-                      <button
-                        onClick={handleGetStarted}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 font-semibold hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 cursor-pointer text-sm sm:text-base"
-                      >
-                        Get Started
-                      </button>
                     </div>
-
-                    {/* Dropdown */}
-                    {isDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 bg-white border-2 border-gray-200 mt-2 rounded-2xl shadow-2xl z-50 max-h-80 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                        <div className="max-h-80 overflow-y-auto">
-                          {filteredServices.length > 0 ? (
-                            filteredServices.map((service, index) => (
-                              <div
-                                key={service.id}
-                                onClick={() => handleServiceSelect(service.name)}
-                                className="p-3 sm:p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 cursor-pointer transition-all duration-150 border-b border-gray-100 last:border-none hover:border-blue-200"
-                                style={{ animationDelay: `${index * 50}ms` }}
-                              >
-                                <div className="font-medium text-gray-900">{service.name}</div>
-                                {service.description && (
-                                  <div className="text-sm text-gray-500 mt-1">{service.description}</div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            <div className="p-4 text-gray-500 text-center">No services found</div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                    <button
+                      onClick={handleGetStarted}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 font-semibold hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 cursor-pointer text-sm sm:text-base rounded-xl h-[58px]"
+                    >
+                      Get Started
+                    </button>
                   </div>
 
                   {/* Popular Services */}
